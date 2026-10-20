@@ -8,6 +8,7 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --conditions=react-server --import tsx --test tests/platform.test.ts",
     "format": "prettier --write . && prisma format",
     "format:check": "prettier --check .",
     "postinstall": "prisma generate",
@@ -17,14 +18,21 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "db:check": "node scripts/check-db.mjs"
+    "db:check": "node scripts/check-db.mjs",
+    "db:setup": "node scripts/setup-db.mjs"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "dotenv": "18.0.8",
     "next": "16.4.2",
+    "pg": "8.23.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.4.3",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/pg": "8.23.1",
@@ -33,8 +41,9 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
     "prettier": "3.9.10",
-    "prisma": "8.0.0-rc.23",
+    "prisma": "7.10.1",
     "tailwindcss": "^4",
+    "tsx": "4.23.15",
     "typescript": "^5"
   }
 }

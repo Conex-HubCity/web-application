@@ -1,6 +1,8 @@
 # Conex — MCD V1 et premières règles de données
 
-Statut : document de conception, sans migration ni création de tables.
+Statut : MCD traduit en Prisma, avec migrations et services métier V1 implémentés.
+Les migrations sont appliquées dans la base locale dédiée `conex`. Voir les
+[notes de réalisation](prisma-v1.md) pour les garanties et les intégrations restantes.
 
 Ce document formalise les règles précisées dans la conversation. Les propositions
 qui restent à décider sont signalées explicitement. Les tables financières et le
@@ -21,7 +23,7 @@ module de dotations ne sont pas détaillés ici.
   plateforme. Ce choix est indépendant de l’état de validation de son compte.
 - Un porteur ne peut avoir qu’un seul projet courant.
 - Le remplacement du projet exige DEUX conditions simultanées : aucun mentorat
-  actif sur ce projet ET au moins un mois sans suivi.
+  actif sur ce projet ET au moins 30 jours sans suivi.
 - Le remplacement conserve les anciennes versions, décisions, demandes et suivis.
 
 ## 2. Identité commune et profils spécialisés
@@ -137,9 +139,10 @@ relationnelle ; les types PostgreSQL précis seront fixés avec le schéma Prism
 Cette structure permet techniquement plusieurs rôles, mais n’autorise pas encore
 le cumul mentor/porteur dans le produit : ce choix reste à confirmer.
 
-Langues, domaines d’expertise et disponibilités détaillées seront normalisés au
-moment de la traduction relationnelle ; les champs du diagramme expriment ici les
-concepts, pas une décision de les stocker sous forme de texte libre.
+Langues et domaines d’expertise sont représentés dans le premier schéma Prisma
+par des listes PostgreSQL ; leurs codes et référentiels restent à préciser.
+Disponibilités détaillées et secteurs restent à affiner. Les champs du diagramme
+expriment les concepts, pas un catalogue de valeurs définitivement arrêté.
 
 ## 3. Validation, demandes et accompagnement
 
@@ -315,19 +318,19 @@ Les corrections de forme et les réponses à une demande de révision doivent ê
 distinguées du remplacement de projet ; le périmètre exact sera précisé avant
 l’implémentation pour ne pas bloquer une simple correction de texte.
 
-### Calcul du mois sans suivi — proposition à confirmer
+### Calcul du délai sans suivi — confirmé pour la V1
 
-- Un suivi qualifiant correspond à un rendez-vous réalisé ou à un bilan de
-  compagnonnage validé, pas à une connexion, un message ou un brouillon.
-- Point de départ proposé : le dernier suivi qualifiant du projet ; s’il n’y en a
-  jamais eu, la première soumission de sa version courante.
-- Durée proposée : un mois calendaire, calculé côté serveur sur des dates stockées
-  en UTC. Il reste à confirmer si le produit doit plutôt compter 30 jours.
+- Un suivi qualifiant correspond à un rendez-vous réalisé, y compris la rencontre
+  introductive, ou à un compte rendu/bilan approuvé, pas à une connexion, un message
+  ou un brouillon.
+- Le point de départ est le plus récent entre ces suivis et la première soumission
+  de la version courante ; s’il n’y a jamais eu de suivi, cette soumission fait foi.
+- La durée retenue est de 30 jours écoulés, calculés côté serveur en UTC.
 - Avant toute première soumission, le dossier reste préparatoire ; les règles de
   modification du brouillon sont à distinguer du changement de projet soumis.
 
-Tant que ces précisions ne sont pas validées, aucun verrou temporel ni migration
-correspondante n’est implémenté.
+Le contrôle est implémenté dans le service de remplacement, avec un verrou de
+transaction partagé par l’activation d’un mentorat et l’enregistrement des suivis.
 
 ## 6. Contrôles nécessaires à la traduction PostgreSQL
 
@@ -355,15 +358,13 @@ correspondante n’est implémenté.
   lancement.
 - Visibilité mentor : choix autonome ou validation supplémentaire par CNX ;
   audience exacte du catalogue.
-- Définition d’un suivi qualifiant, date de départ en l’absence de suivi et mois
-  calendaire ou 30 jours.
+- Le délai de 30 jours et les événements de référence sont confirmés et implémentés.
 - Traitement des mentorats en pause et des demandes de rencontre encore ouvertes
   lors d’un remplacement.
 - Distinction entre correction du dossier et remplacement du projet.
 - Un seul mentor actif par projet, ou plusieurs : aucune unicité de binôme par
   projet n’est imposée tant que ce point n’est pas décidé.
 
-La traduction Prisma ajoutera les champs détaillés et les relations nécessaires
-aux paiements d’adhésion, rendez-vous et bilans mensuels. Elle ne devra pas
-confondre validation de compte, certification, publication du projet et activation
-du mentorat.
+Prisma et les services séparent la validation de compte, la certification, la
+publication du projet et l’activation du mentorat. Les paiements, les rendez-vous
+détaillés et l’authentification restent à brancher dans les étapes suivantes.

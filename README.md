@@ -6,13 +6,20 @@ Base de plateforme de compagnonnage entre entrepreneurs africains et professionn
 
 Le [MCD V1 et ses règles métier](docs/mcd-v1.md) décrit les comptes, les profils
 mentor/porteur, la visibilité et le projet courant avec historique. Les points à
-confirmer y sont identifiés avant toute traduction en migrations Prisma.
+confirmer y sont identifiés ; la traduction Prisma et les premières migrations
+sont désormais disponibles.
+
+Le [backend Prisma V1](docs/prisma-v1.md) décrit les migrations, les contraintes,
+les services métier et les tests. La base locale dédiée `conex` est préparée ;
+l’authentification sera branchée ensuite.
 
 ## Développement
 
 - `npm install`
 - `npm run dev` : http://localhost:3000
 - `npm run lint`
+- `npm test` : règles métier et migrations sur un schéma temporaire isolé.
+- `npm run db:deploy` : appliquer les migrations versionnées sur la base configurée.
 - `npm run build`
 
 ## Écrans et structure

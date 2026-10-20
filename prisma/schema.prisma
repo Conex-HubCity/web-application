@@ -7,4 +7,428 @@ datasource db {
   provider = "postgresql"
 }
 
-// Business models will be defined in the next database-design step.
+enum Role {
+  FOUNDER
+  MENTOR
+  ADMIN
+}
+
+enum AccountStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+enum VerificationStatus {
+  DRAFT
+  PENDING
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  REVOKED
+}
+
+enum MentorVisibility {
+  PRIVATE
+  PLATFORM
+}
+
+enum MentorDocumentType {
+  CV
+  CERTIFICATE
+  DEGREE
+  WORK_REFERENCE
+  OTHER_EVIDENCE
+}
+
+enum FileScanStatus {
+  PENDING
+  CLEAN
+  REJECTED
+  ERROR
+}
+
+enum ProjectReviewStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+  REVOKED
+}
+
+enum ValidationOutcome {
+  APPROVED
+  CHANGES_REQUESTED
+  REJECTED
+  REVOKED
+}
+
+enum MembershipStatus {
+  PENDING_PAYMENT
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  SUSPENDED
+}
+
+enum MentorshipRequestStatus {
+  PENDING_REVIEW
+  REJECTED
+  INVITED
+  INTRO_SCHEDULED
+  AWAITING_CONSENT
+  ACCEPTED
+  DECLINED
+  CANCELLED
+  EXPIRED
+}
+
+enum MentorshipStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  TERMINATED
+}
+
+enum FollowUpType {
+  MONTHLY_REPORT
+  MEETING
+}
+
+enum FollowUpStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id              String        @id @default(uuid()) @db.Uuid
+  email           String?       @unique @db.VarChar(254)
+  phone           String?       @unique @db.VarChar(32)
+  passwordHash    String        @map("password_hash") @db.Text
+  firstName       String        @map("first_name") @db.VarChar(100)
+  lastName        String?       @map("last_name") @db.VarChar(100)
+  emailVerifiedAt DateTime?     @map("email_verified_at") @db.Timestamptz(3)
+  phoneVerifiedAt DateTime?     @map("phone_verified_at") @db.Timestamptz(3)
+  accountStatus   AccountStatus @default(PENDING_VERIFICATION) @map("account_status")
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  roles               UserRole[]
+  mentorProfile       MentorProfile?
+  founderProfile      FounderProfile?
+  validationDecisions ValidationDecision[] @relation("ValidationReviewer")
+  reviewedRequests    MentorshipRequest[]  @relation("RequestReviewer")
+  authoredFollowUps   FollowUp[]           @relation("FollowUpAuthor")
+  reviewedFollowUps   FollowUp[]           @relation("FollowUpReviewer")
+
+  @@index([accountStatus, createdAt])
+  @@map("users")
+}
+
+model UserRole {
+  userId    String   @map("user_id") @db.Uuid
+  role      Role
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@id([userId, role])
+  @@index([role])
+  @@map("user_roles")
+}
+
+model MentorProfile {
+  userId                String             @id @map("user_id") @db.Uuid
+  professionalTitle     String?            @map("professional_title") @db.VarChar(200)
+  biography             String?            @db.Text
+  countryCode           String?            @map("country_code") @db.Char(2)
+  city                  String?            @db.VarChar(150)
+  languages             String[]           @default([])
+  expertise             String[]           @default([])
+  preferredSectors      String[]           @default([]) @map("preferred_sectors")
+  preferredCountryCodes String[]           @default([]) @map("preferred_country_codes")
+  availability          String?            @db.Text
+  motivations           String?            @db.Text
+  verificationStatus    VerificationStatus @default(DRAFT) @map("verification_status")
+  submittedAt           DateTime?          @map("submitted_at") @db.Timestamptz(3)
+  visibilityPreference  MentorVisibility   @default(PRIVATE) @map("visibility_preference")
+  visibilityRequestedAt DateTime?          @map("visibility_requested_at") @db.Timestamptz(3)
+  charterAcceptedAt     DateTime?          @map("charter_accepted_at") @db.Timestamptz(3)
+  createdAt             DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  documents           MentorDocument[]
+  memberships         Membership[]
+  validationDecisions ValidationDecision[] @relation("MentorValidationTarget")
+  mentorshipRequests  MentorshipRequest[]
+
+  @@index([verificationStatus, submittedAt])
+  @@index([visibilityPreference, verificationStatus])
+  @@map("mentor_profiles")
+}
+
+model FounderProfile {
+  userId           String    @id @map("user_id") @db.Uuid
+  biography        String?   @db.Text
+  countryCode      String?   @map("country_code") @db.Char(2)
+  city             String?   @db.VarChar(150)
+  sector           String?   @db.VarChar(150)
+  languages        String[]  @default([])
+  skills           String[]  @default([])
+  availability     String?   @db.Text
+  adultConfirmedAt DateTime? @map("adult_confirmed_at") @db.Timestamptz(3)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  user                   User                    @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  certificationEvidences CertificationEvidence[]
+  project                Project?
+
+  @@map("founder_profiles")
+}
+
+model MentorDocument {
+  id                   String             @id @default(uuid()) @db.Uuid
+  mentorUserId         String             @map("mentor_user_id") @db.Uuid
+  documentType         MentorDocumentType @map("document_type")
+  originalFilename     String             @map("original_filename") @db.VarChar(255)
+  privateStorageKey    String             @unique @map("private_storage_key") @db.Text
+  mimeType             String             @map("mime_type") @db.VarChar(150)
+  sizeBytes            BigInt             @map("size_bytes")
+  checksum             String             @db.Char(64)
+  scanStatus           FileScanStatus     @default(PENDING) @map("scan_status")
+  reviewStatus         VerificationStatus @default(PENDING) @map("review_status")
+  supersedesDocumentId String?            @map("supersedes_document_id") @db.Uuid
+  uploadedAt           DateTime           @default(now()) @map("uploaded_at") @db.Timestamptz(3)
+  withdrawnAt          DateTime?          @map("withdrawn_at") @db.Timestamptz(3)
+
+  mentor              MentorProfile              @relation(fields: [mentorUserId], references: [userId], onDelete: Restrict, onUpdate: NoAction)
+  supersedes          MentorDocument?            @relation("MentorDocumentVersions", fields: [mentorUserId, supersedesDocumentId], references: [mentorUserId, id], onDelete: Restrict, onUpdate: NoAction)
+  replacements        MentorDocument[]           @relation("MentorDocumentVersions")
+  validationDecisions ValidationDecision[]       @relation("MentorDocumentValidationTarget")
+  validationEvidence  MentorValidationDocument[]
+
+  // The composite reference prevents replacing another mentor's document.
+  @@unique([mentorUserId, id])
+  @@index([mentorUserId, reviewStatus])
+  @@index([mentorUserId, supersedesDocumentId])
+  @@map("mentor_documents")
+}
+
+model CertificationEvidence {
+  id                   String             @id @default(uuid()) @db.Uuid
+  founderUserId        String             @map("founder_user_id") @db.Uuid
+  privateStorageKey    String             @unique @map("private_storage_key") @db.Text
+  originalFilename     String             @map("original_filename") @db.VarChar(255)
+  mimeType             String             @map("mime_type") @db.VarChar(150)
+  sizeBytes            BigInt             @map("size_bytes")
+  checksum             String             @db.Char(64)
+  scanStatus           FileScanStatus     @default(PENDING) @map("scan_status")
+  certificateReference String?            @map("certificate_reference") @db.VarChar(200)
+  holderName           String             @map("holder_name") @db.VarChar(200)
+  issuedAt             DateTime?          @map("issued_at") @db.Date
+  cohort               String?            @db.VarChar(150)
+  verificationStatus   VerificationStatus @default(PENDING) @map("verification_status")
+  submittedAt          DateTime           @default(now()) @map("submitted_at") @db.Timestamptz(3)
+  withdrawnAt          DateTime?          @map("withdrawn_at") @db.Timestamptz(3)
+
+  founder             FounderProfile       @relation(fields: [founderUserId], references: [userId], onDelete: Restrict, onUpdate: NoAction)
+  validationDecisions ValidationDecision[] @relation("CertificationValidationTarget")
+
+  // Evidence is specifically for the WoeAcademy Red-level prerequisite.
+  @@index([founderUserId, verificationStatus])
+  @@index([verificationStatus, submittedAt])
+  @@map("certification_evidences")
+}
+
+model Project {
+  id                String   @id @default(uuid()) @db.Uuid
+  founderUserId     String   @unique @map("founder_user_id") @db.Uuid
+  currentRevisionId String?  @unique @map("current_revision_id") @db.Uuid
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  founder         FounderProfile    @relation(fields: [founderUserId], references: [userId], onDelete: Restrict, onUpdate: NoAction)
+  revisions       ProjectRevision[] @relation("ProjectHistory")
+  currentRevision ProjectRevision?  @relation("CurrentProjectRevision", fields: [id, currentRevisionId], references: [projectId, id], onDelete: NoAction, onUpdate: NoAction)
+
+  // The composite reference guarantees the selected revision belongs to this project.
+  @@unique([id, currentRevisionId])
+  @@map("projects")
+}
+
+model ProjectRevision {
+  id                     String              @id @default(uuid()) @db.Uuid
+  projectId              String              @map("project_id") @db.Uuid
+  revisionNumber         Int                 @map("revision_number")
+  title                  String              @db.VarChar(200)
+  summary                String?             @db.Text
+  sector                 String?             @db.VarChar(150)
+  stage                  String?             @db.VarChar(100)
+  market                 String?             @db.Text
+  impact                 String?             @db.Text
+  team                   String?             @db.Text
+  risks                  String?             @db.Text
+  supportNeeds           String[]            @default([]) @map("support_needs")
+  reviewStatus           ProjectReviewStatus @default(DRAFT) @map("review_status")
+  privatePitchStorageKey String?             @unique @map("private_pitch_storage_key") @db.Text
+  pitchOriginalFilename  String?             @map("pitch_original_filename") @db.VarChar(255)
+  pitchSizeBytes         BigInt?             @map("pitch_size_bytes")
+  pitchChecksum          String?             @map("pitch_checksum") @db.Char(64)
+  pitchScanStatus        FileScanStatus      @default(PENDING) @map("pitch_scan_status")
+  submittedAt            DateTime?           @map("submitted_at") @db.Timestamptz(3)
+  publishedAt            DateTime?           @map("published_at") @db.Timestamptz(3)
+  archivedAt             DateTime?           @map("archived_at") @db.Timestamptz(3)
+  createdAt              DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt              DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  project             Project              @relation("ProjectHistory", fields: [projectId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  currentFor          Project?             @relation("CurrentProjectRevision")
+  validationDecisions ValidationDecision[] @relation("ProjectValidationTarget")
+  mentorshipRequests  MentorshipRequest[]
+
+  @@unique([projectId, revisionNumber])
+  @@unique([projectId, id])
+  @@index([reviewStatus, publishedAt])
+  @@index([sector, stage])
+  @@map("project_revisions")
+}
+
+model Membership {
+  id           String           @id @default(uuid()) @db.Uuid
+  mentorUserId String           @map("mentor_user_id") @db.Uuid
+  status       MembershipStatus @default(PENDING_PAYMENT)
+  startsAt     DateTime?        @map("starts_at") @db.Timestamptz(3)
+  endsAt       DateTime?        @map("ends_at") @db.Timestamptz(3)
+  createdAt    DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  mentor MentorProfile @relation(fields: [mentorUserId], references: [userId], onDelete: Restrict, onUpdate: NoAction)
+
+  @@index([mentorUserId, status, endsAt])
+  @@map("memberships")
+}
+
+model ValidationDecision {
+  id                      String            @id @default(uuid()) @db.Uuid
+  reviewerUserId          String            @map("reviewer_user_id") @db.Uuid
+  certificationEvidenceId String?           @map("certification_evidence_id") @db.Uuid
+  mentorUserId            String?           @map("mentor_user_id") @db.Uuid
+  mentorDocumentId        String?           @map("mentor_document_id") @db.Uuid
+  projectRevisionId       String?           @map("project_revision_id") @db.Uuid
+  outcome                 ValidationOutcome
+  reason                  String?           @db.Text
+  decidedAt               DateTime          @default(now()) @map("decided_at") @db.Timestamptz(3)
+
+  reviewer              User                       @relation("ValidationReviewer", fields: [reviewerUserId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  certificationEvidence CertificationEvidence?     @relation("CertificationValidationTarget", fields: [certificationEvidenceId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  mentor                MentorProfile?             @relation("MentorValidationTarget", fields: [mentorUserId], references: [userId], onDelete: Restrict, onUpdate: NoAction)
+  mentorDocument        MentorDocument?            @relation("MentorDocumentValidationTarget", fields: [mentorDocumentId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  projectRevision       ProjectRevision?           @relation("ProjectValidationTarget", fields: [projectRevisionId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  mentorEvidence        MentorValidationDocument[]
+
+  // The initial migration adds a PostgreSQL CHECK for exactly one target.
+  @@unique([mentorUserId, id])
+  @@index([reviewerUserId, decidedAt])
+  @@index([certificationEvidenceId, decidedAt])
+  @@index([mentorUserId, decidedAt])
+  @@index([mentorDocumentId, decidedAt])
+  @@index([projectRevisionId, decidedAt])
+  @@map("validation_decisions")
+}
+
+// Immutable links identify the exact evidence used for a mentor's approval.
+model MentorValidationDocument {
+  decisionId       String   @map("decision_id") @db.Uuid
+  mentorDocumentId String   @map("mentor_document_id") @db.Uuid
+  mentorUserId     String   @map("mentor_user_id") @db.Uuid
+  linkedAt         DateTime @default(now()) @map("linked_at") @db.Timestamptz(3)
+
+  decision ValidationDecision @relation(fields: [mentorUserId, decisionId], references: [mentorUserId, id], onDelete: Restrict, onUpdate: NoAction)
+  document MentorDocument     @relation(fields: [mentorUserId, mentorDocumentId], references: [mentorUserId, id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@id([decisionId, mentorDocumentId])
+  @@index([mentorUserId, decisionId])
+  @@index([mentorUserId, mentorDocumentId])
+  @@map("mentor_validation_documents")
+}
+
+model MentorshipRequest {
+  id                 String                  @id @default(uuid()) @db.Uuid
+  mentorUserId       String                  @map("mentor_user_id") @db.Uuid
+  projectRevisionId  String                  @map("project_revision_id") @db.Uuid
+  status             MentorshipRequestStatus @default(PENDING_REVIEW)
+  message            String?                 @db.Text
+  reviewedByUserId   String?                 @map("reviewed_by_user_id") @db.Uuid
+  reviewReason       String?                 @map("review_reason") @db.Text
+  reviewedAt         DateTime?               @map("reviewed_at") @db.Timestamptz(3)
+  introMeetingAt     DateTime?               @map("intro_meeting_at") @db.Timestamptz(3)
+  introMeetingHeldAt DateTime?               @map("intro_meeting_held_at") @db.Timestamptz(3)
+  mentorConsentedAt  DateTime?               @map("mentor_consented_at") @db.Timestamptz(3)
+  founderConsentedAt DateTime?               @map("founder_consented_at") @db.Timestamptz(3)
+  createdAt          DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime                @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  mentor          MentorProfile   @relation(fields: [mentorUserId], references: [userId], onDelete: Restrict, onUpdate: NoAction)
+  projectRevision ProjectRevision @relation(fields: [projectRevisionId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  reviewer        User?           @relation("RequestReviewer", fields: [reviewedByUserId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  mentorship      Mentorship?
+
+  @@index([mentorUserId, status])
+  @@index([projectRevisionId, status])
+  @@index([reviewedByUserId])
+  @@index([status, createdAt])
+  @@map("mentorship_requests")
+}
+
+model Mentorship {
+  id            String           @id @default(uuid()) @db.Uuid
+  requestId     String           @unique @map("request_id") @db.Uuid
+  status        MentorshipStatus @default(ACTIVE)
+  activatedAt   DateTime         @default(now()) @map("activated_at") @db.Timestamptz(3)
+  endedAt       DateTime?        @map("ended_at") @db.Timestamptz(3)
+  closureReason String?          @map("closure_reason") @db.Text
+  updatedAt     DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  request   MentorshipRequest @relation(fields: [requestId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  followUps FollowUp[]
+
+  // No per-project active-mentor limit is assumed until the product decision.
+  @@index([status, activatedAt])
+  @@map("mentorships")
+}
+
+model FollowUp {
+  id               String         @id @default(uuid()) @db.Uuid
+  mentorshipId     String         @map("mentorship_id") @db.Uuid
+  authorUserId     String         @map("author_user_id") @db.Uuid
+  type             FollowUpType
+  status           FollowUpStatus @default(DRAFT)
+  summary          String?        @db.Text
+  goals            String?        @db.Text
+  progress         String?        @db.Text
+  blockers         String?        @db.Text
+  nextActions      String?        @map("next_actions") @db.Text
+  reportPeriod     DateTime?      @map("report_period") @db.Date
+  occurredAt       DateTime?      @map("occurred_at") @db.Timestamptz(3)
+  recordedAt       DateTime       @default(now()) @map("recorded_at") @db.Timestamptz(3)
+  reviewedByUserId String?        @map("reviewed_by_user_id") @db.Uuid
+  reviewedAt       DateTime?      @map("reviewed_at") @db.Timestamptz(3)
+  reviewReason     String?        @map("review_reason") @db.Text
+  updatedAt        DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  mentorship Mentorship @relation(fields: [mentorshipId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  author     User       @relation("FollowUpAuthor", fields: [authorUserId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  reviewer   User?      @relation("FollowUpReviewer", fields: [reviewedByUserId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@index([mentorshipId, status, occurredAt])
+  @@index([authorUserId])
+  @@index([reviewedByUserId])
+  @@map("follow_ups")
+}

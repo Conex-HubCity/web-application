@@ -12,11 +12,26 @@ const journeys = {
     caption: "Votre parcours commence là où vous en êtes.",
     action: "Créer mon compte porteur",
     steps: [
-      ["Créer votre compte", "Présentez votre parcours, votre projet et vos besoins. Vous pouvez vous inscrire avant d’être certifié."],
-      ["Faire valider votre certification", "Déposez votre certificat WoeAcademy Niveau Rouge. L’équipe Conex le vérifie ; votre profil reste privé avant validation."],
-      ["Donner forme à votre projet", "Une fois votre profil validé, soumettez votre pitch et votre dossier. Leur validation est une étape distincte avant la publication aux mentors."],
-      ["Prendre le temps de la rencontre", "Un mentor manifeste son intérêt. Conex examine la demande et organise un échange. Le compagnonnage commence avec votre accord à tous les deux."],
-      ["Avancer dans la durée", "Fixez vos objectifs ensemble, échangez régulièrement et faites le point chaque mois sur les progrès et les prochaines étapes."],
+      [
+        "Créer votre compte",
+        "Présentez votre parcours, votre projet et vos besoins. Vous pouvez vous inscrire avant d’être certifié.",
+      ],
+      [
+        "Faire valider votre certification",
+        "Déposez votre certificat WoeAcademy Niveau Rouge. L’équipe Conex le vérifie ; votre profil reste privé avant validation.",
+      ],
+      [
+        "Donner forme à votre projet",
+        "Une fois votre profil validé, soumettez votre pitch et votre dossier. Leur validation est une étape distincte avant la publication aux mentors.",
+      ],
+      [
+        "Prendre le temps de la rencontre",
+        "Un mentor manifeste son intérêt. Conex examine la demande et organise un échange. Le compagnonnage commence avec votre accord à tous les deux.",
+      ],
+      [
+        "Avancer dans la durée",
+        "Fixez vos objectifs ensemble, échangez régulièrement et faites le point chaque mois sur les progrès et les prochaines étapes.",
+      ],
     ],
   },
   mentor: {
@@ -25,11 +40,26 @@ const journeys = {
     caption: "Transmettre, c’est aussi continuer à grandir.",
     action: "Présenter ma candidature mentor",
     steps: [
-      ["Présenter votre expérience", "Partagez votre parcours professionnel, vos domaines d’expertise, vos motivations et vos disponibilités."],
-      ["Rejoindre un cercle de confiance", "L’équipe Conex vérifie votre identité et votre expertise. Après validation, la confirmation de votre adhésion active vos accès."],
-      ["Découvrir les projets validés", "Explorez les projets selon vos secteurs, vos langues et vos disponibilités. Les dossiers confidentiels sont réservés aux mentors autorisés."],
-      ["Faire une demande de rencontre", "Vous proposez une mise en relation. Conex en examine la compatibilité et organise un échange, puis recueille le consentement de chacun."],
-      ["Accompagner avec régularité", "Définissez des objectifs communs, partagez votre regard et rédigez les bilans mensuels. L’équipe Conex reste présente en cas de besoin."],
+      [
+        "Présenter votre expérience",
+        "Partagez votre parcours professionnel, vos domaines d’expertise, vos motivations et vos disponibilités.",
+      ],
+      [
+        "Rejoindre un cercle de confiance",
+        "L’équipe Conex vérifie votre identité et votre expertise. Après validation, la confirmation de votre adhésion active vos accès.",
+      ],
+      [
+        "Découvrir les projets validés",
+        "Explorez les projets selon vos secteurs, vos langues et vos disponibilités. Les dossiers confidentiels sont réservés aux mentors autorisés.",
+      ],
+      [
+        "Faire une demande de rencontre",
+        "Vous proposez une mise en relation. Conex en examine la compatibilité et organise un échange, puis recueille le consentement de chacun.",
+      ],
+      [
+        "Accompagner avec régularité",
+        "Définissez des objectifs communs, partagez votre regard et rédigez les bilans mensuels. L’équipe Conex reste présente en cas de besoin.",
+      ],
     ],
   },
 };
@@ -39,27 +69,84 @@ export function Journey() {
   const journey = journeys[role];
 
   return (
-    <section id="comment-ca-marche" className="cnx-journey cnx-section" aria-labelledby="journey-title">
+    <section
+      id="comment-ca-marche"
+      className="cnx-journey cnx-section"
+      aria-labelledby="journey-title"
+    >
       <div className="welcome-container">
         <div className="cnx-section-heading">
-          <div className="welcome-eyebrow"><span /> LE COMPAGNONNAGE, PAS À PAS</div>
-          <h2 id="journey-title">D’abord une rencontre.<br /><em>Puis un chemin commun.</em></h2>
-          <p>La confiance se construit. Chaque étape prépare une relation libre, réciproque et suivie dans la durée.</p>
+          <div className="welcome-eyebrow">
+            <span /> LE COMPAGNONNAGE, PAS À PAS
+          </div>
+          <h2 id="journey-title">
+            D’abord une rencontre.
+            <br />
+            <em>Puis un chemin commun.</em>
+          </h2>
+          <p>
+            La confiance se construit. Chaque étape prépare une relation libre, réciproque et suivie
+            dans la durée.
+          </p>
         </div>
-        <div className="cnx-journey-switch" role="group" aria-label="Choisir le parcours à découvrir">
-          <button type="button" aria-pressed={role === "porteur"} aria-controls="journey-content" onClick={() => setRole("porteur")}>Je porte un projet <span>01</span></button>
-          <button type="button" aria-pressed={role === "mentor"} aria-controls="journey-content" onClick={() => setRole("mentor")}>Je deviens mentor <span>02</span></button>
+        <div
+          className="cnx-journey-switch"
+          role="group"
+          aria-label="Choisir le parcours à découvrir"
+        >
+          <button
+            type="button"
+            aria-pressed={role === "porteur"}
+            aria-controls="journey-content"
+            onClick={() => setRole("porteur")}
+          >
+            Je porte un projet <span>01</span>
+          </button>
+          <button
+            type="button"
+            aria-pressed={role === "mentor"}
+            aria-controls="journey-content"
+            onClick={() => setRole("mentor")}
+          >
+            Je deviens mentor <span>02</span>
+          </button>
         </div>
-        <div id="journey-content" className="cnx-journey-body" role="region" aria-labelledby="journey-role-title">
+        <div
+          id="journey-content"
+          className="cnx-journey-body"
+          role="region"
+          aria-labelledby="journey-role-title"
+        >
           <div className="cnx-journey-photo">
-            <Image src={`/assets/conex/${journey.image}`} alt="" fill sizes="(max-width: 760px) 100vw, 43vw" />
+            <Image
+              src={`/assets/conex/${journey.image}`}
+              alt=""
+              fill
+              sizes="(max-width: 760px) 100vw, 43vw"
+            />
             <div className="cnx-photo-shade" />
-            <p><span aria-hidden="true">✳</span>{journey.caption}</p>
+            <p>
+              <span aria-hidden="true">✳</span>
+              {journey.caption}
+            </p>
           </div>
           <div className="cnx-journey-content">
             <h3 id="journey-role-title">{journey.heading}</h3>
-            <ol className="cnx-journey-steps">{journey.steps.map(([title, text], index) => <li key={title}><span className="cnx-step-number">0{index + 1}</span><div><h4>{title}</h4><p>{text}</p></div></li>)}</ol>
-            <Link className="cnx-inline-link" href={`/inscription/${role}`}>{journey.action}<Icon name="arrow" size={18} /></Link>
+            <ol className="cnx-journey-steps">
+              {journey.steps.map(([title, text], index) => (
+                <li key={title}>
+                  <span className="cnx-step-number">0{index + 1}</span>
+                  <div>
+                    <h4>{title}</h4>
+                    <p>{text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <Link className="cnx-inline-link" href={`/inscription/${role}`}>
+              {journey.action}
+              <Icon name="arrow" size={18} />
+            </Link>
           </div>
         </div>
       </div>

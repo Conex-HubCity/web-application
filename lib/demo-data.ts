@@ -1,11 +1,61 @@
-export type Member = { id: string; name: string; role: "Mentor" | "Entrepreneure"; title: string; location: string; image: string; skills: string[]; bio: string };
+export type Member = {
+  id: string;
+  name: string;
+  role: "Mentor" | "Entrepreneure";
+  title: string;
+  location: string;
+  image: string;
+  skills: string[];
+  bio: string;
+};
 // Profils illustratifs uniquement, sans membres ni disponibilités réels.
 export const members: Member[] = [
-  { id: "amina", name: "Amina Diallo", role: "Mentor", title: "Stratégie & développement", location: "Paris, France", image: "portrait-femme.webp", skills: ["Stratégie", "Leadership"], bio: "Un parcours de démonstration autour du développement d’entreprise, du leadership et de la transmission entre l’Afrique et sa diaspora." },
-  { id: "kwame", name: "Kwame Mensah", role: "Mentor", title: "Entrepreneuriat & innovation", location: "Accra, Ghana", image: "mentor.webp", skills: ["Innovation", "Business model"], bio: "Un profil de démonstration pour explorer l’accompagnement d’un projet, de la première idée à un modèle économique structuré." },
-  { id: "adjo", name: "Adjo Afi", role: "Entrepreneure", title: "Fondatrice · économie locale", location: "Lomé, Togo", image: "entrepreneure.webp", skills: ["Impact", "Artisanat"], bio: "Un projet illustratif qui met en valeur les savoir-faire locaux et explore les possibilités d’un entrepreneuriat à impact." },
+  {
+    id: "amina",
+    name: "Amina Diallo",
+    role: "Mentor",
+    title: "Stratégie & développement",
+    location: "Paris, France",
+    image: "portrait-femme.webp",
+    skills: ["Stratégie", "Leadership"],
+    bio: "Un parcours de démonstration autour du développement d’entreprise, du leadership et de la transmission entre l’Afrique et sa diaspora.",
+  },
+  {
+    id: "kwame",
+    name: "Kwame Mensah",
+    role: "Mentor",
+    title: "Entrepreneuriat & innovation",
+    location: "Accra, Ghana",
+    image: "mentor.webp",
+    skills: ["Innovation", "Business model"],
+    bio: "Un profil de démonstration pour explorer l’accompagnement d’un projet, de la première idée à un modèle économique structuré.",
+  },
+  {
+    id: "adjo",
+    name: "Adjo Afi",
+    role: "Entrepreneure",
+    title: "Fondatrice · économie locale",
+    location: "Lomé, Togo",
+    image: "entrepreneure.webp",
+    skills: ["Impact", "Artisanat"],
+    bio: "Un projet illustratif qui met en valeur les savoir-faire locaux et explore les possibilités d’un entrepreneuriat à impact.",
+  },
 ];
 export const resources = [
-  { id: "pitch", category: "GUIDE PRATIQUE", title: "Donner de la force à son pitch", duration: "5 min de lecture", icon: "spark", text: "Commencez par le problème rencontré par vos clients. Présentez votre solution en une phrase, puis expliquez à qui elle s’adresse. Illustrez votre proposition par un exemple concret. Terminez par votre prochaine étape et l’aide dont vous avez besoin. Exercice : présentez votre projet à voix haute en 60 secondes, puis retenez les trois idées essentielles." },
-  { id: "mentorat", category: "LE COMPAGNONNAGE", title: "Préparer sa première rencontre", duration: "4 min de lecture", icon: "people", text: "Avant un échange de mentorat, notez votre situation actuelle, un objectif précis et trois questions. Pendant la rencontre, partagez vos contraintes et écoutez les retours. Convenez ensemble d’une action réalisable et d’un moyen de faire le point. Le compagnonnage se construit dans la confiance, la régularité et le respect mutuel." },
+  {
+    id: "pitch",
+    category: "GUIDE PRATIQUE",
+    title: "Donner de la force à son pitch",
+    duration: "5 min de lecture",
+    icon: "spark",
+    text: "Commencez par le problème rencontré par vos clients. Présentez votre solution en une phrase, puis expliquez à qui elle s’adresse. Illustrez votre proposition par un exemple concret. Terminez par votre prochaine étape et l’aide dont vous avez besoin. Exercice : présentez votre projet à voix haute en 60 secondes, puis retenez les trois idées essentielles.",
+  },
+  {
+    id: "mentorat",
+    category: "LE COMPAGNONNAGE",
+    title: "Préparer sa première rencontre",
+    duration: "4 min de lecture",
+    icon: "people",
+    text: "Avant un échange de mentorat, notez votre situation actuelle, un objectif précis et trois questions. Pendant la rencontre, partagez vos contraintes et écoutez les retours. Convenez ensemble d’une action réalisable et d’un moyen de faire le point. Le compagnonnage se construit dans la confiance, la régularité et le respect mutuel.",
+  },
 ];

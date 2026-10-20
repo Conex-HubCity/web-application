@@ -1,0 +1,574 @@
+import "dotenv/config";
+import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
+import { readFile, readdir } from "node:fs/promises";
+import { after, before, test } from "node:test";
+import pg from "pg";
+import { PGlite } from "@electric-sql/pglite";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient, type Role } from "../generated/prisma/client";
+import { createPlatformService } from "../lib/domain/platform-service";
+import {
+  DomainError,
+  PROJECT_REPLACEMENT_DELAY_MS,
+  assertProjectReplacement,
+} from "../lib/domain/policies";
+
+const DAY = 86400000;
+const hash = "a".repeat(64);
+const connectionString = process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL;
+const hasDatabase = Boolean(connectionString && !connectionString.includes("CHANGE_ME"));
+const schema = `conex_test_${randomUUID().replaceAll("-", "")}`;
+async function migrationSql() {
+  const root = new URL("../prisma/migrations/", import.meta.url);
+  const entries = await readdir(root, { withFileTypes: true });
+  const names = entries
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
+  return (
+    await Promise.all(names.map((name) => readFile(new URL(`${name}/migration.sql`, root), "utf8")))
+  ).join("\n");
+}
+let control: pg.Client;
+let pool: pg.Pool;
+let db: PrismaClient;
+let service: ReturnType<typeof createPlatformService>;
+let schemaCreated = false;
+
+before(async () => {
+  if (!hasDatabase) return;
+  // A unique schema is created exclusively for this run. Existing tables are never touched.
+  control = new pg.Client({ connectionString, connectionTimeoutMillis: 5000 });
+  await control.connect();
+  await control.query(`CREATE SCHEMA "${schema}"`);
+  schemaCreated = true;
+  await control.query(`SET search_path TO "${schema}"`);
+  const sql = (await migrationSql()).replace('CREATE SCHEMA IF NOT EXISTS "public";', "");
+  assert.doesNotMatch(sql, /"public"\./);
+  await control.query(sql);
+  pool = new pg.Pool({ connectionString, options: `-c search_path=${schema}`, max: 6 });
+  db = new PrismaClient({ adapter: new PrismaPg(pool, { schema }) });
+  service = createPlatformService(db);
+});
+
+after(async () => {
+  await db?.$disconnect();
+  if (pool && !pool.ended) await pool.end();
+  if (control) {
+    if (schemaCreated) {
+      // Never drop a computed or pre-existing application schema.
+      assert.match(schema, /^conex_test_[a-f0-9]{32}$/);
+      await control.query("SET search_path TO public");
+      await control.query(`DROP SCHEMA "${schema}" CASCADE`);
+    }
+    await control.end();
+  }
+});
+
+const databaseTest = hasDatabase ? test : test.skip;
+const expectCode = (code: string) => (error: unknown) =>
+  error instanceof DomainError && error.code === code;
+
+async function user(role: Role) {
+  return db.user.create({
+    data: {
+      email: `${randomUUID()}@example.test`,
+      passwordHash: "test-only-hash",
+      firstName: "Test",
+      accountStatus: "ACTIVE",
+      emailVerifiedAt: new Date(),
+      roles: { create: { role } },
+      ...(role === "FOUNDER"
+        ? { founderProfile: { create: { adultConfirmedAt: new Date() } } }
+        : {}),
+      ...(role === "MENTOR"
+        ? {
+            mentorProfile: {
+              create: { verificationStatus: "APPROVED", charterAcceptedAt: new Date() },
+            },
+          }
+        : {}),
+    },
+  });
+}
+
+async function fixture() {
+  const admin = await user("ADMIN");
+  const founder = await user("FOUNDER");
+  const mentor = await user("MENTOR");
+  await db.membership.create({
+    data: {
+      mentorUserId: mentor.id,
+      status: "ACTIVE",
+      startsAt: new Date(Date.now() - 90 * DAY),
+      endsAt: new Date(Date.now() + 90 * DAY),
+    },
+  });
+  const certificate = await db.certificationEvidence.create({
+    data: {
+      founderUserId: founder.id,
+      privateStorageKey: randomUUID(),
+      originalFilename: "red.pdf",
+      mimeType: "application/pdf",
+      sizeBytes: BigInt(100),
+      checksum: hash,
+      holderName: "Test",
+      scanStatus: "CLEAN",
+      verificationStatus: "APPROVED",
+    },
+  });
+  const project = await service.createProject(founder.id, { title: "Initial project" });
+  const revisionId = project.currentRevision!.id;
+  // Simulate metadata produced by the trusted upload/scanning pipeline.
+  await db.projectRevision.update({
+    where: { id: revisionId },
+    data: {
+      privatePitchStorageKey: randomUUID(),
+      pitchOriginalFilename: "pitch.pdf",
+      pitchSizeBytes: BigInt(200),
+      pitchChecksum: hash,
+      pitchScanStatus: "CLEAN",
+    },
+  });
+  return { admin, founder, mentor, project, revisionId, certificate };
+}
+
+async function publish(f: Awaited<ReturnType<typeof fixture>>, daysAgo = 0) {
+  await service.submitProject(f.founder.id, f.project.id);
+  if (daysAgo)
+    await db.projectRevision.update({
+      where: { id: f.revisionId },
+      data: { submittedAt: new Date(Date.now() - daysAgo * DAY) },
+    });
+  await service.recordValidation(f.admin.id, { kind: "PROJECT", id: f.revisionId }, "APPROVED");
+  await service.publishProject(f.admin.id, f.project.id);
+}
+
+test("replacement boundary is exactly 30 elapsed days, and both conditions are mandatory", () => {
+  const now = new Date("2026-10-20T12:00:00Z");
+  const submittedAt = new Date(now.getTime() - PROJECT_REPLACEMENT_DELAY_MS);
+  assert.doesNotThrow(() =>
+    assertProjectReplacement({ hasOpenMentorship: false, submittedAt, lastFollowUpAt: null, now }),
+  );
+  assert.throws(
+    () =>
+      assertProjectReplacement({ hasOpenMentorship: true, submittedAt, lastFollowUpAt: null, now }),
+    expectCode("MENTORSHIP_OPEN"),
+  );
+  assert.throws(
+    () =>
+      assertProjectReplacement({
+        hasOpenMentorship: false,
+        submittedAt,
+        lastFollowUpAt: new Date(now.getTime() - PROJECT_REPLACEMENT_DELAY_MS + 1),
+        now,
+      }),
+    expectCode("REPLACEMENT_TOO_EARLY"),
+  );
+});
+
+databaseTest(
+  "migration enforces contact, normalization, exact validation targets and immutable audit",
+  async () => {
+    await assert.rejects(
+      db.user.create({ data: { firstName: "No contact", passwordHash: "hash" } }),
+    );
+    await assert.rejects(
+      db.user.create({
+        data: { firstName: "Mixed case", passwordHash: "hash", email: "UPPER@example.test" },
+      }),
+    );
+    const f = await fixture();
+    await assert.rejects(
+      db.validationDecision.create({ data: { reviewerUserId: f.admin.id, outcome: "APPROVED" } }),
+    );
+    await assert.rejects(
+      db.validationDecision.create({
+        data: {
+          reviewerUserId: f.admin.id,
+          outcome: "APPROVED",
+          mentorUserId: f.mentor.id,
+          certificationEvidenceId: f.certificate.id,
+        },
+      }),
+    );
+    const decision = await db.validationDecision.create({
+      data: {
+        reviewerUserId: f.admin.id,
+        outcome: "APPROVED",
+        certificationEvidenceId: f.certificate.id,
+      },
+    });
+    await assert.rejects(
+      db.validationDecision.update({ where: { id: decision.id }, data: { reason: "rewrite" } }),
+    );
+    await assert.rejects(db.validationDecision.delete({ where: { id: decision.id } }));
+  },
+);
+
+databaseTest("account context exposes stored roles, never password hashes", async () => {
+  const founder = await user("FOUNDER");
+  const context = await service.getAccountContext(founder.id);
+  assert.deepEqual(context.roles, ["FOUNDER"]);
+  assert.equal("passwordHash" in context, false);
+  await assert.rejects(
+    service.recordValidation(founder.id, { kind: "MENTOR", id: founder.id }, "APPROVED"),
+    expectCode("FORBIDDEN"),
+  );
+});
+
+databaseTest(
+  "one project per founder; certification and pitch approval are independent",
+  async () => {
+    const f = await fixture();
+    await assert.rejects(service.createProject(f.founder.id, { title: "Second project" }));
+    await db.certificationEvidence.update({
+      where: { id: f.certificate.id },
+      data: { verificationStatus: "PENDING" },
+    });
+    await assert.rejects(
+      service.submitProject(f.founder.id, f.project.id),
+      expectCode("CERTIFICATION_REQUIRED"),
+    );
+    await db.certificationEvidence.update({
+      where: { id: f.certificate.id },
+      data: { verificationStatus: "APPROVED" },
+    });
+    await service.submitProject(f.founder.id, f.project.id);
+    await assert.rejects(
+      service.publishProject(f.admin.id, f.project.id),
+      expectCode("PROJECT_NOT_APPROVED"),
+    );
+    await service.recordValidation(f.admin.id, { kind: "PROJECT", id: f.revisionId }, "APPROVED");
+    await service.publishProject(f.admin.id, f.project.id);
+    const visible = await service.listAvailableProjects(f.mentor.id);
+    assert(visible.some((entry) => entry.id === f.project.id));
+    assert.equal(JSON.stringify(visible).includes("privatePitchStorageKey"), false);
+    await service.recordValidation(
+      f.admin.id,
+      { kind: "CERTIFICATION", id: f.certificate.id },
+      "REVOKED",
+      "Certificate withdrawn",
+    );
+    assert.equal(
+      (await service.listAvailableProjects(f.mentor.id)).some((entry) => entry.id === f.project.id),
+      false,
+    );
+  },
+);
+
+databaseTest(
+  "private mentors can access eligible projects, expired memberships cannot",
+  async () => {
+    const f = await fixture();
+    await publish(f);
+    await service.setMentorVisibility(f.mentor.id, "PRIVATE");
+    assert(
+      (await service.listAvailableProjects(f.mentor.id)).some((entry) => entry.id === f.project.id),
+    );
+    const membership = await db.membership.findFirstOrThrow({
+      where: { mentorUserId: f.mentor.id },
+    });
+    await db.membership.update({
+      where: { id: membership.id },
+      data: { endsAt: new Date(Date.now() - DAY) },
+    });
+    await assert.rejects(
+      service.authorizeProjectDocument(f.mentor.id, f.revisionId),
+      expectCode("MEMBERSHIP_REQUIRED"),
+    );
+  },
+);
+
+databaseTest(
+  "mentor evidence is private, immutable and attached to the correct owner",
+  async () => {
+    const f = await fixture();
+    const document = await service.registerMentorDocument(f.mentor.id, {
+      documentType: "CV",
+      originalFilename: "cv.pdf",
+      privateStorageKey: randomUUID(),
+      mimeType: "application/pdf",
+      sizeBytes: BigInt(100),
+      checksum: hash,
+    });
+    await assert.rejects(
+      db.mentorDocument.update({ where: { id: document.id }, data: { checksum: "b".repeat(64) } }),
+    );
+    const other = await user("MENTOR");
+    await assert.rejects(
+      service.registerMentorDocument(other.id, {
+        documentType: "CV",
+        originalFilename: "cv.pdf",
+        privateStorageKey: randomUUID(),
+        mimeType: "application/pdf",
+        sizeBytes: BigInt(100),
+        checksum: hash,
+        supersedesDocumentId: document.id,
+      }),
+    );
+    await assert.rejects(
+      service.withdrawMentorDocument(other.id, document.id),
+      expectCode("FORBIDDEN"),
+    );
+    await db.mentorDocument.update({ where: { id: document.id }, data: { scanStatus: "CLEAN" } });
+    await service.recordValidation(
+      f.admin.id,
+      { kind: "MENTOR_DOCUMENT", id: document.id },
+      "APPROVED",
+    );
+    await db.mentorProfile.update({
+      where: { userId: f.mentor.id },
+      data: { verificationStatus: "PENDING" },
+    });
+    const approval = await service.recordValidation(
+      f.admin.id,
+      { kind: "MENTOR", id: f.mentor.id, evidenceIds: [document.id] },
+      "APPROVED",
+    );
+    await service.withdrawMentorDocument(f.mentor.id, document.id);
+    assert.equal(
+      (await db.mentorProfile.findUniqueOrThrow({ where: { userId: f.mentor.id } }))
+        .verificationStatus,
+      "PENDING",
+    );
+    assert.equal(
+      await db.mentorValidationDocument.count({ where: { decisionId: approval.id } }),
+      1,
+    );
+  },
+);
+
+databaseTest(
+  "activation requires CNX approval, a meeting and both participants' consent",
+  async () => {
+    const f = await fixture();
+    await publish(f, 40);
+    const request = await service.requestMentorship(f.mentor.id, f.revisionId);
+    await assert.rejects(
+      service.activateMentorship(f.admin.id, request.id),
+      expectCode("CONSENT_REQUIRED"),
+    );
+    await service.approveMentorshipRequest(f.admin.id, request.id);
+    await assert.rejects(
+      service.consentToMentorship(f.founder.id, request.id),
+      expectCode("INVALID_TRANSITION"),
+    );
+    await service.recordIntroMeeting(f.admin.id, request.id, new Date());
+    await service.consentToMentorship(f.mentor.id, request.id);
+    await assert.rejects(
+      service.activateMentorship(f.admin.id, request.id),
+      expectCode("CONSENT_REQUIRED"),
+    );
+    await service.consentToMentorship(f.founder.id, request.id);
+    const mentorship = await service.activateMentorship(f.admin.id, request.id);
+    await assert.rejects(
+      service.replaceProject(f.founder.id, f.project.id, { title: "Blocked" }),
+      expectCode("MENTORSHIP_OPEN"),
+    );
+    await db.mentorship.update({ where: { id: mentorship.id }, data: { status: "PAUSED" } });
+    await assert.rejects(
+      service.replaceProject(f.founder.id, f.project.id, { title: "Still blocked" }),
+      expectCode("MENTORSHIP_OPEN"),
+    );
+    const followUp = await service.recordFollowUp(f.founder.id, mentorship.id, {
+      type: "MEETING",
+      summary: "Meeting completed",
+      occurredAt: new Date(),
+    });
+    await assert.rejects(
+      service.approveFollowUp(f.founder.id, followUp.id),
+      expectCode("FORBIDDEN"),
+    );
+    await service.approveFollowUp(f.admin.id, followUp.id);
+    await assert.rejects(
+      db.followUp.update({
+        where: { id: followUp.id },
+        data: { occurredAt: new Date(Date.now() - 40 * DAY) },
+      }),
+    );
+    await service.closeMentorship(f.admin.id, mentorship.id, "Goals complete");
+    await assert.rejects(
+      service.replaceProject(f.founder.id, f.project.id, { title: "Too soon" }),
+      expectCode("REPLACEMENT_TOO_EARLY"),
+    );
+  },
+);
+
+databaseTest(
+  "replacement after 30 days preserves old content and starts a draft requiring review",
+  async () => {
+    const f = await fixture();
+    await publish(f, 31);
+    const oldRequest = await service.requestMentorship(f.mentor.id, f.revisionId);
+    const revision = await service.replaceProject(f.founder.id, f.project.id, {
+      title: "New project",
+    });
+    assert.equal(revision.reviewStatus, "DRAFT");
+    assert.equal(revision.revisionNumber, 2);
+    assert.equal(revision.publishedAt, null);
+    assert(
+      (await db.projectRevision.findUniqueOrThrow({ where: { id: f.revisionId } })).archivedAt,
+    );
+    assert.equal(
+      (await db.mentorshipRequest.findUniqueOrThrow({ where: { id: oldRequest.id } }))
+        .projectRevisionId,
+      f.revisionId,
+    );
+    await assert.rejects(
+      service.approveMentorshipRequest(f.admin.id, oldRequest.id),
+      expectCode("PROJECT_UNAVAILABLE"),
+    );
+    await assert.rejects(
+      db.projectRevision.update({
+        where: { id: f.revisionId },
+        data: { title: "Rewrite history" },
+      }),
+    );
+    const another = await fixture();
+    await assert.rejects(
+      db.project.update({
+        where: { id: another.project.id },
+        data: { currentRevisionId: revision.id },
+      }),
+    );
+  },
+);
+
+test("initial migration runs on an isolated PostgreSQL engine without application credentials", async () => {
+  const embedded = new PGlite();
+  try {
+    await embedded.exec(await migrationSql());
+    const tables = await embedded.query<{ count: number }>(
+      "SELECT count(*)::int AS count FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'",
+    );
+    assert.equal(tables.rows[0].count, 14);
+    await assert.rejects(
+      embedded.query(
+        "INSERT INTO users(id,password_hash,first_name,updated_at) VALUES ($1,'test','No contact',now())",
+        [randomUUID()],
+      ),
+    );
+  } finally {
+    await embedded.close();
+  }
+});
+
+databaseTest("mentor visibility never publishes CVs or certificate evidence", async () => {
+  const f = await fixture();
+  await assert.rejects(
+    db.certificationEvidence.update({
+      where: { id: f.certificate.id },
+      data: { privateStorageKey: randomUUID() },
+    }),
+  );
+  const otherFounder = await user("FOUNDER");
+  await assert.rejects(
+    db.project.update({ where: { id: f.project.id }, data: { founderUserId: otherFounder.id } }),
+  );
+  const doc = await service.registerMentorDocument(f.mentor.id, {
+    documentType: "CV",
+    originalFilename: "private.pdf",
+    privateStorageKey: randomUUID(),
+    mimeType: "application/pdf",
+    sizeBytes: BigInt(100),
+    checksum: hash,
+  });
+  await db.mentorDocument.update({ where: { id: doc.id }, data: { scanStatus: "CLEAN" } });
+  await service.setMentorVisibility(f.mentor.id, "PLATFORM");
+  const visible = await service.listVisibleMentors(f.founder.id);
+  assert(visible.some((entry) => entry.userId === f.mentor.id));
+  assert.equal(JSON.stringify(visible).includes("privateStorageKey"), false);
+  await assert.rejects(
+    service.authorizeMentorDocument(f.founder.id, doc.id),
+    expectCode("FORBIDDEN"),
+  );
+  await assert.rejects(
+    service.authorizeCertificationDocument(f.mentor.id, f.certificate.id),
+    expectCode("FORBIDDEN"),
+  );
+  assert.equal(
+    (await service.authorizeMentorDocument(f.mentor.id, doc.id)).storageKey,
+    doc.privateStorageKey,
+  );
+  await service.setMentorVisibility(f.mentor.id, "PRIVATE");
+  assert.equal(
+    (await service.listVisibleMentors(f.founder.id)).some((entry) => entry.userId === f.mentor.id),
+    false,
+  );
+});
+
+databaseTest(
+  "concurrent project replacement and mentorship activation cannot both succeed",
+  async () => {
+    const f = await fixture();
+    await publish(f, 40);
+    const request = await service.requestMentorship(f.mentor.id, f.revisionId);
+    await service.approveMentorshipRequest(f.admin.id, request.id);
+    await db.projectRevision.update({
+      where: { id: f.revisionId },
+      data: { publishedAt: new Date(Date.now() - 39 * DAY) },
+    });
+    await db.mentorshipRequest.update({
+      where: { id: request.id },
+      data: {
+        createdAt: new Date(Date.now() - 38 * DAY),
+        reviewedAt: new Date(Date.now() - 37 * DAY),
+      },
+    });
+    await service.recordIntroMeeting(f.admin.id, request.id, new Date(Date.now() - 35 * DAY));
+    await service.consentToMentorship(f.mentor.id, request.id);
+    await service.consentToMentorship(f.founder.id, request.id);
+    const outcomes = await Promise.allSettled([
+      service.activateMentorship(f.admin.id, request.id),
+      service.replaceProject(f.founder.id, f.project.id, { title: "Concurrent replacement" }),
+    ]);
+    assert.equal(outcomes.filter((result) => result.status === "fulfilled").length, 1);
+    const project = await db.project.findUniqueOrThrow({ where: { id: f.project.id } });
+    const active = await db.mentorship.count({
+      where: { requestId: request.id, status: "ACTIVE" },
+    });
+    assert(!(project.currentRevisionId !== f.revisionId && active > 0));
+  },
+);
+
+databaseTest(
+  "a recent introduction blocks replacement even when the participant declines",
+  async () => {
+    const f = await fixture();
+    await publish(f, 40);
+    const request = await service.requestMentorship(f.mentor.id, f.revisionId);
+    await service.approveMentorshipRequest(f.admin.id, request.id);
+    await service.recordIntroMeeting(f.admin.id, request.id, new Date());
+    await service.declineMentorship(f.founder.id, request.id);
+    await assert.rejects(
+      service.activateMentorship(f.admin.id, request.id),
+      expectCode("CONSENT_REQUIRED"),
+    );
+    await assert.rejects(
+      service.replaceProject(f.founder.id, f.project.id, { title: "Too early after meeting" }),
+      expectCode("REPLACEMENT_TOO_EARLY"),
+    );
+  },
+);
+
+databaseTest("draft input cannot inject review state, publication or file approval", async () => {
+  const founder = await user("FOUNDER");
+  const input = {
+    title: "Untrusted form",
+    reviewStatus: "APPROVED",
+    publishedAt: new Date(),
+    pitchScanStatus: "CLEAN",
+  };
+  const project = await service.createProject(founder.id, input);
+  assert.equal(project.currentRevision?.reviewStatus, "DRAFT");
+  assert.equal(project.currentRevision?.publishedAt, null);
+  assert.equal(project.currentRevision?.pitchScanStatus, "PENDING");
+  await service.updateProjectDraft(founder.id, project.id, input);
+  assert.equal(
+    (await db.projectRevision.findUniqueOrThrow({ where: { id: project.currentRevision!.id } }))
+      .reviewStatus,
+    "DRAFT",
+  );
+});
