@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+build/
+coverage/
+generated/
+references/
+public/assets/
+package-lock.json
+next-env.d.ts
+AGENTS.md
+.env*
+prisma/migrations/
+
+# Prisma schemas are formatted by `prisma format` in `npm run format`.
+prisma/*.prisma

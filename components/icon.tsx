@@ -15,6 +15,7 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
     spark: <path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5ZM20 2v4m-2-2h4" />,
     close: <path d="m6 6 12 12M6 18 18 6" />,
     leaf: <path d="M20 3C9 2 3 7 5 14s14 8 15-11ZM5 21l10-11" />,
+    lock: <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" /></>,
     chevron: <path d="m9 5 7 7-7 7" />,
   };
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name] ?? paths.compass}</svg>;

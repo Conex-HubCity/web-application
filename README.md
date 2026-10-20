@@ -1,6 +1,6 @@
 # Conex
 
-Base de plateforme de compagnonnage entre entrepreneurs africains et professionnels de la diaspora. L’accueil est un espace applicatif, pas la reprise du site vitrine de conférence.
+Base de plateforme de compagnonnage entre entrepreneurs africains et professionnels de la diaspora.
 
 ## Développement
 
@@ -9,24 +9,36 @@ Base de plateforme de compagnonnage entre entrepreneurs africains et professionn
 - `npm run lint`
 - `npm run build`
 
-## Structure
+## Écrans et structure
 
-- `app/page.tsx` : entrée de l’application.
-- `components/workspace.tsx` : accueil, communauté, favoris, ressources, aperçu de profil et personnalisation de session.
-- `components/icon.tsx` : icônes SVG partagées.
-- `lib/demo-data.ts` : profils et guides illustratifs à remplacer par les données de la plateforme.
-- `app/globals.css` : tokens et styles responsive ; thèmes clair et sombre via `data-theme="dark"` sur `<html>`.
-- `public/assets/conex/` : les huit assets d’origine conservés, sans transformation.
-- `references/conference-v4/` : sources originales de l’archive, conservées uniquement comme référence. Leurs scripts ne sont ni importés ni exécutés par l’application.
+- `/` : accueil avec le hero de la maquette V4 (photo pleine largeur, dégradé vert forêt, titre serif ivoire/doré et médaillon CNX), deux parcours et connexion directement accessibles.
+- `/inscription/porteur` : aperçu d’inscription entrepreneur, avant la certification.
+- `/inscription/mentor` : aperçu de candidature mentor, vérification avant adhésion.
+- `/connexion` : aperçu de connexion avec choix du rôle.
+- `/espace` : interface de démonstration conservée, sans authentification réelle.
+- `components/splash-screen.tsx` : introduction modale CNX, lettres avec rebond puis « A solution by HubCity ».
+- `components/auth-entry.tsx` : formulaires de prévisualisation ; aucune donnée envoyée ou stockée.
+- `components/brand.tsx` : signature Conex partagée.
+- `components/home-sections.tsx` : cartes des deux parcours, confiance, FAQ native et invitation finale, adaptées de la maquette V4.
+- `components/journey.tsx` : étapes du compagnonnage avec sélection porteur/mentor et contenu distinct pour chaque rôle.
+- `components/workspace.tsx` : communauté, favoris temporaires et ressources de démonstration.
+- `lib/demo-data.ts` : profils et guides illustratifs.
+- `app/globals.css` : tokens et styles de l’espace de démonstration.
+- `app/welcome.css` : accueil, entrées inscription/connexion, splash et adaptations mobiles.
+- `app/home-sections.css` : compositions photo, sections éditoriales, FAQ et adaptations mobiles du bas de page.
+- `public/assets/conex/` : huit assets d’origine conservés, sans transformation.
+- `references/conference-v4/` : sources archivées ; scripts jamais importés dans l’application.
 
-## Identité visuelle
+## Introduction
 
-Palette issue de la référence : vert forêt `#132d26`, vert profond `#0c211b`, ivoire `#f6f3eb`, doré `#f0bf7d`, sauge `#b8c9b7`, avec terre cuite d’accent. Les couleurs sémantiques, surfaces, bordures et rayons sont centralisés en variables CSS. La typographie système évite un téléchargement de polices au build. La palette reste une proposition, pas une charte validée.
+Séquence d’environ 5,4 secondes : C, N, X apparaissent avec un léger rebond, puis la signature anglaise. Le dialogue natif rend le contenu sous-jacent inactif et conserve la navigation au clavier. Bouton « Passer l’introduction » et touche Échap ; défilement restauré à la fermeture. Une lecture par session via `sessionStorage`, avec possibilité de rejouer depuis le pied de page. Si le stockage est indisponible, la présentation fonctionne sans stockage. Le mode de mouvement réduit retire les animations et raccourcit la présentation à une seconde. Sans JavaScript, le splash reste fermé et les liens de l’accueil restent accessibles.
 
-Les photos et profils servent à la démonstration ; ils ne représentent pas des participants réels. Le visuel HubCity fourni est conservé dans les assets, sans être présenté comme un logo authentifié. Le README d’origine précise les réserves de provenance.
+## Identité et règles de parcours
 
-## Périmètre actuel
+Palette de référence : vert forêt `#132d26`, ivoire `#f6f3eb`, doré `#f0bf7d`, sauge `#b8c9b7` et accent terre cuite. Polices système sans téléchargement au build. Identité distincte de WoeAcademy. Photos et profils illustratifs ; le logo HubCity fourni reste archivé comme visuel non authentifié, la signature utilise du texte.
 
-La recherche (nom, expertise, ville), les filtres, les favoris de session, les fiches, les guides et le changement de thème fonctionnent localement. La personnalisation du prénom reste en mémoire, sans stockage ni création de compte. Les vues de navigation sont des sections de l’aperçu sur `/`, pas encore des routes autonomes. Aucun backend, authentification, message ou demande de mentorat n’est connecté. Le thème et les favoris sont réinitialisés au rechargement.
+Le compte porteur peut précéder la certification ; le profil reste privé avant vérification du certificat WoeAcademy Niveau Rouge. Le pitch demande ensuite une validation distincte. Côté mentor : candidature, vérification, puis adhésion avant activation. La mise en relation demande un contrôle CNX et le consentement des deux parties. Les montants, délais et objectifs indicatifs du cahier des charges ne sont pas des décisions intégrées.
 
-À définir ensemble ensuite : rôles, inscription, certification, visibilité des profils, mise en relation et parcours de mentorat. Les consignes de déploiement et règles métier de l’archive sont des éléments de référence, pas des exigences adoptées automatiquement.
+## Limites du prototype
+
+Les formulaires vérifient les champs localement et affichent un retour explicite de démonstration. Ils ne créent ni compte ni session et ne conservent pas les identifiants. Les espaces réels par rôle, certification, stockage privé, paiements, rendez-vous et mentorat nécessitent un backend et des contrôles d’accès. La recherche et les favoris de l’espace de démonstration restent en mémoire. Aucun dossier réel ne doit y être ajouté.
