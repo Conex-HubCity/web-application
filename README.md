@@ -2,6 +2,12 @@
 
 Base de plateforme de compagnonnage entre entrepreneurs africains et professionnels de la diaspora.
 
+## Conception des données
+
+Le [MCD V1 et ses règles métier](docs/mcd-v1.md) décrit les comptes, les profils
+mentor/porteur, la visibilité et le projet courant avec historique. Les points à
+confirmer y sont identifiés avant toute traduction en migrations Prisma.
+
 ## Développement
 
 - `npm install`
