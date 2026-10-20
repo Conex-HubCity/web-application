@@ -25,12 +25,14 @@ l’authentification sera branchée ensuite.
 ## Écrans et structure
 
 - `/` : accueil avec le hero de la maquette V4 (photo pleine largeur, dégradé vert forêt, titre serif ivoire/doré et médaillon CNX), deux parcours et connexion directement accessibles.
-- `/inscription/porteur` : aperçu d’inscription entrepreneur, avant la certification.
-- `/inscription/mentor` : aperçu de candidature mentor, vérification avant adhésion.
-- `/connexion` : aperçu de connexion avec choix du rôle.
+- `/inscription/porteur` : création d’un compte porteur de projet, avant la certification.
+- `/inscription/mentor` : création d’un compte mentor avec profil privé.
+- `/connexion` : connexion par email et mot de passe, rôle reconnu depuis la base.
+- `/compte` : page protégée affichant le prénom, les rôles et la déconnexion.
 - `/espace` : interface de démonstration conservée, sans authentification réelle.
 - `components/splash-screen.tsx` : introduction modale CNX, lettres avec rebond puis « A solution by HubCity ».
-- `components/auth-entry.tsx` : formulaires de prévisualisation ; aucune donnée envoyée ou stockée.
+- `components/auth-entry.tsx` : formulaires reliés aux Server Actions et à PostgreSQL.
+- `lib/auth/` : mots de passe hachés, sessions et limitation des tentatives ; voir [l’authentification V1](docs/authentication-v1.md).
 - `components/brand.tsx` : signature Conex partagée.
 - `components/home-sections.tsx` : cartes des deux parcours, confiance, FAQ native et invitation finale, adaptées de la maquette V4.
 - `components/journey.tsx` : étapes du compagnonnage avec sélection porteur/mentor et contenu distinct pour chaque rôle.
@@ -54,4 +56,4 @@ Le compte porteur peut précéder la certification ; le profil reste privé avan
 
 ## Limites du prototype
 
-Les formulaires vérifient les champs localement et affichent un retour explicite de démonstration. Ils ne créent ni compte ni session et ne conservent pas les identifiants. Les espaces réels par rôle, certification, stockage privé, paiements, rendez-vous et mentorat nécessitent un backend et des contrôles d’accès. La recherche et les favoris de l’espace de démonstration restent en mémoire. Aucun dossier réel ne doit y être ajouté.
+L’inscription et la connexion créent maintenant de vrais comptes et sessions. Les nouveaux comptes restent en attente de vérification ; l’envoi des emails, la vérification du contact et la récupération de mot de passe restent à réaliser. La certification, le stockage privé, les paiements, les rendez-vous et le mentorat disposent d’un socle métier mais attendent leurs interfaces et intégrations. La recherche et les favoris de `/espace` restent une démonstration en mémoire, distincte de `/compte`.

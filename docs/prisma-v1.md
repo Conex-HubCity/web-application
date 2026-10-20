@@ -1,12 +1,14 @@
 ﻿# Conex — backend et Prisma V1
 
-Le [schéma Prisma](../prisma/schema.prisma) traduit le [MCD](mcd-v1.md). Les migrations et les services métier sont maintenant implémentés. L’authentification et les routes HTTP seront branchées dans l’étape suivante.
+Le [schéma Prisma](../prisma/schema.prisma) traduit le [MCD](mcd-v1.md). Les migrations, les services métier et [l’inscription/connexion V1](authentication-v1.md) sont implémentés. Les interfaces des parcours métier restent à brancher.
 
 ## Base et migrations
 
 La base locale dédiée est `conex`. La commande `npm run db:setup` peut la préparer lorsque `.env` vise encore la base technique locale `postgres` : elle conserve les identifiants, crée une base dédiée si nécessaire et met à jour uniquement l’URL locale. Elle refuse de réinitialiser une base existante non identifiée comme Conex.
 
 Les migrations sont versionnées dans `prisma/migrations/` :
+
+- `20261020000300_auth_sessions` : sessions persistantes et limitation des tentatives d’authentification, soit deux tables supplémentaires.
 
 - `20261020000100_initial_v1` : 14 tables métier, clés, index, contraintes de cohérence et premières protections de l’historique.
 - `20261020000200_protect_history` : protection du contenu des certificats, du propriétaire des projets, des suivis approuvés et du rattachement des mentorats.
@@ -70,11 +72,11 @@ Le nouveau projet démarre en brouillon et doit repasser par la validation du pi
 
 ## Préparation de l’authentification
 
-La connexion ne propose plus de sélection mentor/fondateur et n’envoie aucun rôle fourni par le navigateur. Après vérification des identifiants, la future couche d’authentification appellera `getAccountContext(userId)` avec l’identifiant du compte vérifié.
+La connexion ne propose plus de sélection mentor/fondateur. La couche d’authentification vérifie les identifiants et lit les rôles stockés en base. La page `/compte` affiche ce contexte, sans accepter de rôle fourni à la connexion par le navigateur.
 
 La réponse contient `roles`, `accountStatus`, `contactVerified` et les indications de profil utiles à l’orientation. Les permissions continuent d’être vérifiées côté serveur sur chaque action. Un rôle conservé dans le navigateur ne donne aucun droit.
 
-Il n’y a pas encore de session, de connexion réelle ou d’API publique. `actorId` dans les services doit provenir d’une session vérifiée : ne jamais le récupérer directement dans un corps de requête client. Le choix de parcours reste pertinent à l’inscription, pas à la connexion.
+L’inscription et la connexion utilisent des Server Actions et des sessions persistantes. Les comptes créés restent `PENDING_VERIFICATION` : ils peuvent s’authentifier mais les services métier exigent toujours leur activation et la vérification du contact. `actorId` dans ces services doit provenir d’une session vérifiée : ne jamais le récupérer directement dans un corps de requête client. Le choix de parcours reste pertinent à l’inscription, pas à la connexion.
 
 Le modèle permet plusieurs rôles par compte ; la règle de cumul et l’écran d’orientation des comptes multirôles restent à décider pour l’authentification. Aucun administrateur n’est créé automatiquement.
 
@@ -92,7 +94,7 @@ npm run build
 
 Les tests appliquent les migrations à un schéma PostgreSQL temporaire `conex_test_<uuid>`, puis le suppriment. Ils ne modifient jamais les tables applicatives existantes. Ils utilisent `TEST_DATABASE_URL` si renseignée, sinon `DATABASE_URL`. Le compte de test doit avoir le droit de créer un schéma.
 
-Sans URL configurée, les tests PostgreSQL sont explicitement ignorés ; les règles de date et l’application des migrations sur PostgreSQL embarqué restent testées. Vérifier le nombre de tests exécutés avant toute livraison. En local, la suite complète compte 13 tests.
+Sans URL configurée, les tests PostgreSQL sont explicitement ignorés ; les règles de date et l’application des migrations sur PostgreSQL embarqué restent testées. Vérifier le nombre de tests exécutés avant toute livraison. En local, la suite complète compte 15 tests.
 
 ## Intégrations suivantes
 

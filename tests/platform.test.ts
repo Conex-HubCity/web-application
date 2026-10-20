@@ -8,6 +8,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, type Role } from "../generated/prisma/client";
 import { createPlatformService } from "../lib/domain/platform-service";
+import { AuthError, createAuthService } from "../lib/auth/service";
 import {
   DomainError,
   PROJECT_REPLACEMENT_DELAY_MS,
@@ -167,6 +168,135 @@ test("replacement boundary is exactly 30 elapsed days, and both conditions are m
     expectCode("REPLACEMENT_TOO_EARLY"),
   );
 });
+
+databaseTest(
+  "registration persists private role profiles and hashed sessions, without approving accounts",
+  async () => {
+    const auth = createAuthService(db);
+    for (const role of ["FOUNDER", "MENTOR"] as const) {
+      const email = `${randomUUID()}@example.test`;
+      const session = await auth.register({
+        email: ` ${email.toUpperCase()} `,
+        password: "a long test passphrase",
+        passwordConfirmation: "a long test passphrase",
+        firstName: "Alice",
+        lastName: "  Johnson  ",
+        role,
+        adultConfirmed: true,
+      });
+      const account = await auth.getSession(session.token);
+      assert.ok(account);
+      assert.deepEqual(account.roles, [{ role }]);
+      assert.equal(account.accountStatus, "PENDING_VERIFICATION");
+      assert.equal("passwordHash" in account, false);
+      const stored = await db.user.findUniqueOrThrow({
+        where: { id: account.id },
+        include: { founderProfile: true, mentorProfile: true, sessions: true },
+      });
+      assert.match(stored.passwordHash, /^scrypt-v1:/);
+      assert.notEqual(stored.passwordHash, "a long test passphrase");
+      assert.equal(stored.emailVerifiedAt, null);
+      assert.equal(stored.lastName, "Johnson");
+      assert.notEqual(stored.sessions[0].tokenHash, session.token);
+      if (role === "FOUNDER") assert.ok(stored.founderProfile?.adultConfirmedAt);
+      else {
+        assert.equal(stored.mentorProfile?.visibilityPreference, "PRIVATE");
+        assert.equal(stored.mentorProfile?.verificationStatus, "DRAFT");
+      }
+      await assert.rejects(
+        auth.register({
+          email,
+          password: "another long passphrase",
+          passwordConfirmation: "another long passphrase",
+          firstName: "Bob",
+          lastName: "Smith",
+          role,
+          adultConfirmed: true,
+        }),
+        AuthError,
+      );
+      const credentialsWithForgedRole = {
+        email,
+        password: "a long test passphrase",
+        role: "ADMIN",
+      };
+      const login = await auth.login(credentialsWithForgedRole);
+      assert.deepEqual((await auth.getSession(login.token))?.roles, [{ role }]);
+      await auth.logout(login.token);
+      assert.equal(await auth.getSession(login.token), null);
+      assert.equal(await auth.getSession(session.token.slice(1)), null);
+      await db.session.updateMany({
+        where: { userId: account.id },
+        data: { createdAt: new Date(Date.now() - 2 * DAY), expiresAt: new Date(Date.now() - DAY) },
+      });
+      assert.equal(await auth.getSession(session.token), null);
+    }
+  },
+);
+
+databaseTest(
+  "auth rejects privileged signup, invalid input, bad passwords, disabled accounts and throttles persistently",
+  async () => {
+    const auth = createAuthService(db);
+    const input = {
+      email: `${randomUUID()}@example.test`,
+      password: "Pass123!",
+      passwordConfirmation: "Pass123!",
+      firstName: "Alice",
+      lastName: "Johnson",
+      role: "MENTOR",
+      adultConfirmed: true,
+    };
+    await assert.rejects(auth.register({ ...input, role: "ADMIN" }), AuthError);
+    await assert.rejects(auth.register({ ...input, lastName: "  " }), AuthError);
+    await assert.rejects(auth.register({ ...input, lastName: "a".repeat(101) }), AuthError);
+    await assert.rejects(auth.register({ ...input, adultConfirmed: false }), AuthError);
+    await assert.rejects(
+      auth.register({ ...input, password: "1234567", passwordConfirmation: "1234567" }),
+      /entre 8 et 128/,
+    );
+    await assert.rejects(
+      auth.register({ ...input, passwordConfirmation: "different" }),
+      /identiques/,
+    );
+    await assert.rejects(
+      auth.register({ ...input, passwordConfirmation: undefined }),
+      /identiques/,
+    );
+    assert.equal(await db.user.count({ where: { email: input.email } }), 0);
+    const session = await auth.register(input);
+    const account = (await auth.getSession(session.token))!;
+    await assert.rejects(
+      auth.login({ email: input.email, password: "a wrong test passphrase" }),
+      /Email ou mot de passe incorrect/,
+    );
+    for (const accountStatus of ["SUSPENDED", "CLOSED"] as const) {
+      await db.user.update({ where: { id: account.id }, data: { accountStatus } });
+      assert.equal(await auth.getSession(session.token), null);
+      await assert.rejects(auth.login(input), /Email ou mot de passe incorrect/);
+    }
+    const email = `${randomUUID()}@example.test`;
+    const results = await Promise.allSettled(
+      Array.from({ length: 7 }, () =>
+        createAuthService(db).login({ email, password: "unknown account passphrase" }),
+      ),
+    );
+    assert.equal(
+      results.filter(
+        (result) =>
+          result.status === "rejected" && /Trop de tentatives/.test(String(result.reason)),
+      ).length,
+      2,
+    );
+    const errors = results
+      .filter((result) => result.status === "rejected")
+      .map((result) => String(result.reason));
+    assert.equal(
+      errors.filter((message) => /Email ou mot de passe incorrect/.test(message)).length,
+      5,
+    );
+  },
+);
 
 databaseTest(
   "migration enforces contact, normalization, exact validation targets and immutable audit",
@@ -443,7 +573,7 @@ test("initial migration runs on an isolated PostgreSQL engine without applicatio
     const tables = await embedded.query<{ count: number }>(
       "SELECT count(*)::int AS count FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'",
     );
-    assert.equal(tables.rows[0].count, 14);
+    assert.equal(tables.rows[0].count, 16);
     await assert.rejects(
       embedded.query(
         "INSERT INTO users(id,password_hash,first_name,updated_at) VALUES ($1,'test','No contact',now())",

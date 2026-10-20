@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useActionState } from "react";
+import { authenticate } from "@/app/actions/auth";
 import { Brand } from "./brand";
 import { Icon } from "./icon";
 
@@ -15,14 +16,9 @@ export function AuthEntry({
   initialRole?: Role;
 }) {
   const role = initialRole;
-  const [submitted, setSubmitted] = useState(false);
+  const [state, action, pending] = useActionState(authenticate.bind(null, mode), null);
   const register = mode === "register";
   const mentor = role === "mentor";
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    event.currentTarget.reset();
-    setSubmitted(true);
-  }
   return (
     <div className="auth-page">
       <header className="welcome-header welcome-container">
@@ -84,23 +80,27 @@ export function AuthEntry({
               </Link>
             </div>
           )}
-          <div className="auth-preview-note">
-            <strong>Aperçu du parcours.</strong> Les comptes réels ne sont pas encore activés. Aucun
-            identifiant n’est envoyé ni conservé.
-          </div>
-          <form className="auth-form" onSubmit={submit}>
+          <form className="auth-form" action={action}>
+            {register && <input type="hidden" name="role" value={mentor ? "MENTOR" : "FOUNDER"} />}
             {register && (
               <label>
-                Votre prénom
+                Nom
+                <input name="lastName" required autoComplete="family-name" maxLength={100} />
+              </label>
+            )}
+            {register && (
+              <label>
+                Prénom
                 <input name="firstName" required autoComplete="given-name" maxLength={60} />
               </label>
             )}
             <label>
-              Adresse email
+              Email
               <input
                 name="email"
                 type="email"
                 required
+                maxLength={254}
                 autoComplete="email"
                 placeholder="vous@exemple.com"
               />
@@ -111,43 +111,46 @@ export function AuthEntry({
                 name="password"
                 type="password"
                 required
-                minLength={8}
+                minLength={register ? 8 : 1}
+                maxLength={128}
                 autoComplete={register ? "new-password" : "current-password"}
-                aria-describedby="password-hint"
+                aria-describedby={register ? "password-hint" : undefined}
               />
             </label>
-            <span id="password-hint" className="auth-field-hint">
-              {register
-                ? "8 caractères minimum pour cet aperçu."
-                : "Utilisez uniquement des identifiants fictifs dans cet aperçu."}
-            </span>
+            {register && (
+              <span id="password-hint" className="auth-field-hint">
+                8 caractères minimum.
+              </span>
+            )}
+            {register && (
+              <label>
+                Confirmer le mot de passe
+                <input
+                  name="passwordConfirmation"
+                  type="password"
+                  required
+                  minLength={8}
+                  maxLength={128}
+                  autoComplete="new-password"
+                />
+              </label>
+            )}
             {register && (
               <label className="auth-checkbox">
-                <input type="checkbox" required />
+                <input name="adultConfirmed" type="checkbox" required />
                 <span>Je confirme avoir 18 ans ou plus, condition d’accès au pilote Conex.</span>
               </label>
             )}
-            <button className="auth-submit" type="submit">
-              {register ? "Créer mon compte" : "Se connecter"}
+            {state?.error && (
+              <p className="auth-error" role="alert">
+                {state.error}
+              </p>
+            )}
+            <button className="auth-submit" type="submit" disabled={pending}>
+              {pending ? "Un instant…" : register ? "Créer mon compte" : "Se connecter"}
               <Icon name="arrow" size={18} />
             </button>
           </form>
-          {submitted && (
-            <div className="auth-feedback" role="status">
-              <strong>
-                {register
-                  ? "Le parcours d’inscription est prêt à être connecté."
-                  : "La connexion réelle sera disponible à la prochaine étape."}
-              </strong>
-              <p>
-                Aucun compte ni aucune session authentifiée n’a été créé. Vous pouvez explorer
-                l’interface de démonstration.
-              </p>
-              <Link href="/espace">
-                Explorer l’espace de démonstration <Icon name="arrow" size={16} />
-              </Link>
-            </div>
-          )}
           <p className="auth-switch">
             {register ? "Déjà un compte ?" : "Vous découvrez Conex ?"}{" "}
             <Link href={register ? "/connexion" : "/#les-parcours"}>

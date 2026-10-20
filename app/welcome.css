@@ -704,6 +704,24 @@
 .auth-back svg {
   transform: rotate(180deg);
 }
+.account-main {
+  padding-block: 64px;
+}
+.account-panel {
+  max-width: 620px;
+  margin-inline: auto;
+}
+.auth-error {
+  color: #8c2727;
+  background: #fff0ed;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+.auth-submit:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
 .auth-main {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1021,15 +1039,7 @@
     max-width: none;
   }
   .auth-aside {
-    min-height: 450px;
-    border-top-left-radius: 80px;
-  }
-  .auth-aside-photo img {
     display: none;
-  }
-  .auth-aside-content {
-    padding: 31px;
-    min-height: 450px;
   }
   .splash-signature {
     bottom: 100px;
