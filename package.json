@@ -8,6 +8,7 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "export:preview": "node scripts/export-preview.mjs",
     "test": "node --conditions=react-server --import tsx --test tests/platform.test.ts",
     "format": "prettier --write . && prisma format",
     "format:check": "prettier --check .",

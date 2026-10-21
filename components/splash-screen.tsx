@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 
 const SESSION_KEY = "conex:introduction-seen:v1";
 const REPLAY_EVENT = "conex:replay-introduction";
@@ -48,6 +49,8 @@ export function SplashScreen() {
       if (dialog.open) dialog.close();
       releaseScroll();
       dialog.dataset.leaving = "false";
+      // Flush the closed state so replay reliably restarts CSS animations.
+      dialog.getBoundingClientRect();
       previousOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       ownsScrollLock = true;
@@ -87,24 +90,30 @@ export function SplashScreen() {
     >
       <div className="splash-orbit splash-orbit-one" aria-hidden="true" />
       <div className="splash-orbit splash-orbit-two" aria-hidden="true" />
-      <div className="splash-center">
-        <p className="splash-kicker" lang="en">
-          CONNECTIONS THAT HELP US GROW
-        </p>
-        <div className="splash-word" role="img" aria-label="CNX">
-          <span aria-hidden="true">C</span>
-          <span aria-hidden="true">N</span>
-          <span aria-hidden="true">X</span>
-          <i aria-hidden="true">.</i>
+      <div className="splash-content">
+        <div className="splash-center">
+          <p className="splash-kicker" lang="en">
+            CONNECTIONS THAT HELP US GROW
+          </p>
+          <div className="splash-word" role="img" aria-label="CNX">
+            <span aria-hidden="true">C</span>
+            <span aria-hidden="true">N</span>
+            <span aria-hidden="true">X</span>
+            <i aria-hidden="true">.</i>
+          </div>
+          <div className="splash-rule" aria-hidden="true" />
+          <p className="splash-tagline">Le lien nous élève.</p>
         </div>
-        <div className="splash-rule" aria-hidden="true" />
-        <p className="splash-tagline">Le lien nous élève.</p>
-      </div>
-      <div className="splash-signature" lang="en">
-        <span>A solution by</span>
-        <strong>
-          HubCity<span>.</span>
-        </strong>
+        <div className="splash-signature" lang="en">
+          <span>A solution by</span>
+          <Image
+            src="/assets/conex/hubcity-wordmark.png"
+            alt="HubCity"
+            width={176}
+            height={63}
+            unoptimized
+          />
+        </div>
       </div>
       <button className="splash-skip" onClick={() => dismissRef.current()}>
         Passer l’introduction <span aria-hidden="true">↗</span>

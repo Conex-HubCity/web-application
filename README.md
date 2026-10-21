@@ -24,6 +24,8 @@ l’authentification sera branchée ensuite.
 
 ## Écrans et structure
 
+Un aperçu autonome HTML/CSS/JS de l’accueil est disponible dans `exports/conex-preview/`, sans inscription ni connexion, avec un modal « Version en développement — Ne pas publier ». Ouvrir son `index.html`. Pour le régénérer depuis l’application démarrée : `npm run export:preview -- http://localhost:3000/` (Node.js et Python requis pour l’export seulement).
+
 - `/` : accueil avec le hero de la maquette V4 (photo pleine largeur, dégradé vert forêt, titre serif ivoire/doré et médaillon CNX), deux parcours et connexion directement accessibles.
 - `/inscription/porteur` : création d’un compte porteur de projet, avant la certification.
 - `/inscription/mentor` : création d’un compte mentor avec profil privé.
@@ -52,7 +54,7 @@ Séquence d’environ 5,4 secondes : C, N, X apparaissent avec un léger rebond,
 
 ## Identité et règles de parcours
 
-Palette de référence : vert forêt `#132d26`, ivoire `#f6f3eb`, doré `#f0bf7d`, sauge `#b8c9b7` et accent terre cuite. Polices système sans téléchargement au build. Identité distincte de WoeAcademy. Photos et profils illustratifs ; le logo HubCity fourni reste archivé comme visuel non authentifié, la signature utilise du texte.
+Palette de référence : vert forêt `#132d26`, ivoire `#f6f3eb`, doré `#f0bf7d`, sauge `#b8c9b7` et accent terre cuite. Polices système sans téléchargement au build. Identité distincte de WoeAcademy. Photos et profils illustratifs ; la signature du splash affiche « A solution by » puis le logo HubCity fourni dans les assets.
 
 Le compte porteur peut précéder la certification ; le profil reste privé avant vérification du certificat WoeAcademy Niveau Rouge. Le pitch demande ensuite une validation distincte. Côté mentor : candidature, vérification, puis adhésion avant activation. La mise en relation demande un contrôle CNX et le consentement des deux parties. Les montants, délais et objectifs indicatifs du cahier des charges ne sont pas des décisions intégrées.
 
