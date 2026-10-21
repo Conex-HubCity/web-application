@@ -1,6 +1,30 @@
 import type { ReactNode } from "react";
 export function Icon({ name, size = 20 }: { name: string; size?: number }) {
   const paths: Record<string, ReactNode> = {
+    calendar: (
+      <>
+        <rect x="3" y="5" width="18" height="16" rx="2" />
+        <path d="M16 3v4M8 3v4M3 11h18m-13 4h2m4 0h2" />
+      </>
+    ),
+    wallet: (
+      <>
+        <path d="M20 8V5a2 2 0 0 0-2-2H6a3 3 0 0 0 0 6h15v11H6a3 3 0 0 1-3-3V6" />
+        <path d="M21 12h-5v5h5m-3-2.5h.01" />
+      </>
+    ),
+    user: (
+      <>
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 22v-2a8 8 0 0 1 16 0v2" />
+      </>
+    ),
+    logout: (
+      <>
+        <path d="M9 4H4v16h5m5-13 5 5-5 5m-6-5h13" />
+      </>
+    ),
+
     check: <path d="m5 12 4 4L19 6" />,
     document: (
       <>

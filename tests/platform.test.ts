@@ -18,6 +18,7 @@ import {
   MAX_MENTOR_UPLOAD_BYTES,
 } from "../lib/onboarding/mentor-service";
 import { mentorDestination } from "../lib/onboarding/mentor-policy";
+import { getMentorDashboard } from "../lib/domain/mentor-dashboard";
 import {
   DomainError,
   PROJECT_REPLACEMENT_DELAY_MS,
@@ -1077,5 +1078,71 @@ databaseTest(
         "DRAFT",
       );
     });
+  },
+);
+
+databaseTest(
+  "mentor dashboard reads only owned activity and protects the catalogue behind current rights",
+  async () => {
+    const f = await fixture();
+    await db.mentorDocument.create({
+      data: {
+        mentorUserId: f.mentor.id,
+        documentType: "CV",
+        originalFilename: "cv.pdf",
+        privateStorageKey: `mentors/${randomUUID()}`,
+        mimeType: "application/pdf",
+        sizeBytes: BigInt(100),
+        checksum: hash,
+        scanStatus: "CLEAN",
+        reviewStatus: "APPROVED",
+      },
+    });
+    await db.projectRevision.update({
+      where: { id: f.revisionId },
+      data: { supportNeeds: ["Stratégie", "Commercialisation"] },
+    });
+    await publish(f);
+    const request = await service.requestMentorship(f.mentor.id, f.revisionId);
+    const other = await user("MENTOR");
+    await db.mentorshipRequest.create({
+      data: { mentorUserId: other.id, projectRevisionId: f.revisionId },
+    });
+    const dashboard = await getMentorDashboard(f.mentor.id, db);
+    assert.ok(dashboard);
+    assert.equal(dashboard.canBrowse, true);
+    assert.equal(dashboard.membershipActive, true);
+    assert.deepEqual(
+      dashboard.requests.map((entry) => entry.id),
+      [request.id],
+    );
+    assert.equal(
+      dashboard.projects.find((project) => project.id === f.project.id)?.supportNeeds,
+      "Stratégie, Commercialisation",
+    );
+    assert.doesNotMatch(
+      JSON.stringify(dashboard),
+      /passwordHash|privateStorageKey|privatePitchStorageKey|checksum/,
+    );
+    assert.equal(await getMentorDashboard(f.founder.id, db), null);
+    assert.equal(await getMentorDashboard(other.id, db), null);
+    await db.membership.updateMany({
+      where: { mentorUserId: f.mentor.id },
+      data: { status: "EXPIRED" },
+    });
+    const expired = await getMentorDashboard(f.mentor.id, db);
+    assert.ok(expired);
+    assert.equal(expired.membershipActive, false);
+    assert.equal(expired.canBrowse, false);
+    assert.deepEqual(expired.projects, []);
+    assert.deepEqual(
+      expired.requests.map((entry) => entry.id),
+      [request.id],
+    );
+    await db.mentorProfile.update({
+      where: { userId: f.mentor.id },
+      data: { verificationStatus: "PENDING" },
+    });
+    assert.equal(await getMentorDashboard(f.mentor.id, db), null);
   },
 );

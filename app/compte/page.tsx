@@ -6,6 +6,9 @@ import { getAuthenticatedProfile } from "@/lib/onboarding/profile";
 import { logout } from "@/app/actions/auth";
 import { mentorDestination } from "@/lib/onboarding/mentor-policy";
 import "../panel.css";
+import "../mentor-dashboard.css";
+import { MentorDashboard } from "@/components/mentor-dashboard";
+import { getMentorDashboard } from "@/lib/domain/mentor-dashboard";
 
 export const metadata: Metadata = {
   title: "Mon compte — Conex",
@@ -18,6 +21,11 @@ export default async function Account() {
   const mentorRedirect = mentorDestination(profile);
   if (mentorRedirect) redirect(mentorRedirect);
   if (profile.isFounder && !profile.isCertified) redirect("/certification");
+  if (profile.isMentor) {
+    const dashboard = await getMentorDashboard(profile.id);
+    if (!dashboard) redirect("/mentor/validation");
+    return <MentorDashboard data={dashboard} />;
+  }
   return (
     <div className="panel-page">
       <header className="panel-header">
