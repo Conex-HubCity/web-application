@@ -30,7 +30,7 @@ Un aperçu autonome HTML/CSS/JS de l’accueil est disponible dans `exports/cone
 - `/inscription/porteur` : création d’un compte porteur de projet, avant la certification.
 - `/inscription/mentor` : création d’un compte mentor avec profil privé.
 - `/connexion` : connexion par email et mot de passe, rôle reconnu depuis la base.
-- `/compte` : panel protégé par session et contrôle serveur de la certification pour les porteurs de projet.
+- `/compte` : tableau de bord mentor responsive avec six vues, ou espace porteur protégé par certification.
 - `/mentor/candidature` : dépôt privé du CV et des justificatifs d’expérience.
 - `/mentor/validation` : candidature en cours de validation ; voir le [parcours mentor](docs/mentor-onboarding-v1.md).
 - `/certification` : dépôt privé du justificatif WoeAcademy ; [validation automatique en test local](docs/certification-v1.md).

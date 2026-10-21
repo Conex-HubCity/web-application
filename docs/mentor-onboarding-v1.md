@@ -34,3 +34,13 @@ Le schéma Prisma possède déjà les champs nécessaires ; aucune migration sup
 ## Vérifications
 
 Les tests PostgreSQL couvrent la soumission d’un compte en attente, les états de redirection, la confidentialité, la double soumission, l’approbation séparée des pièces et de la candidature, le refus, le retrait, les comptes interdits, les fichiers invalides et le nettoyage des écritures après échec de transaction.
+
+## Tableau de bord mentor
+
+`/compte` affiche désormais une interface dédiée aux mentors validés : vue d’ensemble, projets à découvrir, demandes, accompagnements, profil et adhésion. La navigation est latérale sur ordinateur et comporte quatre entrées principales en bas sur mobile. Les demandes restent accessibles depuis l’accueil et le pied de page ; l’adhésion depuis l’étape mise en avant.
+
+L’accueil présente la prochaine étape d’adhésion pour un nouveau mentor, son parcours et les informations de son dossier. Il n’invente ni projet ni accompagnement ni compteur d’activité. Les demandes et accompagnements affichés sont ceux du compte authentifié, et les projets passent par le service de catalogue existant avec ses contrôles d’accès. Un mentor sans adhésion active n’obtient pas les dossiers réservés.
+
+Les six vues sont navigables. Le profil et ses justificatifs sont consultables en lecture seule ; les clés de stockage et les mots de passe restent sur le serveur. L’adhésion affiche son état réel et, le cas échéant, sa période de validité. Aucun paiement n’est simulé : l’édition du profil, le paiement et les actions de suivi détaillées constituent les étapes suivantes.
+
+Le rendu et la navigation ont été vérifiés à 1440, 1280, 960, 768, 390 et 320 pixels de largeur avec un compte temporaire supprimé après vérification. Le test de données vérifie les demandes propres au mentor, l’exclusion des champs confidentiels et le blocage du catalogue après expiration de l’adhésion.

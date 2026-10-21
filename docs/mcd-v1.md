@@ -497,5 +497,12 @@ Les champs métier du profil professionnel sont modélisés ; seuls l’activit�
 le texte d’expérience sont pour le moment proposés avec le dépôt. Le CV reste
 facultatif lorsqu’un autre justificatif est fourni. L’approbation globale exige
 au moins une preuve acceptée et la charte ; l’analyse technique ne remplace pas
-la décision administrative. Les paiements et les écrans de catalogue, demandes
-et suivi constituent les étapes suivantes.
+la décision administrative. Les paiements, l’édition du profil et les actions détaillées de demande
+et de suivi constituent les étapes suivantes.
+
+Le tableau de bord mentor utilise maintenant ces relations pour ses six vues :
+vue d’ensemble, projets, demandes, accompagnements, profil et adhésion. Les
+requêtes d’activité sont limitées au mentor authentifié, et les projets réservés
+restent filtrés par les droits existants. Cette interface ne nécessite aucun
+changement de schéma. Voir le [parcours mentor](mentor-onboarding-v1.md) pour
+les vues réalisées et les actions restant à brancher.

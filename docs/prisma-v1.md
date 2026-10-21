@@ -94,7 +94,7 @@ npm run build
 
 Les tests appliquent les migrations à un schéma PostgreSQL temporaire `conex_test_<uuid>`, puis le suppriment. Ils ne modifient jamais les tables applicatives existantes. Ils utilisent `TEST_DATABASE_URL` si renseignée, sinon `DATABASE_URL`. Le compte de test doit avoir le droit de créer un schéma.
 
-Sans URL configurée, les tests PostgreSQL sont explicitement ignorés ; les règles de date et l’application des migrations sur PostgreSQL embarqué restent testées. Vérifier le nombre de tests exécutés avant toute livraison. En local, la suite complète compte 21 tests.
+Sans URL configurée, les tests PostgreSQL sont explicitement ignorés ; les règles de date et l’application des migrations sur PostgreSQL embarqué restent testées. Vérifier le nombre de tests exécutés avant toute livraison. En local, la suite complète compte 22 tests.
 
 ## Intégrations suivantes
 
