@@ -25,6 +25,25 @@ export function createOnboardingService(
           lastName: true,
           accountStatus: true,
           roles: { select: { role: true } },
+          mentorProfile: {
+            select: {
+              verificationStatus: true,
+              charterAcceptedAt: true,
+              professionalTitle: true,
+              biography: true,
+              documents: {
+                where: { withdrawnAt: null },
+                orderBy: { uploadedAt: "desc" },
+                select: {
+                  id: true,
+                  originalFilename: true,
+                  documentType: true,
+                  scanStatus: true,
+                  reviewStatus: true,
+                },
+              },
+            },
+          },
           founderProfile: {
             select: {
               certificationEvidences: {
@@ -54,6 +73,17 @@ export function createOnboardingService(
         lastName: user.lastName,
         roles: user.roles.map(({ role }) => role),
         isFounder,
+        isMentor: user.roles.some(({ role }) => role === "MENTOR"),
+        mentorStatus: user.mentorProfile?.verificationStatus ?? "DRAFT",
+        isMentorApproved:
+          user.mentorProfile?.verificationStatus === "APPROVED" &&
+          Boolean(user.mentorProfile.charterAcceptedAt) &&
+          user.mentorProfile.documents.some(
+            (document) => document.scanStatus === "CLEAN" && document.reviewStatus === "APPROVED",
+          ),
+        mentorDocuments: user.mentorProfile?.documents ?? [],
+        mentorProfessionalTitle: user.mentorProfile?.professionalTitle ?? null,
+        mentorBiography: user.mentorProfile?.biography ?? null,
         isCertified: Boolean(certificate),
         certificationStatus: certificate
           ? "APPROVED"

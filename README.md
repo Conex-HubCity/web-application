@@ -31,6 +31,8 @@ Un aperçu autonome HTML/CSS/JS de l’accueil est disponible dans `exports/cone
 - `/inscription/mentor` : création d’un compte mentor avec profil privé.
 - `/connexion` : connexion par email et mot de passe, rôle reconnu depuis la base.
 - `/compte` : panel protégé par session et contrôle serveur de la certification pour les porteurs de projet.
+- `/mentor/candidature` : dépôt privé du CV et des justificatifs d’expérience.
+- `/mentor/validation` : candidature en cours de validation ; voir le [parcours mentor](docs/mentor-onboarding-v1.md).
 - `/certification` : dépôt privé du justificatif WoeAcademy ; [validation automatique en test local](docs/certification-v1.md).
 - `/espace` : interface de démonstration conservée, sans authentification réelle.
 - `components/splash-screen.tsx` : introduction modale CNX, lettres avec rebond puis « A solution by HubCity ».
@@ -45,7 +47,7 @@ Un aperçu autonome HTML/CSS/JS de l’accueil est disponible dans `exports/cone
 - `app/welcome.css` : accueil, entrées inscription/connexion, splash et adaptations mobiles.
 - `app/home-sections.css` : compositions photo, sections éditoriales, FAQ et adaptations mobiles du bas de page.
 - `public/assets/conex/` : huit assets d’origine conservés, sans transformation.
-- `uploads/private/certifications/` : justificatifs confidentiels ; `uploads/public/` est réservé aux futurs fichiers partageables. Les fichiers déposés sont exclus de Git.
+- `uploads/private/certifications/` : justificatifs confidentiels ; `uploads/private/mentors/` conserve les pièces mentor et `uploads/public/` est réservé aux futurs fichiers partageables. Les fichiers déposés sont exclus de Git.
 - `references/conference-v4/` : sources archivées ; scripts jamais importés dans l’application.
 
 ## Introduction

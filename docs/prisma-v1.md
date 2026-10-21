@@ -94,10 +94,10 @@ npm run build
 
 Les tests appliquent les migrations à un schéma PostgreSQL temporaire `conex_test_<uuid>`, puis le suppriment. Ils ne modifient jamais les tables applicatives existantes. Ils utilisent `TEST_DATABASE_URL` si renseignée, sinon `DATABASE_URL`. Le compte de test doit avoir le droit de créer un schéma.
 
-Sans URL configurée, les tests PostgreSQL sont explicitement ignorés ; les règles de date et l’application des migrations sur PostgreSQL embarqué restent testées. Vérifier le nombre de tests exécutés avant toute livraison. En local, la suite complète compte 17 tests.
+Sans URL configurée, les tests PostgreSQL sont explicitement ignorés ; les règles de date et l’application des migrations sur PostgreSQL embarqué restent testées. Vérifier le nombre de tests exécutés avant toute livraison. En local, la suite complète compte 21 tests.
 
 ## Intégrations suivantes
 
-L’authentification et le dépôt privé des certificats WoeAcademy sont branchés. La vérification email/téléphone, le dépôt des pièces mentor et l’analyse antivirus restent à réaliser. Les méthodes de fichiers attendent des métadonnées produites par un traitement serveur fiable, jamais un résultat antivirus déclaré par le client. Les limites de fichiers et référentiels de secteurs/langues restent à fixer.
+L’authentification et le dépôt privé des certificats WoeAcademy sont branchés. Le [dépôt des pièces mentor et la page d’attente](mentor-onboarding-v1.md) sont également branchés. La vérification email/téléphone, l’interface administrative de validation et l’analyse antivirus restent à réaliser. Les méthodes de fichiers attendent des métadonnées produites par un traitement serveur fiable, jamais un résultat antivirus déclaré par le client. Les limites de fichiers et référentiels de secteurs/langues restent à fixer.
 
 Paiements et reçus, calendrier détaillé, notifications, signalements et journal d’audit global sont les modules suivants. `Membership` est contrôlé pour autoriser les accès mais aucun paiement réel n’est simulé ou confirmé automatiquement.

@@ -15,3 +15,5 @@ The third migration adds `sessions` and `auth_throttles`. Authentication attempt
 Run `npm run db:deploy` to apply committed migrations, then `npm run db:generate`. No additional session secret or email credentials are needed for this initial step. The public `/espace` route remains explicitly a demonstration and does not expose account data.
 
 Integration tests run against an isolated temporary PostgreSQL schema: registration for both roles, blocked privileged signup, input validation, duplicate accounts, incorrect passwords, role tampering, expiry/logout, suspended/closed accounts, and concurrent throttling. Database credentials and real application tables are not changed by these tests.
+
+Mentor accounts are now routed by the server to private document submission, review waiting or the dashboard according to their stored candidature status. See [mentor onboarding](mentor-onboarding-v1.md). No applicant can approve their own documents or candidature.

@@ -4,6 +4,7 @@ import { Brand } from "@/components/brand";
 import { Icon } from "@/components/icon";
 import { getAuthenticatedProfile } from "@/lib/onboarding/profile";
 import { logout } from "@/app/actions/auth";
+import { mentorDestination } from "@/lib/onboarding/mentor-policy";
 import "../panel.css";
 
 export const metadata: Metadata = {
@@ -14,6 +15,8 @@ const labels = { FOUNDER: "porteur de projet", MENTOR: "mentor", ADMIN: "adminis
 
 export default async function Account() {
   const profile = await getAuthenticatedProfile();
+  const mentorRedirect = mentorDestination(profile);
+  if (mentorRedirect) redirect(mentorRedirect);
   if (profile.isFounder && !profile.isCertified) redirect("/certification");
   return (
     <div className="panel-page">
@@ -106,8 +109,8 @@ export default async function Account() {
               <span className="welcome-eyebrow">VOTRE PARCOURS</span>
               <h2>Votre expérience ouvre de nouveaux horizons.</h2>
               <p>
-                Bienvenue dans votre espace Conex. Votre candidature et votre expertise feront
-                l’objet d’une vérification avant les mises en relation.
+                Votre candidature a été validée. Retrouvez ici la suite de votre parcours mentor et
+                vos prochaines étapes avec Conex.
               </p>
             </div>
           </section>

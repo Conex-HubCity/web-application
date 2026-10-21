@@ -473,24 +473,29 @@ l’activation des comptes restent distinctes et ne sont pas simulées par le d�
   Cette simulation concerne les porteurs de projet, pas les candidatures mentor.
 - Les justificatifs WoeAcademy sont stockés dans `uploads/private/certifications/`.
   `uploads/public/` est réservé aux futurs fichiers partageables et n’est pas servi
-  automatiquement. Les CV et preuves mentor devront rester dans le stockage privé.
+  automatiquement. Les CV et preuves mentor sont déposés dans `uploads/private/mentors/`.
 
-## 9. Priorité actuelle : parcours mentor
+## 9. Parcours mentor après connexion
 
-| Étape                   | Règle et état actuel                                                                                                                                                                    |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Inscription             | Compte `PENDING_VERIFICATION`, rôle `MENTOR`, profil `DRAFT` et visibilité `PRIVATE`. Inscription et connexion fonctionnent.                                                            |
-| Vérification du contact | Prérequis des actions métier du service actuel, avec activation du compte. Interface et envoi des messages à brancher.                                                                  |
-| Profil professionnel    | Titre, biographie, pays/ville, langues, expertises, secteurs et pays préférés, disponibilités et motivations existent dans Prisma. Formulaire et soumission à construire.               |
-| Justificatifs           | CV et preuves d’expertise privés. Métadonnées, décisions par pièce, remplacement et retrait sont implémentés côté métier ; dépôt et consultation depuis l’interface restent à brancher. |
-| Charte et examen CNX    | L’approbation globale exige la charte acceptée et au moins une preuve acceptée, contrôlée et non retirée. Les preuves exactes sont conservées dans la décision.                         |
-| Adhésion                | Une candidature approuvée ne suffit pas : adhésion `ACTIVE`, avec dates de validité, requise pour les accès réservés. Intégration du paiement à réaliser.                               |
-| Panel et projets        | Écran mentor actuel minimal. Le catalogue, les demandes de rencontre et les suivis disposent d’un socle métier ; les écrans mentor restent à construire.                                |
-| Visibilité              | Le choix privé/visible ne change ni la validation ni l’adhésion. Aucun CV ou justificatif ne devient public.                                                                            |
+Le [parcours mentor V1](mentor-onboarding-v1.md) est branché : contrôle serveur à
+l’entrée du tableau de bord, dépôt privé des pièces et page d’attente. Aucun champ
+Prisma supplémentaire n’est nécessaire.
 
-Les états `verification_status`, `account_status` et `membership.status` restent
-indépendants. Le retrait d’une preuve utilisée dans la dernière approbation remet
-la candidature en attente de réexamen ; l’historique de décision est conservé.
-Aucun CV ou diplôme particulier n’est encore imposé au-delà de l’exigence d’au
-moins une preuve acceptée pour l’approbation globale. Les pièces obligatoires et
-les conditions de paiement restent à préciser avant leurs écrans.
+| Étape               | Règle et état actuel                                                                                                                                      |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inscription         | Compte `PENDING_VERIFICATION`, rôle `MENTOR`, profil `DRAFT`, visibilité `PRIVATE`.                                                                       |
+| Dépôt initial       | Autorisé au mentor authentifié, même avant vérification du contact. CV et/ou justificatifs, engagements acceptés, activité et expérience facultatives.    |
+| Fichiers            | Jusqu’à cinq fichiers et 5 Mio au total par soumission ; PDF, Word ou images. Stockage privé, contrôle du format, états technique et métier `PENDING`.    |
+| Soumission          | Profil `PENDING`, `submitted_at` et `charter_accepted_at` renseignés. Redirection vers `/mentor/validation`.                                              |
+| Validation          | Décisions par pièce puis décision globale avec les preuves retenues. Backend existant ; interface d’examen et analyse antivirus à brancher.               |
+| Tableau de bord     | Accès après candidature approuvée, engagements acceptés et présence d’une pièce acceptée, contrôlée et non retirée. Contrôle refait côté serveur.         |
+| Refus ou retrait    | Retour au dépôt après refus/révocation ou absence de pièces disponibles. L’historique est conservé.                                                       |
+| Contact et adhésion | Restent indépendants de l’accès au tableau de bord. Les actions métier sur les projets exigent toujours compte actif, contact vérifié et adhésion active. |
+| Visibilité          | Le dépôt et l’approbation ne publient jamais le CV. Préférence `PRIVATE` conservée par défaut.                                                            |
+
+Les champs métier du profil professionnel sont modélisés ; seuls l’activité et
+le texte d’expérience sont pour le moment proposés avec le dépôt. Le CV reste
+facultatif lorsqu’un autre justificatif est fourni. L’approbation globale exige
+au moins une preuve acceptée et la charte ; l’analyse technique ne remplace pas
+la décision administrative. Les paiements et les écrans de catalogue, demandes
+et suivi constituent les étapes suivantes.

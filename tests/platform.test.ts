@@ -14,6 +14,11 @@ import { AuthError, createAuthService } from "../lib/auth/service";
 import { createOnboardingService } from "../lib/onboarding/service";
 import { MAX_CERTIFICATION_BYTES } from "../lib/onboarding/policy";
 import {
+  createMentorOnboardingService,
+  MAX_MENTOR_UPLOAD_BYTES,
+} from "../lib/onboarding/mentor-service";
+import { mentorDestination } from "../lib/onboarding/mentor-policy";
+import {
   DomainError,
   PROJECT_REPLACEMENT_DELAY_MS,
   assertProjectReplacement,
@@ -839,3 +844,238 @@ databaseTest("draft input cannot inject review state, publication or file approv
     "DRAFT",
   );
 });
+
+async function withMentorUploads(
+  run: (service: ReturnType<typeof createMentorOnboardingService>, folder: string) => Promise<void>,
+) {
+  const folder = await mkdtemp(path.join(tmpdir(), "conex-mentor-test-"));
+  try {
+    await run(createMentorOnboardingService(db, folder), folder);
+  } finally {
+    assert.equal(path.dirname(path.resolve(folder)), path.resolve(tmpdir()));
+    assert.match(path.basename(folder), /^conex-mentor-test-/);
+    await rm(folder, { recursive: true, force: true });
+  }
+}
+
+async function newMentorCandidate() {
+  const mentor = await user("MENTOR");
+  await db.mentorProfile.update({
+    where: { userId: mentor.id },
+    data: { verificationStatus: "DRAFT", charterAcceptedAt: null },
+  });
+  await db.user.update({
+    where: { id: mentor.id },
+    data: { accountStatus: "PENDING_VERIFICATION", emailVerifiedAt: null },
+  });
+  return mentor;
+}
+
+function mentorSubmission() {
+  return {
+    documents: [
+      {
+        file: new File(["%PDF-1.7\nCV test"], "cv.pdf", { type: "application/pdf" }),
+        documentType: "CV" as const,
+      },
+    ],
+    charterAccepted: true,
+    professionalTitle: "  Architecte  ",
+    biography: "Une expérience professionnelle.",
+  };
+}
+
+databaseTest(
+  "mentor onboarding gates pending accounts; submission is private, pending and idempotent",
+  async () => {
+    await withMentorUploads(async (onboarding, folder) => {
+      const mentor = await newMentorCandidate();
+      const profiles = createOnboardingService(db);
+      assert.equal(
+        mentorDestination((await profiles.getProfile(mentor.id))!),
+        "/mentor/candidature",
+      );
+      await Promise.all([
+        onboarding.submit(mentor.id, mentorSubmission()),
+        onboarding.submit(mentor.id, mentorSubmission()),
+      ]);
+      const profile = (await profiles.getProfile(mentor.id))!;
+      assert.equal(mentorDestination(profile), "/mentor/validation");
+      assert.equal(profile.isMentorApproved, false);
+      assert.equal(profile.mentorStatus, "PENDING");
+      assert.equal(profile.mentorProfessionalTitle, "Architecte");
+      assert.equal(profile.mentorDocuments.length, 1);
+      assert.equal("privateStorageKey" in profile.mentorDocuments[0], false);
+      const proof = await db.mentorDocument.findFirstOrThrow({
+        where: { mentorUserId: mentor.id },
+      });
+      assert.equal(proof.scanStatus, "PENDING");
+      assert.equal(proof.reviewStatus, "PENDING");
+      assert.equal(proof.originalFilename, "cv.pdf");
+      assert.match(proof.privateStorageKey, /^mentors\/[a-f0-9-]{36}$/);
+      assert.equal(
+        await readFile(path.join(folder, proof.privateStorageKey.split("/")[1]), "utf8"),
+        "%PDF-1.7\nCV test",
+      );
+      assert.equal((await readdir(folder)).length, 1);
+      const stored = await db.user.findUniqueOrThrow({
+        where: { id: mentor.id },
+        include: { mentorProfile: true },
+      });
+      assert.equal(stored.accountStatus, "PENDING_VERIFICATION");
+      assert.equal(stored.emailVerifiedAt, null);
+      assert.ok(stored.mentorProfile?.submittedAt);
+      assert.ok(stored.mentorProfile?.charterAcceptedAt);
+      assert.equal(stored.mentorProfile?.visibilityPreference, "PRIVATE");
+    });
+  },
+);
+
+databaseTest(
+  "mentor document and candidature approvals unlock dashboard; rejection and withdrawal close it",
+  async () => {
+    await withMentorUploads(async (onboarding) => {
+      const mentor = await newMentorCandidate();
+      const admin = await user("ADMIN");
+      const profiles = createOnboardingService(db);
+      await onboarding.submit(mentor.id, mentorSubmission());
+      const proof = await db.mentorDocument.findFirstOrThrow({
+        where: { mentorUserId: mentor.id },
+      });
+      await assert.rejects(
+        service.recordValidation(
+          admin.id,
+          { kind: "MENTOR", id: mentor.id, evidenceIds: [proof.id] },
+          "APPROVED",
+        ),
+      );
+      // Trusted scanning result, never supplied by the applicant.
+      await db.mentorDocument.update({ where: { id: proof.id }, data: { scanStatus: "CLEAN" } });
+      await service.recordValidation(
+        admin.id,
+        { kind: "MENTOR_DOCUMENT", id: proof.id },
+        "APPROVED",
+      );
+      assert.equal(
+        mentorDestination((await profiles.getProfile(mentor.id))!),
+        "/mentor/validation",
+      );
+      await service.recordValidation(
+        admin.id,
+        { kind: "MENTOR", id: mentor.id, evidenceIds: [proof.id] },
+        "APPROVED",
+      );
+      assert.equal(mentorDestination((await profiles.getProfile(mentor.id))!), null);
+      assert.equal((await profiles.getProfile(mentor.id))?.isMentorApproved, true);
+      await assert.rejects(onboarding.submit(mentor.id, mentorSubmission()), AuthError);
+      await db.user.update({
+        where: { id: mentor.id },
+        data: { accountStatus: "ACTIVE", emailVerifiedAt: new Date() },
+      });
+      await assert.rejects(
+        service.listAvailableProjects(mentor.id),
+        expectCode("MEMBERSHIP_REQUIRED"),
+      );
+      await service.withdrawMentorDocument(mentor.id, proof.id);
+      assert.equal(
+        mentorDestination((await profiles.getProfile(mentor.id))!),
+        "/mentor/candidature",
+      );
+      await onboarding.submit(mentor.id, mentorSubmission());
+      await service.recordValidation(
+        admin.id,
+        { kind: "MENTOR", id: mentor.id },
+        "REJECTED",
+        "Merci de compléter votre dossier.",
+      );
+      assert.equal(
+        mentorDestination((await profiles.getProfile(mentor.id))!),
+        "/mentor/candidature",
+      );
+      await onboarding.submit(mentor.id, mentorSubmission());
+      assert.equal(
+        mentorDestination((await profiles.getProfile(mentor.id))!),
+        "/mentor/validation",
+      );
+      assert.equal(
+        (await db.mentorDocument.findUniqueOrThrow({ where: { id: proof.id } })).privateStorageKey,
+        proof.privateStorageKey,
+      );
+    });
+  },
+);
+
+databaseTest(
+  "mentor submission rejects unauthorized actors, missing consent and invalid uploads without writing files",
+  async () => {
+    await withMentorUploads(async (onboarding, folder) => {
+      const mentor = await newMentorCandidate();
+      const founder = await user("FOUNDER");
+      await assert.rejects(onboarding.submit(founder.id, mentorSubmission()), AuthError);
+      await assert.rejects(
+        onboarding.submit(mentor.id, { ...mentorSubmission(), charterAccepted: false }),
+        AuthError,
+      );
+      await assert.rejects(
+        onboarding.submit(mentor.id, { ...mentorSubmission(), documents: [] }),
+        AuthError,
+      );
+      await assert.rejects(
+        onboarding.submit(mentor.id, {
+          ...mentorSubmission(),
+          documents: Array.from({ length: 6 }, () => mentorSubmission().documents[0]),
+        }),
+        AuthError,
+      );
+      await assert.rejects(
+        onboarding.submit(mentor.id, {
+          ...mentorSubmission(),
+          documents: [{ file: new File([], "empty.pdf"), documentType: "CV" }],
+        }),
+        AuthError,
+      );
+      await assert.rejects(
+        onboarding.submit(mentor.id, {
+          ...mentorSubmission(),
+          documents: [
+            {
+              file: new File([new Uint8Array(MAX_MENTOR_UPLOAD_BYTES + 1)], "large.pdf"),
+              documentType: "CV",
+            },
+          ],
+        }),
+        AuthError,
+      );
+      await assert.rejects(
+        onboarding.submit(mentor.id, {
+          ...mentorSubmission(),
+          documents: [{ file: new File(["not a PDF"], "fake.pdf"), documentType: "CV" }],
+        }),
+        AuthError,
+      );
+      await db.user.update({ where: { id: mentor.id }, data: { accountStatus: "SUSPENDED" } });
+      await assert.rejects(onboarding.submit(mentor.id, mentorSubmission()), AuthError);
+      assert.equal((await readdir(folder)).length, 0);
+      assert.equal(await db.mentorDocument.count({ where: { mentorUserId: mentor.id } }), 0);
+    });
+  },
+);
+
+databaseTest(
+  "mentor submission rolls back metadata and removes files if the database rejects profile content",
+  async () => {
+    await withMentorUploads(async (onboarding, folder) => {
+      const mentor = await newMentorCandidate();
+      await assert.rejects(
+        onboarding.submit(mentor.id, { ...mentorSubmission(), biography: String.fromCharCode(0) }),
+      );
+      assert.equal((await readdir(folder)).length, 0);
+      assert.equal(await db.mentorDocument.count({ where: { mentorUserId: mentor.id } }), 0);
+      assert.equal(
+        (await db.mentorProfile.findUniqueOrThrow({ where: { userId: mentor.id } }))
+          .verificationStatus,
+        "DRAFT",
+      );
+    });
+  },
+);
