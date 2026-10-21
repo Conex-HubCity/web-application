@@ -1,6 +1,8 @@
 # Conex — MCD V1 et premières règles de données
 
-Statut : MCD traduit en Prisma, avec migrations et services métier V1 implémentés.
+Statut : MCD synchronisé avec les 16 modèles du schéma Prisma le 21 octobre 2026.
+Les diagrammes reprennent les colonnes et clés du schéma actuel, y compris les sessions,
+les preuves de validation mentor et les certifications de test.
 Les migrations sont appliquées dans la base locale dédiée `conex`. Voir les
 [notes de réalisation](prisma-v1.md) pour les garanties et les intégrations restantes.
 
@@ -36,6 +38,7 @@ erDiagram
     USERS ||--o| MENTOR_PROFILES : possede
     USERS ||--o| FOUNDER_PROFILES : possede
     USERS ||--o{ USER_ROLES : dispose_de
+    USERS ||--o{ SESSIONS : ouvre
     FOUNDER_PROFILES ||--o{ CERTIFICATION_EVIDENCES : depose
     FOUNDER_PROFILES ||--o| PROJECTS : porte
     PROJECTS ||--|{ PROJECT_REVISIONS : conserve
@@ -45,7 +48,7 @@ erDiagram
     USERS {
         uuid id PK
         string email UK
-        string phone
+        string phone UK
         string password_hash
         string first_name
         string last_name
@@ -58,28 +61,40 @@ erDiagram
     USER_ROLES {
         uuid user_id PK,FK
         string role PK
+        datetime created_at
     }
     MENTOR_PROFILES {
         uuid user_id PK,FK
         string professional_title
         string biography
-        string country
+        string country_code
         string city
-        string expertise
+        string_array languages
+        string_array expertise
+        string_array preferred_sectors
+        string_array preferred_country_codes
         string availability
+        string motivations
         string verification_status
+        datetime submitted_at
         string visibility_preference
         datetime visibility_requested_at
         datetime charter_accepted_at
+        datetime created_at
+        datetime updated_at
     }
     FOUNDER_PROFILES {
         uuid user_id PK,FK
         string biography
-        string country
+        string country_code
         string city
         string sector
+        string_array languages
+        string_array skills
         string availability
         datetime adult_confirmed_at
+        datetime created_at
+        datetime updated_at
     }
     MENTOR_DOCUMENTS {
         uuid id PK
@@ -99,16 +114,27 @@ erDiagram
     CERTIFICATION_EVIDENCES {
         uuid id PK
         uuid founder_user_id FK
-        string private_storage_key
+        string private_storage_key UK
+        string original_filename
+        string mime_type
+        bigint size_bytes
+        string checksum
+        string scan_status
         string certificate_reference
+        string holder_name
+        date issued_at
+        string cohort
         string verification_status
         datetime submitted_at
+        datetime withdrawn_at
+        boolean is_test
     }
     PROJECTS {
-        uuid id PK
+        uuid id PK,FK
         uuid founder_user_id FK,UK
         uuid current_revision_id FK,UK
         datetime created_at
+        datetime updated_at
     }
     PROJECT_REVISIONS {
         uuid id PK
@@ -116,11 +142,24 @@ erDiagram
         int revision_number
         string title
         string summary
+        string sector
+        string stage
+        string market
+        string impact
+        string team
+        string risks
+        string_array support_needs
         string review_status
-        string private_pitch_storage_key
+        string private_pitch_storage_key UK
+        string pitch_original_filename
+        bigint pitch_size_bytes
+        string pitch_checksum
+        string pitch_scan_status
         datetime submitted_at
         datetime published_at
         datetime archived_at
+        datetime created_at
+        datetime updated_at
     }
     MEMBERSHIPS {
         uuid id PK
@@ -128,12 +167,30 @@ erDiagram
         string status
         datetime starts_at
         datetime ends_at
+        datetime created_at
+        datetime updated_at
+    }
+
+    SESSIONS {
+        uuid id PK
+        string token_hash UK
+        uuid user_id FK
+        datetime expires_at
+        datetime created_at
+    }
+    AUTH_THROTTLES {
+        string key PK
+        int attempts
+        datetime window_start
     }
 ```
 
 La notation `PK` désigne une clé primaire, `FK` une clé étrangère et `UK` une
-contrainte d’unicité. Les attributs listés constituent une première projection
-relationnelle ; les types PostgreSQL précis seront fixés avec le schéma Prisma.
+contrainte d’unicité sur une colonne. Les colonnes reprennent le schéma actuel ;
+les types PostgreSQL précis, la nullabilité, les index et les valeurs par défaut
+sont définis dans `prisma/schema.prisma`. Les types `string_array` désignent des listes PostgreSQL.
+Les unicités et références composites sont précisées ci-dessous, sans laisser
+entendre que chaque colonne du groupe serait unique individuellement.
 
 `USER_ROLES` permet de distinguer les permissions `MENTOR`, `FOUNDER` et `ADMIN`.
 Cette structure permet techniquement plusieurs rôles, mais n’autorise pas encore
@@ -149,6 +206,11 @@ expriment les concepts, pas un catalogue de valeurs définitivement arrêté.
 ```mermaid
 erDiagram
     USERS ||--o{ VALIDATION_DECISIONS : admin_decide
+    VALIDATION_DECISIONS ||--o{ MENTOR_VALIDATION_DOCUMENTS : retient
+    MENTOR_DOCUMENTS ||--o{ MENTOR_VALIDATION_DOCUMENTS : sert_de_preuve
+    MENTOR_DOCUMENTS o|--o{ MENTOR_DOCUMENTS : remplace
+    USERS o|--o{ MENTORSHIP_REQUESTS : examine
+    USERS o|--o{ FOLLOW_UPS : approuve
     CERTIFICATION_EVIDENCES o|--o{ VALIDATION_DECISIONS : concerne_certificat
     MENTOR_PROFILES o|--o{ VALIDATION_DECISIONS : concerne_mentor
     MENTOR_DOCUMENTS o|--o{ VALIDATION_DECISIONS : concerne_document
@@ -166,7 +228,7 @@ erDiagram
         uuid mentor_user_id FK
         uuid mentor_document_id FK
         uuid project_revision_id FK
-        string decision
+        string outcome
         string reason
         datetime decided_at
     }
@@ -175,12 +237,16 @@ erDiagram
         uuid mentor_user_id FK
         uuid project_revision_id FK
         string status
+        string message
         uuid reviewed_by_user_id FK
+        string review_reason
         datetime reviewed_at
         datetime intro_meeting_at
+        datetime intro_meeting_held_at
         datetime mentor_consented_at
         datetime founder_consented_at
         datetime created_at
+        datetime updated_at
     }
     MENTORSHIPS {
         uuid id PK
@@ -189,6 +255,7 @@ erDiagram
         datetime activated_at
         datetime ended_at
         string closure_reason
+        datetime updated_at
     }
     FOLLOW_UPS {
         uuid id PK
@@ -196,14 +263,31 @@ erDiagram
         uuid author_user_id FK
         string type
         string status
+        string summary
+        string goals
+        string progress
+        string blockers
+        string next_actions
+        date report_period
         datetime occurred_at
         datetime recorded_at
+        uuid reviewed_by_user_id FK
+        datetime reviewed_at
+        string review_reason
+        datetime updated_at
+    }
+
+    MENTOR_VALIDATION_DOCUMENTS {
+        uuid decision_id PK,FK
+        uuid mentor_document_id PK,FK
+        uuid mentor_user_id FK
+        datetime linked_at
     }
 ```
 
 Chaque décision vise exactement UNE cible : une preuve de certification, un
 profil mentor, un document mentor ou une version de projet. Les quatre clés étrangères de cible sont
-facultatives individuellement ; une contrainte PostgreSQL imposera qu’une seule
+facultatives individuellement ; une contrainte PostgreSQL impose qu’une seule
 soit renseignée. Cela évite un identifiant polymorphe sans intégrité référentielle.
 
 La vérification d’un email ou téléphone ne remplace pas une validation métier.
@@ -220,7 +304,7 @@ qui a motivé la demande, par l’intermédiaire de `MENTORSHIP_REQUESTS`.
 
 ### Documents du mentor
 
-Modèle prévu : `MentorDocument`, table `mentor_documents`, avec une relation
+Modèle implémenté : `MentorDocument`, table `mentor_documents`, avec une relation
 plusieurs-vers-un vers `MentorProfile` par `mentor_user_id`.
 
 | Champ                                                      | Usage                                                                                     |
@@ -241,8 +325,8 @@ Le remplacement doit concerner un document du même mentor.
 
 L’acceptation d’un CV ou d’un justificatif ne valide pas automatiquement le mentor
 et n’active pas son adhésion. La validation globale du profil est une décision
-distincte. Les pièces retenues comme preuves lors de cette décision devront être
-traçables ; leur retrait ou remplacement ultérieur ne doit pas modifier
+distincte. Les pièces retenues comme preuves lors de cette décision sont tracées dans
+`mentor_validation_documents` ; leur retrait ou remplacement ultérieur ne doit pas modifier
 rétroactivement le dossier examiné.
 
 Ces documents sont accessibles au mentor propriétaire et aux membres de l’équipe
@@ -250,7 +334,7 @@ CNX habilités à vérifier sa candidature, via des accès temporaires contrôl�
 ne deviennent pas publics lorsque le mentor choisit un profil visible et ne sont
 pas accessibles automatiquement aux porteurs de projets ou aux autres mentors.
 
-Avant l’implémentation, préciser les pièces obligatoires, les formats acceptés,
+Avant de brancher les écrans de dépôt, préciser les pièces obligatoires, les formats acceptés,
 les limites de taille et de nombre, la durée de conservation et la procédure de
 réexamen lorsqu’une preuve essentielle est retirée. Aucun caractère obligatoire
 du CV ou d’un diplôme particulier n’est fixé à ce stade.
@@ -262,7 +346,7 @@ du CV ou d’un diplôme particulier n’est fixé à ce stade.
 | `PRIVATE`  | Profil absent du catalogue de mentors ; le mentor peut toujours découvrir les projets et demander une rencontre s’il dispose des droits nécessaires. |
 | `PLATFORM` | Profil proposé à la visibilité dans la plateforme, sous réserve des conditions d’activation.                                                         |
 
-Proposition : profil privé par défaut. `PLATFORM` signifie une visibilité dans
+Implémentation actuelle : profil privé par défaut. `PLATFORM` signifie une visibilité dans
 l’espace Conex autorisé, pas une publication sur Internet ni une indexation dans
 les moteurs de recherche.
 
@@ -295,19 +379,19 @@ version sont créés ensemble dans une transaction.
 remplacement_autorise =
     aucun_mentorat_actif_sur_le_projet
     ET
-    au_moins_un_mois_sans_suivi
+    au_moins_30_jours_ecoules_sans_suivi
 ```
 
-| Situation                                         | Remplacement                                                           |
-| ------------------------------------------------- | ---------------------------------------------------------------------- |
-| Aucun mentorat actif, moins d’un mois sans suivi  | Refusé                                                                 |
-| Aucun mentorat actif, au moins un mois sans suivi | Autorisé                                                               |
-| Mentorat actif, moins d’un mois sans suivi        | Refusé                                                                 |
-| Mentorat actif, au moins un mois sans suivi       | Refusé : le mentorat doit d’abord être clôturé selon le processus CNX. |
+| Situation                                          | Remplacement                                                           |
+| -------------------------------------------------- | ---------------------------------------------------------------------- |
+| Aucun mentorat actif, moins de 30 jours sans suivi | Refusé                                                                 |
+| Aucun mentorat actif, au moins 30 jours sans suivi | Autorisé                                                               |
+| Mentorat actif, moins de 30 jours sans suivi       | Refusé                                                                 |
+| Mentorat actif, au moins 30 jours sans suivi       | Refusé : le mentorat doit d’abord être clôturé selon le processus CNX. |
 
-L’écoulement d’un mois ne clôture pas automatiquement un mentorat. Mettre un
-mentorat en pause ne doit pas contourner la règle : proposition à valider, une
-pause continue de bloquer le remplacement jusqu’à une clôture documentée.
+L’écoulement de 30 jours ne clôture pas automatiquement un mentorat. Dans le
+service actuel, les états `ACTIVE` et `PAUSED` bloquent tous deux le remplacement
+jusqu’à une clôture documentée ; cette politique des pauses reste à confirmer côté produit.
 
 Un nouveau projet doit repasser par la validation du pitch. La validation de
 l’ancienne version n’est pas transférée. Les anciennes demandes ne sont pas
@@ -332,13 +416,13 @@ l’implémentation pour ne pas bloquer une simple correction de texte.
 Le contrôle est implémenté dans le service de remplacement, avec un verrou de
 transaction partagé par l’activation d’un mentorat et l’enregistrement des suivis.
 
-## 6. Contrôles nécessaires à la traduction PostgreSQL
+## 6. Contrôles implémentés en PostgreSQL et dans les services
 
 1. Unicité de l’email normalisé et des clés de profils `user_id`.
 2. Une seule ligne `PROJECTS` par porteur ; unicité du couple
    `(project_id, revision_number)`.
-3. La version courante doit appartenir au même projet. Prévoir une référence
-   composite, pas seulement une clé étrangère vers n’importe quelle version.
+3. La version courante appartient au même projet grâce à une référence composite
+   `(id, current_revision_id)` vers `(project_id, id)`.
 4. Vérifier les deux conditions de remplacement côté serveur, dans une
    transaction qui verrouille le projet. L’activation d’un mentorat et
    l’enregistrement d’un suivi qualifiant doivent utiliser le même verrou pour
@@ -352,19 +436,61 @@ transaction partagé par l’activation d’un mentorat et l’enregistrement de
 7. Conserver les décisions, versions et liens historiques. La politique de
    suppression et de conservation reste à définir avant les données réelles.
 
-## 7. Décisions restantes avant le schéma Prisma
+## 7. Décisions produit restantes
 
 - Cumul des profils mentor et porteur sur un même compte, ou rôles exclusifs au
   lancement.
 - Visibilité mentor : choix autonome ou validation supplémentaire par CNX ;
   audience exacte du catalogue.
-- Le délai de 30 jours et les événements de référence sont confirmés et implémentés.
-- Traitement des mentorats en pause et des demandes de rencontre encore ouvertes
-  lors d’un remplacement.
-- Distinction entre correction du dossier et remplacement du projet.
+- Confirmation produit du blocage des mentorats en pause. Le service actuel les
+  bloque ; les anciennes demandes ne peuvent pas être activées sur une version archivée.
+- Périmètre éditorial des corrections après soumission. Le service autorise
+  actuellement les modifications en `DRAFT` et `CHANGES_REQUESTED`.
 - Un seul mentor actif par projet, ou plusieurs : aucune unicité de binôme par
   projet n’est imposée tant que ce point n’est pas décidé.
 
 Prisma et les services séparent la validation de compte, la certification, la
 publication du projet et l’activation du mentorat. Les paiements, les rendez-vous
-détaillés et l’authentification restent à brancher dans les étapes suivantes.
+détaillés et les interfaces mentor restent à brancher. L’inscription, la
+connexion et les sessions sont déjà en place ; la vérification du contact et
+l’activation des comptes restent distinctes et ne sont pas simulées par le dépôt d’un certificat.
+
+## 8. Sessions, fichiers et garanties complémentaires
+
+- `sessions` relie un jeton de session haché à son compte et à une expiration.
+  Le cookie contient le jeton aléatoire, jamais le rôle faisant autorité. Le serveur
+  relit les rôles et refuse les comptes suspendus ou fermés.
+- `auth_throttles` conserve une fenêtre de tentatives par clé hachée email/opération.
+  Cette table ne possède pas de relation vers `users` : elle couvre aussi les emails
+  qui ne correspondent à aucun compte.
+- `mentor_validation_documents` possède une clé primaire composée de
+  `(decision_id, mentor_document_id)`. Ses deux références composites incluent
+  `mentor_user_id` : la décision et la pièce appartiennent au même mentor.
+- Les versions de documents mentor utilisent également une référence composite
+  garantissant que la pièce remplacée appartient au même propriétaire.
+- `certification_evidences.is_test` distingue les approbations simulées en local.
+  Cette origine est immuable ; une preuve de test ne donne aucun accès en production.
+  Cette simulation concerne les porteurs de projet, pas les candidatures mentor.
+- Les justificatifs WoeAcademy sont stockés dans `uploads/private/certifications/`.
+  `uploads/public/` est réservé aux futurs fichiers partageables et n’est pas servi
+  automatiquement. Les CV et preuves mentor devront rester dans le stockage privé.
+
+## 9. Priorité actuelle : parcours mentor
+
+| Étape                   | Règle et état actuel                                                                                                                                                                    |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inscription             | Compte `PENDING_VERIFICATION`, rôle `MENTOR`, profil `DRAFT` et visibilité `PRIVATE`. Inscription et connexion fonctionnent.                                                            |
+| Vérification du contact | Prérequis des actions métier du service actuel, avec activation du compte. Interface et envoi des messages à brancher.                                                                  |
+| Profil professionnel    | Titre, biographie, pays/ville, langues, expertises, secteurs et pays préférés, disponibilités et motivations existent dans Prisma. Formulaire et soumission à construire.               |
+| Justificatifs           | CV et preuves d’expertise privés. Métadonnées, décisions par pièce, remplacement et retrait sont implémentés côté métier ; dépôt et consultation depuis l’interface restent à brancher. |
+| Charte et examen CNX    | L’approbation globale exige la charte acceptée et au moins une preuve acceptée, contrôlée et non retirée. Les preuves exactes sont conservées dans la décision.                         |
+| Adhésion                | Une candidature approuvée ne suffit pas : adhésion `ACTIVE`, avec dates de validité, requise pour les accès réservés. Intégration du paiement à réaliser.                               |
+| Panel et projets        | Écran mentor actuel minimal. Le catalogue, les demandes de rencontre et les suivis disposent d’un socle métier ; les écrans mentor restent à construire.                                |
+| Visibilité              | Le choix privé/visible ne change ni la validation ni l’adhésion. Aucun CV ou justificatif ne devient public.                                                                            |
+
+Les états `verification_status`, `account_status` et `membership.status` restent
+indépendants. Le retrait d’une preuve utilisée dans la dernière approbation remet
+la candidature en attente de réexamen ; l’historique de décision est conservé.
+Aucun CV ou diplôme particulier n’est encore imposé au-delà de l’exigence d’au
+moins une preuve acceptée pour l’approbation globale. Les pièces obligatoires et
+les conditions de paiement restent à préciser avant leurs écrans.

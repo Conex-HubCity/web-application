@@ -98,6 +98,6 @@ Sans URL configurée, les tests PostgreSQL sont explicitement ignorés ; les rè
 
 ## Intégrations suivantes
 
-Authentification, vérification email/téléphone, stockage des pièces et analyse antivirus doivent encore être branchés. Les méthodes de fichiers attendent des métadonnées produites par un traitement serveur fiable, jamais un résultat antivirus déclaré par le client. Les limites de fichiers et référentiels de secteurs/langues restent à fixer.
+L’authentification et le dépôt privé des certificats WoeAcademy sont branchés. La vérification email/téléphone, le dépôt des pièces mentor et l’analyse antivirus restent à réaliser. Les méthodes de fichiers attendent des métadonnées produites par un traitement serveur fiable, jamais un résultat antivirus déclaré par le client. Les limites de fichiers et référentiels de secteurs/langues restent à fixer.
 
 Paiements et reçus, calendrier détaillé, notifications, signalements et journal d’audit global sont les modules suivants. `Membership` est contrôlé pour autoriser les accès mais aucun paiement réel n’est simulé ou confirmé automatiquement.
