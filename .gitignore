@@ -13,6 +13,11 @@
 # testing
 /coverage
 
+# Keep the upload directory structure, never uploaded files.
+/uploads/**
+!/uploads/**/
+!/uploads/**/.gitkeep
+
 # next.js
 /.next/
 /out/

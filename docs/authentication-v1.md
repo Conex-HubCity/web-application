@@ -2,6 +2,8 @@
 
 Registration and login now use PostgreSQL. `/inscription/porteur` creates a `FOUNDER` and `FounderProfile`; `/inscription/mentor` creates a `MENTOR` and a private, unapproved `MentorProfile`. Both create an authenticated session and redirect to `/compte`. Public signup cannot create `ADMIN` roles. Login accepts only email/password; the account page reads roles from the database.
 
+The account page now also checks founder certification on the server and redirects uncertified founders to `/certification`. See [certification onboarding](certification-v1.md) for private uploads and the local-only automatic approval mode.
+
 Accounts remain `PENDING_VERIFICATION`, with no verified email date. Authentication is distinct from contact verification and professional approval. Existing domain services continue requiring an active, verified account. Email delivery/verification, account activation, password recovery and dossier approval interfaces are subsequent work.
 
 Passwords use Node.js asynchronous scrypt (`N=131072`, `r=8`, `p=1`), a random 16-byte salt and a 64-byte derived key. Passwords accept 8–128 characters on registration and are never trimmed. Registration requires a matching password confirmation, checked on the server and never stored. See the [Node.js crypto reference](https://nodejs.org/download/release/v20.19.5/docs/api/crypto.html#cryptoscryptpassword-salt-keylen-options-callback).

@@ -1,0 +1,254 @@
+.panel-page {
+  min-height: 100dvh;
+  background: var(--background);
+}
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 22px max(24px, calc((100vw - 1180px) / 2));
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.panel-identity {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.panel-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--soft-green);
+  color: var(--forest);
+  text-transform: uppercase;
+}
+.panel-logout {
+  padding: 10px 0;
+  color: var(--muted);
+  font-size: 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.panel-logout:hover {
+  color: var(--forest);
+}
+.panel-main {
+  max-width: 1180px;
+  margin: auto;
+  padding: 48px 24px 64px;
+}
+.panel-welcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin: 22px 0 34px;
+}
+.panel-welcome h1 {
+  font:
+    400 clamp(30px, 4vw, 44px)/1.15 Georgia,
+    serif;
+  letter-spacing: -1.2px;
+  margin: 0 0 12px;
+}
+.panel-welcome h1 em {
+  color: #52715a;
+}
+.panel-welcome p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.panel-certified {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #ccdac8;
+  background: #eaf0e5;
+  padding: 11px 14px;
+  border-radius: 24px;
+  font-size: 11px;
+  color: #35553a;
+}
+.panel-project {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  padding: clamp(26px, 4vw, 48px);
+  border-radius: 22px;
+  color: var(--cream);
+  background: var(--forest);
+}
+.panel-project .welcome-eyebrow {
+  color: var(--gold);
+}
+.panel-project-copy {
+  max-width: 620px;
+}
+.panel-project h2 {
+  font:
+    400 clamp(28px, 3vw, 38px)/1.2 Georgia,
+    serif;
+  margin: 18px 0;
+}
+.panel-project p {
+  color: #d4ded3;
+  font-size: 13px;
+  line-height: 1.9;
+  margin: 0;
+}
+.panel-project-symbol {
+  color: var(--gold);
+  border: 1px solid #ffffff26;
+  border-radius: 50%;
+  padding: 28px;
+  margin-right: 20px;
+}
+.panel-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 26px;
+}
+.panel-steps article {
+  display: flex;
+  align-items: start;
+  gap: 15px;
+  padding: 26px 22px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+}
+.panel-step-number {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 11px;
+}
+.panel-step-number.complete {
+  color: var(--forest);
+  background: var(--soft-green);
+}
+.panel-step-state {
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.panel-steps h2 {
+  font:
+    400 21px Georgia,
+    serif;
+  margin: 10px 0;
+}
+.panel-steps p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.certification-main {
+  padding-block: 50px 80px;
+}
+.certification-card {
+  max-width: 590px;
+  margin: auto;
+  padding: clamp(24px, 4vw, 44px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+}
+.certification-card h1 {
+  font:
+    400 clamp(32px, 4vw, 43px)/1.15 Georgia,
+    serif;
+  margin: 22px 0;
+  letter-spacing: -1px;
+}
+.certification-card h1 em {
+  color: #627858;
+}
+.certification-card > p {
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--muted);
+}
+.certification-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  text-align: center;
+  background: #f5f6ef;
+  border: 1px dashed #a8b7a3;
+  border-radius: 14px;
+  padding: 26px 18px;
+  margin-top: 14px;
+}
+.certification-upload > span {
+  color: var(--muted);
+  font-size: 11px;
+}
+.certification-upload input {
+  max-width: 100%;
+  font-size: 12px;
+  padding: 12px;
+}
+.certification-upload input::file-selector-button {
+  border: none;
+  border-radius: 6px;
+  background: var(--forest);
+  color: var(--cream);
+  padding: 9px 12px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.certification-card .certification-privacy {
+  text-align: center;
+  font-size: 11px;
+  margin-top: 22px;
+}
+@media (max-width: 800px) {
+  .panel-header {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px 20px;
+  }
+  .panel-header .brand {
+    margin-right: auto;
+  }
+  .panel-identity {
+    display: none;
+  }
+  .panel-main {
+    padding: 32px 20px;
+  }
+  .panel-welcome {
+    align-items: start;
+    flex-direction: column;
+    margin-block: 18px 26px;
+    gap: 18px;
+  }
+  .panel-project-symbol {
+    display: none;
+  }
+  .panel-steps {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .certification-main {
+    padding-block: 24px 48px;
+  }
+}

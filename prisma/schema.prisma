@@ -260,6 +260,7 @@ model CertificationEvidence {
   verificationStatus   VerificationStatus @default(PENDING) @map("verification_status")
   submittedAt          DateTime           @default(now()) @map("submitted_at") @db.Timestamptz(3)
   withdrawnAt          DateTime?          @map("withdrawn_at") @db.Timestamptz(3)
+  isTest               Boolean            @default(false) @map("is_test")
 
   founder             FounderProfile       @relation(fields: [founderUserId], references: [userId], onDelete: Restrict, onUpdate: NoAction)
   validationDecisions ValidationDecision[] @relation("CertificationValidationTarget")

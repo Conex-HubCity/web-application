@@ -1,7 +1,9 @@
 import "dotenv/config";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
-import { readFile, readdir } from "node:fs/promises";
+import { readFile, readdir, mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { after, before, test } from "node:test";
 import pg from "pg";
 import { PGlite } from "@electric-sql/pglite";
@@ -9,6 +11,8 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, type Role } from "../generated/prisma/client";
 import { createPlatformService } from "../lib/domain/platform-service";
 import { AuthError, createAuthService } from "../lib/auth/service";
+import { createOnboardingService } from "../lib/onboarding/service";
+import { MAX_CERTIFICATION_BYTES } from "../lib/onboarding/policy";
 import {
   DomainError,
   PROJECT_REPLACEMENT_DELAY_MS,
@@ -230,6 +234,139 @@ databaseTest(
         data: { createdAt: new Date(Date.now() - 2 * DAY), expiresAt: new Date(Date.now() - DAY) },
       });
       assert.equal(await auth.getSession(session.token), null);
+    }
+  },
+);
+
+databaseTest(
+  "founder onboarding checks stored certification; local test upload unlocks only its owner",
+  async () => {
+    const folder = await mkdtemp(path.join(tmpdir(), "conex-upload-test-"));
+    const env: Record<string, string | undefined> = process.env;
+    const previous = { mode: env.CERTIFICATION_TEST_MODE, node: env.NODE_ENV };
+    env.CERTIFICATION_TEST_MODE = "true";
+    env.NODE_ENV = "test";
+    try {
+      const onboarding = createOnboardingService(db, folder);
+      const founder = await user("FOUNDER");
+      const other = await user("FOUNDER");
+      const mentor = await user("MENTOR");
+      assert.equal((await onboarding.getProfile(founder.id))?.isCertified, false);
+      assert.equal((await onboarding.getProfile(mentor.id))?.isFounder, false);
+      const file = new File(["any local test content"], "../../proof.txt", { type: "text/plain" });
+      const results = await Promise.all([
+        onboarding.uploadCertification(founder.id, file),
+        onboarding.uploadCertification(founder.id, file),
+      ]);
+      assert.ok(results.every((result) => result.certified));
+      const evidence = await db.certificationEvidence.findFirstOrThrow({
+        where: { founderUserId: founder.id },
+      });
+      assert.equal(evidence.originalFilename, "proof.txt");
+      assert.equal(evidence.isTest, true);
+      assert.equal(evidence.verificationStatus, "APPROVED");
+      assert.equal(
+        await readFile(path.join(folder, evidence.privateStorageKey.split("/")[1]), "utf8"),
+        "any local test content",
+      );
+      assert.equal((await readdir(folder)).length, 1);
+      assert.equal(
+        await db.certificationEvidence.count({ where: { founderUserId: founder.id } }),
+        1,
+      );
+      assert.equal((await onboarding.getProfile(founder.id))?.isCertified, true);
+      assert.equal((await onboarding.getProfile(other.id))?.isCertified, false);
+      assert.equal("privateStorageKey" in (await onboarding.getProfile(founder.id))!, false);
+      await assert.rejects(
+        db.certificationEvidence.update({ where: { id: evidence.id }, data: { isTest: false } }),
+      );
+      env.NODE_ENV = "production";
+      assert.equal((await onboarding.getProfile(founder.id))?.isCertified, false);
+      const project = await service.createProject(founder.id, {
+        title: "Test certification isolation",
+      });
+      await assert.rejects(
+        service.submitProject(founder.id, project.id),
+        expectCode("CERTIFICATION_REQUIRED"),
+      );
+      env.NODE_ENV = "test";
+      await db.certificationEvidence.update({
+        where: { id: evidence.id },
+        data: { verificationStatus: "REVOKED" },
+      });
+      assert.equal((await onboarding.getProfile(founder.id))?.isCertified, false);
+    } finally {
+      for (const [key, value] of [
+        ["CERTIFICATION_TEST_MODE", previous.mode],
+        ["NODE_ENV", previous.node],
+      ] as const) {
+        if (value === undefined) delete env[key];
+        else env[key] = value;
+      }
+      assert.equal(path.dirname(path.resolve(folder)), path.resolve(tmpdir()));
+      assert.match(path.basename(folder), /^conex-upload-test-/);
+      await rm(folder, { recursive: true, force: true });
+    }
+  },
+);
+
+databaseTest(
+  "certification uploads reject invalid files and mentors; production never auto approves",
+  async () => {
+    const folder = await mkdtemp(path.join(tmpdir(), "conex-upload-test-"));
+    const env: Record<string, string | undefined> = process.env;
+    const previous = { mode: env.CERTIFICATION_TEST_MODE, node: env.NODE_ENV };
+    env.CERTIFICATION_TEST_MODE = "true";
+    env.NODE_ENV = "production";
+    try {
+      const onboarding = createOnboardingService(db, folder);
+      const founder = await user("FOUNDER");
+      const mentor = await user("MENTOR");
+      await db.user.update({
+        where: { id: founder.id },
+        data: { accountStatus: "PENDING_VERIFICATION", emailVerifiedAt: null },
+      });
+      await assert.rejects(
+        onboarding.uploadCertification(founder.id, new File([], "empty.pdf")),
+        AuthError,
+      );
+      await assert.rejects(
+        onboarding.uploadCertification(
+          founder.id,
+          new File([new Uint8Array(MAX_CERTIFICATION_BYTES + 1)], "large.pdf"),
+        ),
+        AuthError,
+      );
+      const file = new File(["certificate"], "document.pdf", { type: "application/pdf" });
+      await assert.rejects(onboarding.uploadCertification(mentor.id, file), AuthError);
+      assert.equal((await readdir(folder)).length, 0);
+      assert.deepEqual(await onboarding.uploadCertification(founder.id, file), {
+        certified: false,
+      });
+      const evidence = await db.certificationEvidence.findFirstOrThrow({
+        where: { founderUserId: founder.id },
+      });
+      assert.equal(evidence.isTest, false);
+      assert.equal(evidence.verificationStatus, "PENDING");
+      assert.equal(evidence.scanStatus, "PENDING");
+      assert.equal((await onboarding.getProfile(founder.id))?.isCertified, false);
+      const stored = await db.user.findUniqueOrThrow({ where: { id: founder.id } });
+      assert.equal(stored.accountStatus, "PENDING_VERIFICATION");
+      assert.equal(stored.emailVerifiedAt, null);
+      await db.user.update({ where: { id: founder.id }, data: { accountStatus: "SUSPENDED" } });
+      assert.equal(await onboarding.getProfile(founder.id), null);
+      await assert.rejects(onboarding.uploadCertification(founder.id, file), AuthError);
+    } finally {
+      for (const [key, value] of [
+        ["CERTIFICATION_TEST_MODE", previous.mode],
+        ["NODE_ENV", previous.node],
+      ] as const) {
+        if (value === undefined) delete env[key];
+        else env[key] = value;
+      }
+      assert.equal(path.dirname(path.resolve(folder)), path.resolve(tmpdir()));
+      assert.match(path.basename(folder), /^conex-upload-test-/);
+      await rm(folder, { recursive: true, force: true });
     }
   },
 );

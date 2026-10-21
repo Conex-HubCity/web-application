@@ -8,10 +8,10 @@ La base locale dédiée est `conex`. La commande `npm run db:setup` peut la pré
 
 Les migrations sont versionnées dans `prisma/migrations/` :
 
-- `20261020000300_auth_sessions` : sessions persistantes et limitation des tentatives d’authentification, soit deux tables supplémentaires.
-
 - `20261020000100_initial_v1` : 14 tables métier, clés, index, contraintes de cohérence et premières protections de l’historique.
 - `20261020000200_protect_history` : protection du contenu des certificats, du propriétaire des projets, des suivis approuvés et du rattachement des mentorats.
+- `20261020000300_auth_sessions` : sessions persistantes et limitation des tentatives d’authentification, soit deux tables supplémentaires.
+- `20261020000400_test_certification_marker` : origine immuable des justificatifs approuvés en simulation locale ; voir le [parcours de certification](certification-v1.md).
 
 `prisma/constraints-v1.sql` est la source des contraintes complémentaires incluses dans la migration initiale. Ne pas exécuter ce fichier séparément ni modifier une migration déjà appliquée.
 
@@ -94,7 +94,7 @@ npm run build
 
 Les tests appliquent les migrations à un schéma PostgreSQL temporaire `conex_test_<uuid>`, puis le suppriment. Ils ne modifient jamais les tables applicatives existantes. Ils utilisent `TEST_DATABASE_URL` si renseignée, sinon `DATABASE_URL`. Le compte de test doit avoir le droit de créer un schéma.
 
-Sans URL configurée, les tests PostgreSQL sont explicitement ignorés ; les règles de date et l’application des migrations sur PostgreSQL embarqué restent testées. Vérifier le nombre de tests exécutés avant toute livraison. En local, la suite complète compte 15 tests.
+Sans URL configurée, les tests PostgreSQL sont explicitement ignorés ; les règles de date et l’application des migrations sur PostgreSQL embarqué restent testées. Vérifier le nombre de tests exécutés avant toute livraison. En local, la suite complète compte 17 tests.
 
 ## Intégrations suivantes
 

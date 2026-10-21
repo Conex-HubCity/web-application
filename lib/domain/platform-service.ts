@@ -1,4 +1,5 @@
 import "server-only";
+import { approvedCertificationFilter } from "@/lib/onboarding/policy";
 import {
   Prisma,
   type PrismaClient,
@@ -123,9 +124,7 @@ export function createPlatformService(db: PrismaClient = getDb()) {
     const certificate = await tx.certificationEvidence.findFirst({
       where: {
         founderUserId: userId,
-        verificationStatus: "APPROVED",
-        scanStatus: "CLEAN",
-        withdrawnAt: null,
+        ...approvedCertificationFilter(),
       },
     });
     requireCondition(
@@ -624,7 +623,7 @@ export function createPlatformService(db: PrismaClient = getDb()) {
                 roles: { some: { role: "FOUNDER" } },
               },
               certificationEvidences: {
-                some: { verificationStatus: "APPROVED", scanStatus: "CLEAN", withdrawnAt: null },
+                some: approvedCertificationFilter(),
               },
             },
           },

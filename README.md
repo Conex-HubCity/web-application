@@ -28,7 +28,8 @@ l’authentification sera branchée ensuite.
 - `/inscription/porteur` : création d’un compte porteur de projet, avant la certification.
 - `/inscription/mentor` : création d’un compte mentor avec profil privé.
 - `/connexion` : connexion par email et mot de passe, rôle reconnu depuis la base.
-- `/compte` : page protégée affichant le prénom, les rôles et la déconnexion.
+- `/compte` : panel protégé par session et contrôle serveur de la certification pour les porteurs de projet.
+- `/certification` : dépôt privé du justificatif WoeAcademy ; [validation automatique en test local](docs/certification-v1.md).
 - `/espace` : interface de démonstration conservée, sans authentification réelle.
 - `components/splash-screen.tsx` : introduction modale CNX, lettres avec rebond puis « A solution by HubCity ».
 - `components/auth-entry.tsx` : formulaires reliés aux Server Actions et à PostgreSQL.
@@ -42,6 +43,7 @@ l’authentification sera branchée ensuite.
 - `app/welcome.css` : accueil, entrées inscription/connexion, splash et adaptations mobiles.
 - `app/home-sections.css` : compositions photo, sections éditoriales, FAQ et adaptations mobiles du bas de page.
 - `public/assets/conex/` : huit assets d’origine conservés, sans transformation.
+- `uploads/private/certifications/` : justificatifs confidentiels ; `uploads/public/` est réservé aux futurs fichiers partageables. Les fichiers déposés sont exclus de Git.
 - `references/conference-v4/` : sources archivées ; scripts jamais importés dans l’application.
 
 ## Introduction
