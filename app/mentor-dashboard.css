@@ -21,7 +21,10 @@
   overflow-y: auto;
   z-index: 30;
 }
-.md-sidebar > .cnx-brand {
+.md-sidebar > .cnx-brand-group {
+  justify-content: space-between;
+}
+.md-sidebar > .cnx-brand-group .cnx-brand {
   margin: 0 12px;
   font-size: 33px;
 }

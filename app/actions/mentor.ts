@@ -1,4 +1,5 @@
 "use server";
+import { actionPath } from "@/lib/i18n/action-locale";
 
 import { saveMentorProfile } from "@/lib/domain/mentor-profile";
 import { redirect } from "next/navigation";
@@ -14,7 +15,7 @@ export async function submitMentorApplication(
   form: FormData,
 ): Promise<MentorSubmissionState> {
   const user = await getCurrentUser();
-  if (!user) redirect("/connexion");
+  if (!user) redirect(await actionPath("/connexion"));
   try {
     const cv = form.get("cv");
     const evidence = form.getAll("evidence");
@@ -37,17 +38,17 @@ export async function submitMentorApplication(
     );
     return { error: "Votre dossier n’a pas pu être envoyé. Veuillez réessayer." };
   }
-  revalidatePath("/compte");
-  revalidatePath("/mentor/candidature");
-  revalidatePath("/mentor/validation");
-  redirect("/mentor/validation");
+  revalidatePath("/[lang]/compte", "page");
+  revalidatePath("/[lang]/mentor/candidature", "page");
+  revalidatePath("/[lang]/mentor/validation", "page");
+  redirect(await actionPath("/mentor/validation"));
 }
 
 export async function refreshMentorStatus() {
-  if (!(await getCurrentUser())) redirect("/connexion");
-  revalidatePath("/compte");
-  revalidatePath("/mentor/validation");
-  redirect("/compte");
+  if (!(await getCurrentUser())) redirect(await actionPath("/connexion"));
+  revalidatePath("/[lang]/compte", "page");
+  revalidatePath("/[lang]/mentor/validation", "page");
+  redirect(await actionPath("/compte"));
 }
 
 export type MentorProfileState = { error?: string; success?: string } | null;
@@ -57,7 +58,7 @@ export async function updateMentorProfile(
   form: FormData,
 ): Promise<MentorProfileState> {
   const user = await getCurrentUser();
-  if (!user) redirect("/connexion");
+  if (!user) redirect(await actionPath("/connexion"));
   try {
     await saveMentorProfile(user.id, form);
   } catch (error) {
@@ -68,7 +69,7 @@ export async function updateMentorProfile(
     );
     return { error: "Votre profil n’a pas pu être enregistré." };
   }
-  revalidatePath("/compte");
+  revalidatePath("/[lang]/compte", "page");
   return { success: "Votre profil a été enregistré." };
 }
 
@@ -77,7 +78,7 @@ export async function uploadMentorDocuments(
   form: FormData,
 ): Promise<MentorProfileState> {
   const user = await getCurrentUser();
-  if (!user) redirect("/connexion");
+  if (!user) redirect(await actionPath("/connexion"));
   const type = form.get("documentType");
   if (type !== "CV" && type !== "OTHER_EVIDENCE")
     return { error: "Choisissez un type de document." };
@@ -96,6 +97,6 @@ export async function uploadMentorDocuments(
     console.error("Mentor upload failed", error instanceof Error ? error.name : "UnknownError");
     return { error: "Vos documents n’ont pas pu être envoyés." };
   }
-  revalidatePath("/compte");
+  revalidatePath("/[lang]/compte", "page");
   return { success: "Documents envoyés. Ils sont en attente d’examen." };
 }

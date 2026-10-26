@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "@/components/i18n";
 
 import { useActionState } from "react";
 import { submitMentorApplication } from "@/app/actions/mentor";
@@ -13,11 +14,13 @@ export function MentorApplicationForm({
   professionalTitle?: string | null;
   biography?: string | null;
 }) {
+  const t = useTranslations();
   const [state, action, pending] = useActionState(submitMentorApplication, null);
   return (
     <form action={action} className="auth-form mentor-application-form">
       <label>
-        Votre activité <span className="mentor-optional">(facultatif)</span>
+        {" "}
+        {t("Votre activité")} <span className="mentor-optional">{t("(facultatif)")}</span>
         <input
           name="professionalTitle"
           maxLength={200}
@@ -26,49 +29,62 @@ export function MentorApplicationForm({
         />
       </label>
       <label>
-        Votre expérience <span className="mentor-optional">(facultatif)</span>
+        {" "}
+        {t("Votre expérience")} <span className="mentor-optional">{t("(facultatif)")}</span>
         <textarea name="biography" rows={4} maxLength={4000} defaultValue={biography ?? ""} />
       </label>
       <label className="mentor-file-field">
-        Votre CV <input name="cv" type="file" accept={accept} disabled={pending} />
+        {" "}
+        {t("Votre CV")} <input name="cv" type="file" accept={accept} disabled={pending} />
       </label>
       <label className="mentor-file-field">
-        Autres justificatifs{" "}
+        {" "}
+        {t("Autres justificatifs")}{" "}
         <input name="evidence" type="file" accept={accept} multiple disabled={pending} />
-        <span className="auth-field-hint">Diplômes, certificats ou attestations d’expérience.</span>
+        <span className="auth-field-hint">
+          {t("Diplômes, certificats ou attestations d’expérience.")}
+        </span>
       </label>
       <p className="auth-field-hint">
-        Au moins un document. PDF, Word ou images ; cinq fichiers et 5 Mo au total maximum.
+        {" "}
+        {t(
+          "Au moins un document. PDF, Word ou images ; cinq fichiers et 5 Mo au total maximum.",
+        )}{" "}
       </p>
       <details className="mentor-charter">
-        <summary>Les engagements du mentor</summary>
+        <summary>{t("Les engagements du mentor")}</summary>
         <ul>
-          <li>Préserver la confidentialité des projets et des documents reçus.</li>
+          <li>{t("Préserver la confidentialité des projets et des documents reçus.")}</li>
           <li>
-            Présenter son expérience avec exactitude et respecter ses disponibilités annoncées.
+            {" "}
+            {t(
+              "Présenter son expérience avec exactitude et respecter ses disponibilités annoncées.",
+            )}{" "}
           </li>
           <li>
-            Construire une relation choisie, respectueuse et sans promesse de financement ou
-            d’emploi.
+            {" "}
+            {t(
+              "Construire une relation choisie, respectueuse et sans promesse de financement ou d’emploi.",
+            )}{" "}
           </li>
-          <li>Participer aux échanges et aux bilans convenus avec le porteur de projet.</li>
+          <li>{t("Participer aux échanges et aux bilans convenus avec le porteur de projet.")}</li>
         </ul>
       </details>
       <label className="auth-checkbox">
         <input name="charterAccepted" type="checkbox" required />
-        <span>Je m’engage à respecter les engagements du mentor ci-dessus.</span>
+        <span>{t("Je m’engage à respecter les engagements du mentor ci-dessus.")}</span>
       </label>
       {state?.error && (
         <p className="auth-error" role="alert">
-          {state.error}
+          {t(state.error)}
         </p>
       )}
       <button type="submit" className="auth-submit" disabled={pending}>
         {pending
-          ? "Envoi en cours…"
+          ? t("Envoi en cours…")
           : resubmission
-            ? "Soumettre à nouveau mon dossier"
-            : "Soumettre mon dossier"}
+            ? t("Soumettre à nouveau mon dossier")
+            : t("Soumettre mon dossier")}
       </button>
     </form>
   );

@@ -1,44 +1,8 @@
+import { getTranslator } from "@/lib/i18n/server";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/i18n";
 import { Icon } from "./icon";
 import { Journey } from "./journey";
-
-const pathways = [
-  {
-    role: "porteur",
-    number: "01",
-    image: "entrepreneure.webp",
-    label: "PORTEURS DE PROJETS",
-    title: (
-      <>
-        Vous avez l’élan.
-        <br />
-        Trouvez le regard
-        <br />
-        qui fait avancer.
-      </>
-    ),
-    text: "Prenez du recul, structurez votre projet et avancez avec l’expérience d’un mentor. Vous restez aux commandes de votre parcours.",
-    action: "Créer mon compte porteur",
-  },
-  {
-    role: "mentor",
-    number: "02",
-    image: "mentor.webp",
-    label: "PROFESSIONNELS DE LA DIASPORA",
-    title: (
-      <>
-        Votre expérience
-        <br />
-        peut ouvrir
-        <br />
-        d’autres possibles.
-      </>
-    ),
-    text: "Partagez votre regard et vos savoir-faire avec un entrepreneur africain. Un engagement de transmission, à la mesure de vos disponibilités.",
-    action: "Devenir mentor",
-  },
-];
 
 const commitments = [
   {
@@ -96,7 +60,44 @@ const questions = [
   },
 ];
 
-export function HomeSections() {
+export async function HomeSections() {
+  const t = await getTranslator();
+  const pathways = [
+    {
+      role: "porteur",
+      number: "01",
+      image: "entrepreneure.webp",
+      label: t("PORTEURS DE PROJETS"),
+      title: (
+        <>
+          {" "}
+          {t("Vous avez l’élan.")} <br /> {t("Trouvez le regard")} <br />{" "}
+          {t("qui fait avancer.")}{" "}
+        </>
+      ),
+      text: t(
+        "Prenez du recul, structurez votre projet et avancez avec l’expérience d’un mentor. Vous restez aux commandes de votre parcours.",
+      ),
+      action: t("Créer mon compte porteur"),
+    },
+    {
+      role: "mentor",
+      number: "02",
+      image: "mentor.webp",
+      label: t("PROFESSIONNELS DE LA DIASPORA"),
+      title: (
+        <>
+          {" "}
+          {t("Votre expérience")} <br /> {t("peut ouvrir")} <br /> {t("d’autres possibles.")}{" "}
+        </>
+      ),
+      text: t(
+        "Partagez votre regard et vos savoir-faire avec un entrepreneur africain. Un engagement de transmission, à la mesure de vos disponibilités.",
+      ),
+      action: t("Devenir mentor"),
+    },
+  ];
+
   return (
     <>
       <section
@@ -108,17 +109,19 @@ export function HomeSections() {
           <div className="cnx-split-heading">
             <div className="cnx-section-heading">
               <div className="welcome-eyebrow">
-                <span /> DEUX PARCOURS, UN MÊME ÉLAN
+                <span /> {t("DEUX PARCOURS, UN MÊME ÉLAN")}{" "}
               </div>
               <h2 id="pathways-title">
-                Chacun son chemin.
-                <br />
-                <em>Un horizon partagé.</em>
+                {" "}
+                {t("Chacun son chemin.")} <br />
+                <em>{t("Un horizon partagé.")}</em>
               </h2>
             </div>
             <p>
-              Une idée à faire grandir. Une expérience à transmettre. Choisissez la place depuis
-              laquelle vous souhaitez avancer.
+              {" "}
+              {t(
+                "Une idée à faire grandir. Une expérience à transmettre. Choisissez la place depuis laquelle vous souhaitez avancer.",
+              )}{" "}
             </p>
           </div>
           <div className="cnx-pathway-grid">
@@ -136,7 +139,9 @@ export function HomeSections() {
                 />
                 <div className="cnx-photo-shade" />
                 <div className="cnx-pathway-top">
-                  <span>PARCOURS {pathway.number}</span>
+                  <span>
+                    {t("PARCOURS")} {pathway.number}
+                  </span>
                   <span className="cnx-circle-arrow">
                     <Icon name="diagonal" size={19} />
                   </span>
@@ -154,9 +159,10 @@ export function HomeSections() {
             ))}
           </div>
           <p className="cnx-pathway-footnote">
-            <Icon name="compass" size={18} />
-            Vous pouvez créer votre compte avant la certification. La validation du profil et celle
-            du projet restent deux étapes distinctes.
+            <Icon name="compass" size={18} />{" "}
+            {t(
+              "Vous pouvez créer votre compte avant la certification. La validation du profil et celle du projet restent deux étapes distinctes.",
+            )}{" "}
           </p>
         </div>
       </section>
@@ -168,43 +174,43 @@ export function HomeSections() {
           <div>
             <div className="cnx-section-heading">
               <div className="welcome-eyebrow">
-                <span /> UN CADRE QUI PREND SOIN DU LIEN
+                <span /> {t("UN CADRE QUI PREND SOIN DU LIEN")}{" "}
               </div>
               <h2 id="trust-title">
-                La confiance
-                <br />
-                ne se décrète pas.
-                <br />
-                <em>Elle se construit.</em>
+                {" "}
+                {t("La confiance")} <br /> {t("ne se décrète pas.")} <br />
+                <em>{t("Elle se construit.")}</em>
               </h2>
               <p>
-                Un accompagnement a besoin de clarté, de respect et de liberté. C’est le cadre dans
-                lequel Conex fait naître les rencontres.
+                {" "}
+                {t(
+                  "Un accompagnement a besoin de clarté, de respect et de liberté. C’est le cadre dans lequel Conex fait naître les rencontres.",
+                )}{" "}
               </p>
             </div>
             <div className="cnx-commitments">
               {commitments.map((item) => (
-                <article key={item.title}>
+                <article key={t(item.title)}>
                   <span className="cnx-commitment-icon">
                     <Icon name={item.icon} size={20} />
                   </span>
                   <div>
-                    <h3>{item.title}</h3>
-                    <p>{item.text}</p>
+                    <h3>{t(item.title)}</h3>
+                    <p>{t(item.text)}</p>
                   </div>
                 </article>
               ))}
             </div>
             <a className="cnx-inline-link" href="#questions-frequentes">
-              Comprendre le fonctionnement
-              <Icon name="arrow" size={18} />
+              {" "}
+              {t("Comprendre le fonctionnement")} <Icon name="arrow" size={18} />
             </a>
           </div>
           <div className="cnx-trust-visual">
             <div className="cnx-trust-photo">
               <Image
                 src="/assets/conex/portrait-femme.webp"
-                alt="Portrait illustratif d’une professionnelle"
+                alt={t("Portrait illustratif d’une professionnelle")}
                 fill
                 sizes="(max-width: 760px) 100vw, 42vw"
               />
@@ -212,11 +218,11 @@ export function HomeSections() {
             <div className="cnx-trust-note">
               <Icon name="people" size={30} />
               <p>
-                <strong>Un lien libre.</strong>
-                <span>Un cadre partagé pour avancer.</span>
+                <strong>{t("Un lien libre.")}</strong>
+                <span>{t("Un cadre partagé pour avancer.")}</span>
               </p>
             </div>
-            <span className="cnx-image-note">Visuel d’illustration</span>
+            <span className="cnx-image-note">{t("Visuel d’illustration")}</span>
           </div>
         </div>
       </section>
@@ -229,34 +235,36 @@ export function HomeSections() {
         <div className="welcome-container cnx-faq-grid">
           <div className="cnx-section-heading cnx-faq-heading">
             <div className="welcome-eyebrow">
-              <span /> AVANT DE FAIRE LE PREMIER PAS
+              <span /> {t("AVANT DE FAIRE LE PREMIER PAS")}{" "}
             </div>
             <h2 id="faq-title">
-              Vos questions.
-              <br />
-              <em>En toute clarté.</em>
+              {" "}
+              {t("Vos questions.")} <br />
+              <em>{t("En toute clarté.")}</em>
             </h2>
             <p>
-              Quelques repères pour comprendre votre parcours et rejoindre Conex en connaissance de
-              cause.
+              {" "}
+              {t(
+                "Quelques repères pour comprendre votre parcours et rejoindre Conex en connaissance de cause.",
+              )}{" "}
             </p>
             <Link className="cnx-inline-link" href="/inscription/porteur">
-              Commencer mon parcours
-              <Icon name="arrow" size={18} />
+              {" "}
+              {t("Commencer mon parcours")} <Icon name="arrow" size={18} />
             </Link>
           </div>
           <div className="cnx-faq-items">
             {questions.map((item, index) => (
-              <details key={item.question}>
+              <details key={t(item.question)}>
                 <summary>
                   <span className="cnx-faq-number">0{index + 1}</span>
-                  <span>{item.question}</span>
+                  <span>{t(item.question)}</span>
                   <span className="cnx-faq-plus" aria-hidden="true">
                     +
                   </span>
                 </summary>
                 <div className="cnx-faq-answer">
-                  <p>{item.answer}</p>
+                  <p>{t(item.answer)}</p>
                 </div>
               </details>
             ))}
@@ -268,36 +276,38 @@ export function HomeSections() {
         <div className="welcome-container cnx-final-grid">
           <div className="cnx-section-heading">
             <div className="welcome-eyebrow">
-              <span /> LA SUITE COMMENCE AVEC VOUS
+              <span /> {t("LA SUITE COMMENCE AVEC VOUS")}{" "}
             </div>
             <h2 id="final-title">
-              Les possibles
-              <br />
-              se construisent
-              <br />
-              <em>à plusieurs.</em>
+              {" "}
+              {t("Les possibles")} <br /> {t("se construisent")} <br />
+              <em>{t("à plusieurs.")}</em>
             </h2>
             <p>
-              Votre projet mérite un regard nouveau. Votre expérience peut ouvrir une voie. Faisons
-              le premier pas.
+              {" "}
+              {t(
+                "Votre projet mérite un regard nouveau. Votre expérience peut ouvrir une voie. Faisons le premier pas.",
+              )}{" "}
             </p>
             <div className="welcome-hero-actions">
               <Link className="hero-join hero-join-founder" href="/inscription/porteur">
-                Je porte un projet
+                {" "}
+                {t("Je porte un projet")}{" "}
                 <span>
                   <Icon name="diagonal" size={18} />
                 </span>
               </Link>
               <Link className="hero-join hero-join-mentor" href="/inscription/mentor">
-                Devenir mentor
-                <Icon name="arrow" size={18} />
+                {" "}
+                {t("Devenir mentor")} <Icon name="arrow" size={18} />
               </Link>
             </div>
             <p className="cnx-final-login">
-              Déjà membre ?{" "}
+              {" "}
+              {t("Déjà membre ?")}{" "}
               <Link href="/connexion">
-                Se connecter
-                <Icon name="diagonal" size={14} />
+                {" "}
+                {t("Se connecter")} <Icon name="diagonal" size={14} />
               </Link>
             </p>
           </div>
@@ -305,7 +315,7 @@ export function HomeSections() {
             <div className="cnx-final-photo">
               <Image
                 src="/assets/conex/collectif.webp"
-                alt="Illustration d’un collectif réuni autour d’un projet"
+                alt={t("Illustration d’un collectif réuni autour d’un projet")}
                 fill
                 sizes="(max-width: 760px) 85vw, 40vw"
               />

@@ -63,3 +63,7 @@ Le compte porteur peut précéder la certification ; le profil reste privé avan
 ## Limites du prototype
 
 L’inscription et la connexion créent maintenant de vrais comptes et sessions. Les nouveaux comptes restent en attente de vérification ; l’envoi des emails, la vérification du contact et la récupération de mot de passe restent à réaliser. La certification, le stockage privé, les paiements, les rendez-vous et le mentorat disposent d’un socle métier mais attendent leurs interfaces et intégrations. La recherche et les favoris de `/espace` restent une démonstration en mémoire, distincte de `/compte`.
+
+## Multilingue
+
+Français/anglais : routes `/fr` et `/en`, sélecteur persistant et traduction de l’accueil, de l’authentification, des espaces mentor et porteur, de la certification et de la démonstration. Voir [le périmètre et les conventions](docs/i18n.md).

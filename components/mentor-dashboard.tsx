@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations, useLocale } from "@/components/i18n";
 
 import { useState } from "react";
 import { MentorProfile } from "./mentor-profile";
@@ -27,8 +28,6 @@ const requestLabels: Record<string, string> = {
   CANCELLED: "Demande annulée",
   EXPIRED: "Demande expirée",
 };
-const date = (value: string) =>
-  new Intl.DateTimeFormat("fr-FR", { dateStyle: "long", timeZone: "UTC" }).format(new Date(value));
 
 function EmptyState({
   icon,
@@ -52,6 +51,13 @@ function EmptyState({
 }
 
 export function MentorDashboard({ data }: { data: MentorDashboardData }) {
+  const t = useTranslations();
+  const locale = useLocale();
+  const date = (value: string) =>
+    new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "fr-FR", {
+      dateStyle: "long",
+      timeZone: "UTC",
+    }).format(new Date(value));
   const [view, setView] = useState<View>("overview");
   const firstName = data.firstName.charAt(0).toLocaleUpperCase("fr") + data.firstName.slice(1);
   const initials = (data.firstName.charAt(0) + (data.lastName?.charAt(0) ?? "")).toUpperCase();
@@ -71,27 +77,28 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
     </button>
   );
   const membershipLabel = data.membershipActive
-    ? "Active"
+    ? t("Active")
     : data.membership?.status === "EXPIRED"
-      ? "À renouveler"
+      ? t("À renouveler")
       : data.membership?.status === "SUSPENDED"
-        ? "Suspendue"
+        ? t("Suspendue")
         : data.membership?.status === "CANCELLED"
-          ? "Résiliée"
-          : "À activer";
+          ? t("Résiliée")
+          : t("À activer");
 
   return (
     <div className="mentor-shell">
       <a href="#mentor-main" className="skip-link">
-        Aller au contenu
+        {" "}
+        {t("Aller au contenu")}{" "}
       </a>
       <aside className="md-sidebar">
         <Brand />
         <div className="md-workspace-label">
-          <span /> ESPACE MENTOR
+          <span /> {t("ESPACE MENTOR")}{" "}
         </div>
-        <span className="md-nav-label">MON PARCOURS</span>
-        <nav aria-label="Navigation mentor">
+        <span className="md-nav-label">{t("MON PARCOURS")}</span>
+        <nav aria-label={t("Navigation mentor")}>
           {navigation.map((item) => (
             <button
               type="button"
@@ -101,9 +108,9 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
               onClick={() => go(item.id)}
             >
               <Icon name={item.icon} size={19} />
-              <span>{item.label}</span>
+              <span>{t(item.label)}</span>
               {item.id === "membership" && !data.membershipActive && (
-                <i aria-label="Adhésion à activer" />
+                <i aria-label={t("Adhésion à activer")} />
               )}
             </button>
           ))}
@@ -115,14 +122,13 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
               <strong>
                 {firstName} {data.lastName}
               </strong>
-              <small>Mentor Conex</small>
+              <small>{t("Mentor Conex")}</small>
             </span>
             <Icon name="chevron" size={15} />
           </button>
           <form action={logout}>
             <button type="submit" className="md-signout">
-              <Icon name="logout" size={16} />
-              Se déconnecter
+              <Icon name="logout" size={16} /> {t("Se déconnecter")}{" "}
             </button>
           </form>
         </div>
@@ -133,18 +139,18 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
             <Brand />
           </div>
           <div className="md-breadcrumb">
-            Mon espace <span>/</span>
-            <strong>{activeLabel}</strong>
+            {" "}
+            {t("Mon espace")} <span>/</span>
+            <strong>{t(activeLabel)}</strong>
           </div>
           <div className="md-topbar-right">
             <span className="md-approved">
-              <Icon name="check" size={13} />
-              Candidature validée
+              <Icon name="check" size={13} /> {t("Candidature validée")}{" "}
             </span>
             <button
               className="md-avatar"
               type="button"
-              aria-label="Ouvrir mon profil"
+              aria-label={t("Ouvrir mon profil")}
               onClick={() => go("profile")}
             >
               {initials}
@@ -154,11 +160,12 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
         <main id="mentor-main" className="md-main">
           <div className="md-page-heading">
             <div>
-              <span className="md-eyebrow">L’ESPACE DES POSSIBLES</span>
+              <span className="md-eyebrow">{t("L’ESPACE DES POSSIBLES")}</span>
               <h1>
                 {view === "overview" ? (
                   <>
-                    Bonjour, <em>{firstName}.</em>
+                    {" "}
+                    {t("Bonjour,")} <em>{firstName}.</em>
                   </>
                 ) : (
                   activeLabel
@@ -166,22 +173,21 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
               </h1>
               <p>
                 {view === "overview"
-                  ? "Votre expérience a sa place ici. Construisons la suite."
+                  ? t("Votre expérience a sa place ici. Construisons la suite.")
                   : view === "projects"
-                    ? "Des idées à faire grandir, des parcours à accompagner."
+                    ? t("Des idées à faire grandir, des parcours à accompagner.")
                     : view === "requests"
-                      ? "Gardez le fil de vos prochaines rencontres."
+                      ? t("Gardez le fil de vos prochaines rencontres.")
                       : view === "mentorships"
-                        ? "Un lien se construit, un échange après l’autre."
+                        ? t("Un lien se construit, un échange après l’autre.")
                         : view === "profile"
-                          ? "Votre parcours, votre expertise, votre place dans Conex."
-                          : "Un engagement pour transmettre dans la durée."}
+                          ? t("Votre parcours, votre expertise, votre place dans Conex.")
+                          : t("Un engagement pour transmettre dans la durée.")}
               </p>
             </div>
             {view === "overview" && (
               <button type="button" className="md-outline" onClick={() => go("profile")}>
-                <Icon name="user" size={16} />
-                Mon profil
+                <Icon name="user" size={16} /> {t("Mon profil")}{" "}
               </button>
             )}
           </div>
@@ -191,31 +197,39 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
               <section className="md-hero">
                 <div className="md-hero-copy">
                   <span className="md-eyebrow">
-                    {data.membershipActive ? "LE CHAMP DES POSSIBLES" : "VOTRE PROCHAINE ÉTAPE"}
+                    {data.membershipActive
+                      ? t("LE CHAMP DES POSSIBLES")
+                      : t("VOTRE PROCHAINE ÉTAPE")}
                   </span>
                   <h2>
                     {data.membershipActive ? (
                       <>
-                        Les bonnes rencontres
-                        <br />
-                        <em>commencent ici.</em>
+                        {" "}
+                        {t("Les bonnes rencontres")} <br />
+                        <em>{t("commencent ici.")}</em>
                       </>
                     ) : (
                       <>
-                        Votre dossier est validé.
-                        <br />
-                        <em>La suite vous attend.</em>
+                        {" "}
+                        {t("Votre dossier est validé.")} <br />
+                        <em>{t("La suite vous attend.")}</em>
                       </>
                     )}
                   </h2>
                   <p>
                     {data.membershipActive
-                      ? "Découvrez les projets validés et partagez votre regard là où il peut faire la différence."
-                      : "L’adhésion est la prochaine étape pour découvrir les projets et proposer votre accompagnement."}
+                      ? t(
+                          "Découvrez les projets validés et partagez votre regard là où il peut faire la différence.",
+                        )
+                      : t(
+                          "L’adhésion est la prochaine étape pour découvrir les projets et proposer votre accompagnement.",
+                        )}
                   </p>
                   {action(
                     data.membershipActive ? "projects" : "membership",
-                    data.membershipActive ? "Découvrir les projets" : "Découvrir mon adhésion",
+                    data.membershipActive
+                      ? t("Découvrir les projets")
+                      : t("Découvrir mon adhésion"),
                     true,
                   )}
                 </div>
@@ -226,9 +240,9 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                     <Icon name="compass" size={50} />
                   </div>
                   <span>
-                    PLUS LOIN,
-                    <br />
-                    <em>ensemble.</em>
+                    {" "}
+                    {t("PLUS LOIN,")} <br />
+                    <em>{t("ensemble.")}</em>
                   </span>
                 </div>
               </section>
@@ -236,10 +250,10 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                 <section className="md-card md-connections">
                   <div className="md-section-heading">
                     <div>
-                      <span className="md-eyebrow">LE CŒUR DU PARCOURS</span>
-                      <h2>Mes accompagnements</h2>
+                      <span className="md-eyebrow">{t("LE CŒUR DU PARCOURS")}</span>
+                      <h2>{t("Mes accompagnements")}</h2>
                     </div>
-                    {data.mentorships.length > 0 && action("mentorships", "Tout voir")}
+                    {data.mentorships.length > 0 && action("mentorships", t("Tout voir"))}
                   </div>
                   {data.mentorships.length ? (
                     <div className="md-records">
@@ -248,47 +262,49 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                           <span className="md-record-avatar">{item.founder.charAt(0)}</span>
                           <div>
                             <h3>{item.project}</h3>
-                            <p>Avec {item.founder}</p>
+                            <p>
+                              {t("Avec")} {item.founder}
+                            </p>
                           </div>
                           <span className="md-tag">
-                            {item.status === "PAUSED" ? "En pause" : "En cours"}
+                            {item.status === "PAUSED" ? t("En pause") : t("En cours")}
                           </span>
                         </article>
                       ))}
                     </div>
                   ) : (
-                    <EmptyState icon="people" title="Votre première rencontre se prépare.">
-                      Un projet, une personne, un regard nouveau.
-                      <br />
-                      Votre premier accompagnement prendra sa place ici.
+                    <EmptyState icon="people" title={t("Votre première rencontre se prépare.")}>
+                      {" "}
+                      {t("Un projet, une personne, un regard nouveau.")} <br />{" "}
+                      {t("Votre premier accompagnement prendra sa place ici.")}{" "}
                     </EmptyState>
                   )}
                   <div className="md-card-bottom">
-                    {action("projects", "Explorer les projets")}
-                    {action("requests", "Suivre mes demandes")}
+                    {action("projects", t("Explorer les projets"))}
+                    {action("requests", t("Suivre mes demandes"))}
                   </div>
                 </section>
                 <section className="md-card md-journey">
-                  <span className="md-eyebrow">PAS À PAS</span>
-                  <h2>Votre parcours</h2>
+                  <span className="md-eyebrow">{t("PAS À PAS")}</span>
+                  <h2>{t("Votre parcours")}</h2>
                   <ol>
                     <li className="done">
                       <span>
                         <Icon name="check" size={14} />
                       </span>
                       <div>
-                        <h3>Candidature validée</h3>
-                        <p>Bienvenue dans le cercle Conex.</p>
+                        <h3>{t("Candidature validée")}</h3>
+                        <p>{t("Bienvenue dans le cercle Conex.")}</p>
                       </div>
                     </li>
                     <li className={data.membershipActive ? "done" : "current"}>
                       <span>{data.membershipActive ? <Icon name="check" size={14} /> : "02"}</span>
                       <div>
-                        <h3>Votre adhésion</h3>
+                        <h3>{t("Votre adhésion")}</h3>
                         <p>
                           {data.membershipActive
-                            ? "Votre engagement est confirmé."
-                            : "La prochaine étape de votre engagement."}
+                            ? t("Votre engagement est confirmé.")
+                            : t("La prochaine étape de votre engagement.")}
                         </p>
                       </div>
                     </li>
@@ -297,12 +313,12 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                         {data.mentorships.length ? <Icon name="check" size={14} /> : "03"}
                       </span>
                       <div>
-                        <h3>Premier compagnonnage</h3>
-                        <p>Une rencontre choisie, un chemin commun.</p>
+                        <h3>{t("Premier compagnonnage")}</h3>
+                        <p>{t("Une rencontre choisie, un chemin commun.")}</p>
                       </div>
                     </li>
                   </ol>
-                  {action("membership", "Voir mon adhésion")}
+                  {action("membership", t("Voir mon adhésion"))}
                 </section>
               </div>
               <div className="md-small-grid">
@@ -311,12 +327,12 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                     <Icon name="document" size={21} />
                   </span>
                   <div>
-                    <h3>Votre dossier est prêt.</h3>
+                    <h3>{t("Votre dossier est prêt.")}</h3>
                     <p>
-                      {data.documents.length} document{data.documents.length > 1 ? "s" : ""} dans
-                      votre dossier mentor.
+                      {data.documents.length} document{data.documents.length > 1 ? "s" : ""}{" "}
+                      {t("dans votre dossier mentor.")}{" "}
                     </p>
-                    {action("profile", "Consulter mon dossier")}
+                    {action("profile", t("Consulter mon dossier"))}
                   </div>
                   <span className="md-mini-check">
                     <Icon name="check" size={13} />
@@ -329,11 +345,11 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                   <div>
                     <h3>
                       {data.visibility === "PRIVATE"
-                        ? "Votre profil reste privé."
-                        : "Votre visibilité sur Conex."}
+                        ? t("Votre profil reste privé.")
+                        : t("Votre visibilité sur Conex.")}
                     </h3>
-                    <p>Vos justificatifs restent confidentiels.</p>
-                    {action("profile", "Voir mon profil")}
+                    <p>{t("Vos justificatifs restent confidentiels.")}</p>
+                    {action("profile", t("Voir mon profil"))}
                   </div>
                 </section>
               </div>
@@ -348,30 +364,35 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                     icon="lock"
                     title={
                       data.membershipActive
-                        ? "Vos accès sont en cours d’activation."
-                        : "Une étape avant les rencontres."
+                        ? t("Vos accès sont en cours d’activation.")
+                        : t("Une étape avant les rencontres.")
                     }
                   >
                     {data.membershipActive
-                      ? "Votre candidature est validée. L’accès au catalogue reste soumis à l’activation de votre compte."
-                      : "Une adhésion active vous permettra de découvrir les projets validés et de proposer une rencontre."}
+                      ? t(
+                          "Votre candidature est validée. L’accès au catalogue reste soumis à l’activation de votre compte.",
+                        )
+                      : t(
+                          "Une adhésion active vous permettra de découvrir les projets validés et de proposer une rencontre.",
+                        )}
                   </EmptyState>
                   <div className="md-centered-action">
-                    {action("membership", "Voir mon adhésion", true)}
+                    {action("membership", t("Voir mon adhésion"), true)}
                   </div>
                 </>
               ) : data.projects.length ? (
                 <div className="md-project-grid">
                   {data.projects.map((project) => (
                     <article className="md-project-card" key={project.id}>
-                      <span className="md-tag">{project.sector || "Projet validé"}</span>
+                      <span className="md-tag">{project.sector || t("Projet validé")}</span>
                       <h2>{project.title}</h2>
                       <p>
-                        {project.summary || "Une idée à faire grandir avec un regard expérimenté."}
+                        {project.summary ||
+                          t("Une idée à faire grandir avec un regard expérimenté.")}
                       </p>
                       {project.supportNeeds && (
                         <details>
-                          <summary>Les besoins d’accompagnement</summary>
+                          <summary>{t("Les besoins d’accompagnement")}</summary>
                           <p>{project.supportNeeds}</p>
                         </details>
                       )}
@@ -379,8 +400,9 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                   ))}
                 </div>
               ) : (
-                <EmptyState icon="compass" title="Les prochaines idées prennent forme.">
-                  Les projets validés apparaîtront ici lorsqu’ils seront disponibles.
+                <EmptyState icon="compass" title={t("Les prochaines idées prennent forme.")}>
+                  {" "}
+                  {t("Les projets validés apparaîtront ici lorsqu’ils seront disponibles.")}{" "}
                 </EmptyState>
               )}
             </section>
@@ -394,7 +416,9 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                       <span className="md-record-avatar">{item.founder.charAt(0)}</span>
                       <div>
                         <h2>{item.project}</h2>
-                        <p>Avec {item.founder}</p>
+                        <p>
+                          {t("Avec")} {item.founder}
+                        </p>
                         {item.meetingAt && (
                           <p className="md-date">
                             <Icon name="calendar" size={14} />
@@ -403,23 +427,25 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                         )}
                         {item.message && (
                           <details>
-                            <summary>Votre message</summary>
+                            <summary>{t("Votre message")}</summary>
                             <p>{item.message}</p>
                           </details>
                         )}
                       </div>
-                      <span className="md-tag">{requestLabels[item.status] ?? item.status}</span>
+                      <span className="md-tag">{t(requestLabels[item.status] ?? item.status)}</span>
                     </article>
                   ))}
                 </div>
               ) : (
                 <>
-                  <EmptyState icon="message" title="Tout commence par un intérêt partagé.">
-                    Vos demandes et leurs prochaines étapes apparaîtront ici, de l’examen par Conex
-                    à la rencontre.
+                  <EmptyState icon="message" title={t("Tout commence par un intérêt partagé.")}>
+                    {" "}
+                    {t(
+                      "Vos demandes et leurs prochaines étapes apparaîtront ici, de l’examen par Conex à la rencontre.",
+                    )}{" "}
                   </EmptyState>
                   <div className="md-centered-action">
-                    {action("projects", "Découvrir les projets", true)}
+                    {action("projects", t("Découvrir les projets"), true)}
                   </div>
                 </>
               )}
@@ -434,27 +460,31 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                       <span className="md-record-avatar">{item.founder.charAt(0)}</span>
                       <div>
                         <h2>{item.project}</h2>
-                        <p>Avec {item.founder}</p>
+                        <p>
+                          {t("Avec")} {item.founder}
+                        </p>
                         <p>
                           {item.lastFollowUpAt
-                            ? `Dernier suivi : ${date(item.lastFollowUpAt)}`
-                            : "Le premier échange reste à préparer."}
+                            ? `${t("Dernier suivi :")} ${date(item.lastFollowUpAt)}`
+                            : t("Le premier échange reste à préparer.")}
                         </p>
                       </div>
                       <span className="md-tag">
-                        {item.status === "PAUSED" ? "En pause" : "En cours"}
+                        {item.status === "PAUSED" ? t("En pause") : t("En cours")}
                       </span>
                     </article>
                   ))}
                 </div>
               ) : (
                 <>
-                  <EmptyState icon="people" title="Un lien à construire, à votre rythme.">
-                    Vos accompagnements en cours seront réunis ici, avec les échanges et les
-                    prochaines étapes.
+                  <EmptyState icon="people" title={t("Un lien à construire, à votre rythme.")}>
+                    {" "}
+                    {t(
+                      "Vos accompagnements en cours seront réunis ici, avec les échanges et les prochaines étapes.",
+                    )}{" "}
                   </EmptyState>
                   <div className="md-centered-action">
-                    {action("projects", "Explorer les projets", true)}
+                    {action("projects", t("Explorer les projets"), true)}
                   </div>
                 </>
               )}
@@ -467,46 +497,52 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                 <span className="md-small-icon">
                   <Icon name="wallet" size={24} />
                 </span>
-                <span className="md-eyebrow">VOTRE ENGAGEMENT CONEX</span>
+                <span className="md-eyebrow">{t("VOTRE ENGAGEMENT CONEX")}</span>
                 <h2>
-                  Une adhésion.
-                  <br />
-                  <em>Des liens à faire grandir.</em>
+                  {" "}
+                  {t("Une adhésion.")} <br />
+                  <em>{t("Des liens à faire grandir.")}</em>
                 </h2>
                 <p>
-                  Un cadre commun pour découvrir les projets, proposer une rencontre et accompagner
-                  dans la durée.
+                  {" "}
+                  {t(
+                    "Un cadre commun pour découvrir les projets, proposer une rencontre et accompagner dans la durée.",
+                  )}{" "}
                 </p>
                 <span className={`md-tag ${data.membershipActive ? "md-tag-active" : ""}`}>
                   {membershipLabel}
                 </span>
                 {data.membershipActive && data.membership?.endsAt ? (
-                  <p>Votre adhésion est active jusqu’au {date(data.membership.endsAt)}.</p>
+                  <p>
+                    {t("Votre adhésion est active jusqu’au")} {date(data.membership.endsAt)}.
+                  </p>
                 ) : (
                   <div className="md-membership-note">
-                    Les modalités d’adhésion sont en cours de préparation. Aucun paiement n’est
-                    demandé depuis cet espace pour le moment.
+                    {" "}
+                    {t(
+                      "Les modalités d’adhésion sont en cours de préparation. Aucun paiement n’est demandé depuis cet espace pour le moment.",
+                    )}{" "}
                   </div>
                 )}
               </section>
               <section className="md-card md-membership-benefits">
-                <span className="md-eyebrow">AU FIL DE VOTRE PARCOURS</span>
-                <h2>La rencontre, dans un cadre de confiance.</h2>
+                <span className="md-eyebrow">{t("AU FIL DE VOTRE PARCOURS")}</span>
+                <h2>{t("La rencontre, dans un cadre de confiance.")}</h2>
                 {[
                   {
                     icon: "compass",
-                    title: "Des projets validés",
-                    text: "Des parcours examinés par Conex, avec des besoins identifiés.",
+                    title: t("Des projets validés"),
+                    text: t("Des parcours examinés par Conex, avec des besoins identifiés."),
                   },
                   {
                     icon: "people",
-                    title: "Une relation choisie",
-                    text: "Une mise en relation accompagnée, avec l’accord de chacun.",
+                    title: t("Une relation choisie"),
+                    text: t("Une mise en relation accompagnée, avec l’accord de chacun."),
                   },
                   {
                     icon: "leaf",
-                    title: "Un suivi dans la durée",
-                    text: "Des objectifs partagés et des points réguliers pour avancer.",
+                    title: t("Un suivi dans la durée"),
+                    text: t("Des objectifs partagés et des points réguliers pour avancer."),
                   },
                 ].map((item) => (
                   <div key={item.title}>
@@ -521,15 +557,15 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
             </div>
           )}
           <footer className="md-footer">
-            <span>CONEX · LE LIEN NOUS ÉLÈVE</span>
+            <span>{t("CONEX · LE LIEN NOUS ÉLÈVE")}</span>
             <button type="button" onClick={() => go("requests")}>
-              Mes demandes de rencontre
-              <Icon name="arrow" size={14} />
+              {" "}
+              {t("Mes demandes de rencontre")} <Icon name="arrow" size={14} />
             </button>
           </footer>
         </main>
       </div>
-      <nav className="md-mobile-nav" aria-label="Navigation mentor mobile">
+      <nav className="md-mobile-nav" aria-label={t("Navigation mentor mobile")}>
         {navigation
           .filter((item) => ["overview", "projects", "mentorships", "profile"].includes(item.id))
           .map((item) => (
@@ -541,7 +577,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
               onClick={() => go(item.id)}
             >
               <Icon name={item.icon} size={20} />
-              <span>{item.mobile}</span>
+              <span>{t(item.mobile)}</span>
             </button>
           ))}
       </nav>

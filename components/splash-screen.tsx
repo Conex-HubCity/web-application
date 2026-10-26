@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "@/components/i18n";
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
@@ -7,6 +8,7 @@ const SESSION_KEY = "conex:introduction-seen:v1";
 const REPLAY_EVENT = "conex:replay-introduction";
 
 export function SplashScreen() {
+  const t = useTranslations();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const dismissRef = useRef<() => void>(() => {});
 
@@ -82,7 +84,7 @@ export function SplashScreen() {
     <dialog
       ref={dialogRef}
       className="cnx-splash"
-      aria-label="Présentation de Conex"
+      aria-label={t("Présentation de Conex")}
       onCancel={(event) => {
         event.preventDefault();
         dismissRef.current();
@@ -102,7 +104,7 @@ export function SplashScreen() {
             <i aria-hidden="true">.</i>
           </div>
           <div className="splash-rule" aria-hidden="true" />
-          <p className="splash-tagline">Le lien nous élève.</p>
+          <p className="splash-tagline">{t("Le lien nous élève.")}</p>
         </div>
         <div className="splash-signature" lang="en">
           <span>A solution by</span>
@@ -116,16 +118,19 @@ export function SplashScreen() {
         </div>
       </div>
       <button className="splash-skip" onClick={() => dismissRef.current()}>
-        Passer l’introduction <span aria-hidden="true">↗</span>
+        {" "}
+        {t("Passer l’introduction")} <span aria-hidden="true">↗</span>
       </button>
     </dialog>
   );
 }
 
 export function ReplayIntroduction() {
+  const t = useTranslations();
   return (
     <button className="intro-replay" onClick={() => window.dispatchEvent(new Event(REPLAY_EVENT))}>
-      Revoir l’introduction <span aria-hidden="true">↗</span>
+      {" "}
+      {t("Revoir l’introduction")} <span aria-hidden="true">↗</span>
     </button>
   );
 }

@@ -61,9 +61,13 @@ def replace_text(node, text):
 def transform(node):
     if isinstance(node, str):
         return node
-    if node.tag in {"script", "style", "link", "template"} or node.has("welcome-existing") or node.has("cnx-final-login"):
+    if node.tag in {"script", "style", "link", "template"} or node.has("welcome-existing") or node.has("cnx-final-login") or node.has("cnx-language-select"):
         return None
     href = node.attrs.get("href", "")
+    if href in {"/fr", "/en"}:
+        href = "/"
+    elif href.startswith(("/fr/", "/en/")):
+        href = href[3:]
     if node.tag == "a" and href.startswith(("/connexion", "/espace", "/compte")):
         return None
     if node.tag == "a" and href.startswith("/inscription/"):

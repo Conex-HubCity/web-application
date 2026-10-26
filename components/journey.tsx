@@ -1,7 +1,8 @@
 "use client";
+import { useTranslations } from "@/components/i18n";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/i18n";
 import { useState } from "react";
 import { Icon } from "./icon";
 
@@ -65,6 +66,7 @@ const journeys = {
 };
 
 export function Journey() {
+  const t = useTranslations();
   const [role, setRole] = useState<"porteur" | "mentor">("porteur");
   const journey = journeys[role];
 
@@ -77,22 +79,24 @@ export function Journey() {
       <div className="welcome-container">
         <div className="cnx-section-heading">
           <div className="welcome-eyebrow">
-            <span /> LE COMPAGNONNAGE, PAS À PAS
+            <span /> {t("LE COMPAGNONNAGE, PAS À PAS")}{" "}
           </div>
           <h2 id="journey-title">
-            D’abord une rencontre.
-            <br />
-            <em>Puis un chemin commun.</em>
+            {" "}
+            {t("D’abord une rencontre.")} <br />
+            <em>{t("Puis un chemin commun.")}</em>
           </h2>
           <p>
-            La confiance se construit. Chaque étape prépare une relation libre, réciproque et suivie
-            dans la durée.
+            {" "}
+            {t(
+              "La confiance se construit. Chaque étape prépare une relation libre, réciproque et suivie dans la durée.",
+            )}{" "}
           </p>
         </div>
         <div
           className="cnx-journey-switch"
           role="group"
-          aria-label="Choisir le parcours à découvrir"
+          aria-label={t("Choisir le parcours à découvrir")}
         >
           <button
             type="button"
@@ -100,7 +104,8 @@ export function Journey() {
             aria-controls="journey-content"
             onClick={() => setRole("porteur")}
           >
-            Je porte un projet <span>01</span>
+            {" "}
+            {t("Je porte un projet")} <span>01</span>
           </button>
           <button
             type="button"
@@ -108,7 +113,8 @@ export function Journey() {
             aria-controls="journey-content"
             onClick={() => setRole("mentor")}
           >
-            Je deviens mentor <span>02</span>
+            {" "}
+            {t("Je deviens mentor")} <span>02</span>
           </button>
         </div>
         <div
@@ -127,24 +133,24 @@ export function Journey() {
             <div className="cnx-photo-shade" />
             <p>
               <span aria-hidden="true">✳</span>
-              {journey.caption}
+              {t(journey.caption)}
             </p>
           </div>
           <div className="cnx-journey-content">
-            <h3 id="journey-role-title">{journey.heading}</h3>
+            <h3 id="journey-role-title">{t(journey.heading)}</h3>
             <ol className="cnx-journey-steps">
               {journey.steps.map(([title, text], index) => (
-                <li key={title}>
+                <li key={t(title)}>
                   <span className="cnx-step-number">0{index + 1}</span>
                   <div>
-                    <h4>{title}</h4>
-                    <p>{text}</p>
+                    <h4>{t(title)}</h4>
+                    <p>{t(text)}</p>
                   </div>
                 </li>
               ))}
             </ol>
             <Link className="cnx-inline-link" href={`/inscription/${role}`}>
-              {journey.action}
+              {t(journey.action)}
               <Icon name="arrow" size={18} />
             </Link>
           </div>

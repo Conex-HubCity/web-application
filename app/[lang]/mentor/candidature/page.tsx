@@ -1,3 +1,6 @@
+import { getTranslator } from "@/lib/i18n/server";
+import { getLocale } from "@/lib/i18n/server";
+import { localizePath } from "@/lib/i18n/config";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Brand } from "@/components/brand";
@@ -5,17 +8,22 @@ import { MentorApplicationForm } from "@/components/mentor-application-form";
 import { getAuthenticatedProfile } from "@/lib/onboarding/profile";
 import { mentorDestination } from "@/lib/onboarding/mentor-policy";
 import { logout } from "@/app/actions/auth";
-import "../../panel.css";
+import "@/app/panel.css";
 
-export const metadata: Metadata = {
-  title: "Votre candidature mentor — Conex",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslator();
+  return {
+    title: t("Votre candidature mentor — Conex"),
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function MentorApplication() {
+  const t = await getTranslator();
   const profile = await getAuthenticatedProfile();
   const destination = mentorDestination(profile);
-  if (destination !== "/mentor/candidature") redirect(destination ?? "/compte");
+  if (destination !== "/mentor/candidature")
+    redirect(localizePath(destination ?? "/compte", await getLocale()));
   const rejected = profile.mentorStatus === "REJECTED";
   const revoked = profile.mentorStatus === "REVOKED";
   const needsUpdate = ["REJECTED", "REVOKED"].includes(profile.mentorStatus);
@@ -25,32 +33,40 @@ export default async function MentorApplication() {
         <Brand />
         <form action={logout}>
           <button className="panel-logout" type="submit">
-            Se déconnecter
+            {" "}
+            {t("Se déconnecter")}{" "}
           </button>
         </form>
       </header>
       <main className="welcome-container certification-main">
         <section className="certification-card">
-          <span className="welcome-eyebrow">VOTRE CANDIDATURE MENTOR</span>
+          <span className="welcome-eyebrow">{t("VOTRE CANDIDATURE MENTOR")}</span>
           <h1 className={needsUpdate ? "mentor-application-rejected" : undefined}>
             {rejected ? (
               <>
-                Votre dernière candidature <em>a été refusée.</em>
+                {" "}
+                {t("Votre dernière candidature")} <em>{t("a été refusée.")}</em>
               </>
             ) : revoked ? (
               <>
-                Votre validation mentor <em>a été retirée.</em>
+                {" "}
+                {t("Votre validation mentor")} <em>{t("a été retirée.")}</em>
               </>
             ) : (
               <>
-                Faisons connaissance <em>avec votre expérience.</em>
+                {" "}
+                {t("Faisons connaissance")} <em>{t("avec votre expérience.")}</em>
               </>
             )}
           </h1>
           <p>
             {needsUpdate
-              ? "Votre dossier doit être complété. Déposez de nouveaux justificatifs pour permettre à l’équipe Conex de réexaminer votre candidature."
-              : "Votre candidature n’est pas encore validée. Envoyez votre CV ou tout document attestant de votre expérience : diplôme, certificat ou attestation professionnelle."}
+              ? t(
+                  "Votre dossier doit être complété. Déposez de nouveaux justificatifs pour permettre à l’équipe Conex de réexaminer votre candidature.",
+                )
+              : t(
+                  "Votre candidature n’est pas encore validée. Envoyez votre CV ou tout document attestant de votre expérience : diplôme, certificat ou attestation professionnelle.",
+                )}
           </p>
           <MentorApplicationForm
             resubmission={needsUpdate}
@@ -58,7 +74,8 @@ export default async function MentorApplication() {
             biography={profile.mentorBiography}
           />
           <p className="certification-privacy">
-            Vos documents restent confidentiels et sont examinés par l’équipe Conex.
+            {" "}
+            {t("Vos documents restent confidentiels et sont examinés par l’équipe Conex.")}{" "}
           </p>
         </section>
       </main>

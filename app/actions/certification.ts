@@ -1,4 +1,5 @@
 "use server";
+import { actionPath } from "@/lib/i18n/action-locale";
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -13,7 +14,7 @@ export async function uploadCertification(
   form: FormData,
 ): Promise<CertificationState> {
   const user = await getCurrentUser();
-  if (!user) redirect("/connexion");
+  if (!user) redirect(await actionPath("/connexion"));
   let certified = false;
   try {
     const file = form.get("document");
@@ -28,8 +29,8 @@ export async function uploadCertification(
     );
     return { error: "Le document n’a pas pu être déposé. Veuillez réessayer." };
   }
-  revalidatePath("/compte");
-  revalidatePath("/certification");
-  if (certified) redirect("/compte");
+  revalidatePath("/[lang]/compte", "page");
+  revalidatePath("/[lang]/certification", "page");
+  if (certified) redirect(await actionPath("/compte"));
   return { received: true };
 }

@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "@/components/i18n";
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { updateMentorProfile, uploadMentorDocuments } from "@/app/actions/mentor";
@@ -15,6 +16,7 @@ const labels: Record<string, string> = {
 };
 
 export function MentorProfile({ data }: { data: MentorDashboardData }) {
+  const t = useTranslations();
   const [editing, setEditing] = useState(false);
   const [state, action, pending] = useActionState(updateMentorProfile, null);
   const [upload, uploadAction, uploading] = useActionState(uploadMentorDocuments, null);
@@ -33,12 +35,13 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
               <h2>
                 {data.firstName} {data.lastName}
               </h2>
-              <p>{data.professionalTitle || "Mentor Conex"}</p>
+              <p>{data.professionalTitle || t("Mentor Conex")}</p>
             </div>
           </div>
           {!editing && (
             <button type="button" className="md-outline" onClick={() => setEditing(true)}>
-              Modifier mon profil
+              {" "}
+              {t("Modifier mon profil")}{" "}
             </button>
           )}
         </div>
@@ -46,7 +49,8 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
           <form action={action} className="md-profile-form">
             <fieldset disabled={pending}>
               <label>
-                Prénom
+                {" "}
+                {t("Prénom")}{" "}
                 <input
                   name="firstName"
                   autoComplete="given-name"
@@ -56,7 +60,8 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
                 />
               </label>
               <label>
-                Nom
+                {" "}
+                {t("Nom")}{" "}
                 <input
                   name="lastName"
                   autoComplete="family-name"
@@ -66,11 +71,12 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
                 />
               </label>
               <label>
-                Email
-                <input type="email" value={data.email ?? ""} readOnly />
+                {" "}
+                {t("Email")} <input type="email" value={data.email ?? ""} readOnly />
               </label>
               <label>
-                Activité professionnelle
+                {" "}
+                {t("Activité professionnelle")}{" "}
                 <input
                   name="professionalTitle"
                   defaultValue={data.professionalTitle ?? ""}
@@ -78,7 +84,8 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
                 />
               </label>
               <label>
-                Présentation
+                {" "}
+                {t("Présentation")}{" "}
                 <textarea
                   name="biography"
                   rows={5}
@@ -87,7 +94,8 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
                 />
               </label>
               <label>
-                Ville
+                {" "}
+                {t("Ville")}{" "}
                 <input
                   name="city"
                   autoComplete="address-level2"
@@ -96,7 +104,8 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
                 />
               </label>
               <label>
-                Code pays
+                {" "}
+                {t("Code pays")}{" "}
                 <input
                   name="countryCode"
                   placeholder="TG"
@@ -107,36 +116,39 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
                 />
               </label>
               <label>
-                Expertises
+                {" "}
+                {t("Expertises")}{" "}
                 <input name="expertise" defaultValue={data.expertise.join(", ")} maxLength={2000} />
-                <small>Séparez les expertises par des virgules.</small>
+                <small>{t("Séparez les expertises par des virgules.")}</small>
               </label>
               <label>
-                Langues
+                {" "}
+                {t("Langues")}{" "}
                 <input name="languages" defaultValue={data.languages.join(", ")} maxLength={2000} />
-                <small>Séparez les langues par des virgules.</small>
+                <small>{t("Séparez les langues par des virgules.")}</small>
               </label>
               <label>
-                Visibilité
+                {" "}
+                {t("Visibilité")}{" "}
                 <select name="visibility" defaultValue={data.visibility}>
-                  <option value="PRIVATE">Profil privé</option>
-                  <option value="PLATFORM">Visible sur Conex</option>
+                  <option value="PRIVATE">{t("Profil privé")}</option>
+                  <option value="PLATFORM">{t("Visible sur Conex")}</option>
                 </select>
               </label>
             </fieldset>
             {state?.error && (
               <p className="md-form-error" role="alert">
-                {state.error}
+                {t(state.error)}
               </p>
             )}
             {state?.success && (
               <p className="md-form-success" role="status">
-                {state.success}
+                {t(state.success)}
               </p>
             )}
             <div className="md-form-actions">
               <button className="md-primary" type="submit" disabled={pending}>
-                {pending ? "Enregistrement…" : "Enregistrer"}
+                {pending ? t("Enregistrement…") : t("Enregistrer")}
               </button>
               <button
                 className="md-outline"
@@ -144,7 +156,8 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
                 disabled={pending}
                 onClick={() => setEditing(false)}
               >
-                Fermer
+                {" "}
+                {t("Fermer")}{" "}
               </button>
             </div>
           </form>
@@ -153,28 +166,28 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
             {data.biography && <p className="md-biography">{data.biography}</p>}
             <dl className="md-profile-details">
               <div>
-                <dt>Email</dt>
-                <dd>{data.email || "Non renseigné"}</dd>
+                <dt>{t("Email")}</dt>
+                <dd>{data.email || t("Non renseigné")}</dd>
               </div>
               <div>
-                <dt>Localisation</dt>
+                <dt>{t("Localisation")}</dt>
                 <dd>
-                  {[data.city, data.countryCode].filter(Boolean).join(", ") || "Non renseignée"}
+                  {[data.city, data.countryCode].filter(Boolean).join(", ") || t("Non renseignée")}
                 </dd>
               </div>
               <div>
-                <dt>Expertises</dt>
-                <dd>{data.expertise.join(", ") || "À compléter"}</dd>
+                <dt>{t("Expertises")}</dt>
+                <dd>{data.expertise.join(", ") || t("À compléter")}</dd>
               </div>
               <div>
-                <dt>Langues</dt>
-                <dd>{data.languages.join(", ") || "À compléter"}</dd>
+                <dt>{t("Langues")}</dt>
+                <dd>{data.languages.join(", ") || t("À compléter")}</dd>
               </div>
               <div>
-                <dt>Visibilité</dt>
+                <dt>{t("Visibilité")}</dt>
                 <dd>
                   <Icon name="lock" size={14} />
-                  {data.visibility === "PRIVATE" ? "Profil privé" : "Visible sur Conex"}
+                  {data.visibility === "PRIVATE" ? t("Profil privé") : t("Visible sur Conex")}
                 </dd>
               </div>
             </dl>
@@ -183,7 +196,8 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
       </section>
       <details className="md-card md-profile-card md-document-disclosure">
         <summary>
-          Mes justificatifs <span>{data.documents.length}</span>
+          {" "}
+          {t("Mes justificatifs")} <span>{data.documents.length}</span>
         </summary>
         <ul className="md-documents">
           {data.documents.map((doc) => (
@@ -191,24 +205,26 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
               <Icon name="document" size={20} />
               <span>
                 {doc.name}
-                <small>{doc.type === "CV" ? "CV" : "Justificatif d’expérience"}</small>
+                <small>{doc.type === "CV" ? "CV" : t("Justificatif d’expérience")}</small>
               </span>
-              <span className="md-tag">{labels[doc.status] ?? doc.status}</span>
+              <span className="md-tag">{t(labels[doc.status] ?? doc.status)}</span>
             </li>
           ))}
         </ul>
         <form ref={uploadForm} action={uploadAction} className="md-profile-form md-upload-form">
-          <h3>Ajouter des documents</h3>
+          <h3>{t("Ajouter des documents")}</h3>
           <fieldset disabled={uploading}>
             <label>
-              Type de document
+              {" "}
+              {t("Type de document")}{" "}
               <select name="documentType">
                 <option value="CV">CV</option>
-                <option value="OTHER_EVIDENCE">Justificatif d’expérience</option>
+                <option value="OTHER_EVIDENCE">{t("Justificatif d’expérience")}</option>
               </select>
             </label>
             <label>
-              Fichiers
+              {" "}
+              {t("Fichiers")}{" "}
               <input
                 type="file"
                 name="documents"
@@ -216,22 +232,22 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
                 multiple
                 required
               />
-              <small>PDF, Word ou images. Cinq fichiers et 5 Mo au total maximum.</small>
+              <small>{t("PDF, Word ou images. Cinq fichiers et 5 Mo au total maximum.")}</small>
             </label>
           </fieldset>
           {upload?.error && (
             <p className="md-form-error" role="alert">
-              {upload.error}
+              {t(upload.error)}
             </p>
           )}
           {upload?.success && (
             <p className="md-form-success" role="status">
-              {upload.success}
+              {t(upload.success)}
             </p>
           )}
           <div>
             <button className="md-primary" type="submit" disabled={uploading}>
-              {uploading ? "Envoi en cours…" : "Envoyer les documents"}
+              {uploading ? t("Envoi en cours…") : t("Envoyer les documents")}
             </button>
           </div>
         </form>

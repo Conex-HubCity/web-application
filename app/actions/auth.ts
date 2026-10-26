@@ -1,4 +1,5 @@
 "use server";
+import { actionPath } from "@/lib/i18n/action-locale";
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -38,12 +39,12 @@ export async function authenticate(
       error: "Le service est momentanément indisponible. Réessayez dans quelques instants.",
     };
   }
-  redirect("/compte");
+  redirect(await actionPath("/compte"));
 }
 
 export async function logout() {
   const jar = await cookies();
   await createAuthService().logout(jar.get(SESSION_COOKIE)?.value);
   jar.delete(SESSION_COOKIE);
-  redirect("/connexion");
+  redirect(await actionPath("/connexion"));
 }

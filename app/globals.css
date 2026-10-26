@@ -1348,3 +1348,28 @@ h1 {
     scroll-behavior: auto !important;
   }
 }
+
+.cnx-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.cnx-language-select {
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 11px;
+  padding: 5px 3px;
+  cursor: pointer;
+}
+.cnx-language-select option {
+  color: #132d26;
+  background: #fffdf7;
+}
+.cnx-language-select:focus-visible {
+  outline: 2px solid #b77b5e;
+  outline-offset: 3px;
+}

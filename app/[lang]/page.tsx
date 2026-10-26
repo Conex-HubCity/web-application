@@ -1,26 +1,30 @@
+import { getTranslator } from "@/lib/i18n/server";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/i18n";
 import { Brand } from "@/components/brand";
 import { Icon } from "@/components/icon";
 import { ReplayIntroduction, SplashScreen } from "@/components/splash-screen";
 import { HomeSections } from "@/components/home-sections";
-import "./home-sections.css";
+import "@/app/home-sections.css";
 
-export default function Home() {
+export default async function Home() {
+  const t = await getTranslator();
   return (
     <div className="welcome-page">
       <SplashScreen />
       <a className="skip-link" href="#welcome-main">
-        Aller au contenu
+        {" "}
+        {t("Aller au contenu")}{" "}
       </a>
       <header className="welcome-header welcome-public-header welcome-container">
         <Brand />
-        <nav className="welcome-nav" aria-label="Navigation principale">
-          <a href="#les-parcours">Les parcours</a>
-          <a href="#comment-ca-marche">Comment ça marche</a>
+        <nav className="welcome-nav" aria-label={t("Navigation principale")}>
+          <a href="#les-parcours">{t("Les parcours")}</a>
+          <a href="#comment-ca-marche">{t("Comment ça marche")}</a>
           <a href="#questions-frequentes">FAQ</a>
           <Link href="/connexion" className="welcome-login">
-            Se connecter <Icon name="diagonal" size={16} />
+            {" "}
+            {t("Se connecter")} <Icon name="diagonal" size={16} />
           </Link>
         </nav>
       </header>
@@ -30,7 +34,7 @@ export default function Home() {
             <Image
               className="welcome-hero-background"
               src="/assets/conex/jeune-fondatrice.webp"
-              alt="Illustration d’une jeune entrepreneure regardant vers l’avenir"
+              alt={t("Illustration d’une jeune entrepreneure regardant vers l’avenir")}
               fill
               sizes="100vw"
               preload
@@ -41,74 +45,80 @@ export default function Home() {
           <div className="welcome-hero welcome-container">
             <div className="welcome-hero-copy">
               <div className="welcome-eyebrow">
-                <span /> L’AFRIQUE ET SA DIASPORA, EN LIEN
+                <span /> {t("L’AFRIQUE ET SA DIASPORA, EN LIEN")}{" "}
               </div>
               <h1 id="welcome-title">
-                Un projet.
-                <br />
-                Une expérience.
-                <br />
-                <em>Un lien pour grandir.</em>
+                {" "}
+                {t("Un projet.")} <br /> {t("Une expérience.")} <br />
+                <em>{t("Un lien pour grandir.")}</em>
               </h1>
               <p className="welcome-lead">
-                Les bonnes rencontres ouvrent de nouveaux possibles. Conex relie les entrepreneurs
-                africains aux professionnels de la diaspora pour avancer ensemble.
+                {" "}
+                {t(
+                  "Les bonnes rencontres ouvrent de nouveaux possibles. Conex relie les entrepreneurs africains aux professionnels de la diaspora pour avancer ensemble.",
+                )}{" "}
               </p>
-              <div className="welcome-hero-actions" aria-label="Choisir mon parcours">
+              <div className="welcome-hero-actions" aria-label={t("Choisir mon parcours")}>
                 <Link className="hero-join hero-join-founder" href="/inscription/porteur">
-                  Je porte un projet{" "}
+                  {" "}
+                  {t("Je porte un projet")}{" "}
                   <span>
                     <Icon name="diagonal" size={18} />
                   </span>
                 </Link>
                 <Link className="hero-join hero-join-mentor" href="/inscription/mentor">
-                  Devenir mentor <Icon name="arrow" size={18} />
+                  {" "}
+                  {t("Devenir mentor")} <Icon name="arrow" size={18} />
                 </Link>
               </div>
               <p className="welcome-existing">
-                Déjà membre ou mentor ?{" "}
+                {" "}
+                {t("Déjà membre ou mentor ?")}{" "}
                 <Link href="/connexion">
-                  Connectez-vous <span aria-hidden="true">↗</span>
+                  {" "}
+                  {t("Connectez-vous")} <span aria-hidden="true">↗</span>
                 </Link>
               </p>
               <div className="welcome-hero-ethos">
-                <span>TRANSMISSION</span>
+                <span>{t("TRANSMISSION")}</span>
                 <i aria-hidden="true" />
-                <span>RENCONTRE</span>
+                <span>{t("RENCONTRE")}</span>
                 <i aria-hidden="true" />
-                <span>COMPAGNONNAGE</span>
+                <span>{t("COMPAGNONNAGE")}</span>
               </div>
             </div>
             <div
               className="welcome-seal"
-              aria-label="CNX, Afrique et diaspora : le lien nous élève"
+              aria-label={t("CNX, Afrique et diaspora : le lien nous élève")}
             >
-              <span>AFRIQUE · DIASPORA</span>
+              <span>{t("AFRIQUE · DIASPORA")}</span>
               <strong>CNX</strong>
-              <span>LE LIEN NOUS ÉLÈVE</span>
+              <span>{t("LE LIEN NOUS ÉLÈVE")}</span>
             </div>
-            <span className="welcome-side-note">Plus loin, ensemble.</span>
+            <span className="welcome-side-note">{t("Plus loin, ensemble.")}</span>
             <div className="welcome-hero-baseline">
-              <span>LE TALENT EST PARTOUT. CRÉONS LES LIENS.</span>
+              <span>{t("LE TALENT EST PARTOUT. CRÉONS LES LIENS.")}</span>
               <a href="#comment-ca-marche">
-                Comment ça marche <Icon name="arrow" size={16} />
+                {" "}
+                {t("Comment ça marche")} <Icon name="arrow" size={16} />
               </a>
             </div>
           </div>
         </section>
         <section
           className="welcome-prerequisite welcome-container"
-          aria-label="Prérequis du parcours entrepreneur"
+          aria-label={t("Prérequis du parcours entrepreneur")}
         >
           <span className="prerequisite-icon">
             <Icon name="compass" size={21} />
           </span>
           <p>
-            <strong>Votre compte est le premier pas.</strong> Vous pouvez le créer avant d’être
-            certifié. La certification WoeAcademy Niveau Rouge est nécessaire pour valider votre
-            profil ; votre projet fera ensuite l’objet d’une validation distincte.
+            <strong>{t("Votre compte est le premier pas.")}</strong>{" "}
+            {t(
+              "Vous pouvez le créer avant d’être certifié. La certification WoeAcademy Niveau Rouge est nécessaire pour valider votre profil ; votre projet fera ensuite l’objet d’une validation distincte.",
+            )}{" "}
           </p>
-          <a href="#comment-ca-marche" aria-label="Comprendre les étapes du parcours">
+          <a href="#comment-ca-marche" aria-label={t("Comprendre les étapes du parcours")}>
             <Icon name="arrow" size={20} />
           </a>
         </section>
@@ -118,15 +128,15 @@ export default function Home() {
         <div>
           <Brand />
           <p>
-            Un réseau de confiance.
-            <br />
-            Une ambition partagée.
+            {" "}
+            {t("Un réseau de confiance.")} <br /> {t("Une ambition partagée.")}{" "}
           </p>
         </div>
         <div className="welcome-footer-actions">
           <ReplayIntroduction />
           <Link href="/connexion">
-            Accéder à mon espace <Icon name="arrow" size={15} />
+            {" "}
+            {t("Accéder à mon espace")} <Icon name="arrow" size={15} />
           </Link>
           <span>© 2026 Conex · A solution by HubCity</span>
         </div>

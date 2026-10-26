@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "export:preview": "node scripts/export-preview.mjs",
-    "test": "node --conditions=react-server --import tsx --test tests/platform.test.ts",
+    "test": "node --conditions=react-server --import tsx --test tests/platform.test.ts tests/i18n.test.ts",
     "format": "prettier --write . && prisma format",
     "format:check": "prettier --check .",
     "postinstall": "prisma generate",
