@@ -18,6 +18,7 @@ import {
   MAX_MENTOR_UPLOAD_BYTES,
 } from "../lib/onboarding/mentor-service";
 import { mentorDestination } from "../lib/onboarding/mentor-policy";
+import { saveMentorProfile } from "../lib/domain/mentor-profile";
 import { getMentorDashboard } from "../lib/domain/mentor-dashboard";
 import {
   DomainError,
@@ -1144,5 +1145,98 @@ databaseTest(
       data: { verificationStatus: "PENDING" },
     });
     assert.equal(await getMentorDashboard(f.mentor.id, db), null);
+  },
+);
+
+function profileForm() {
+  const form = new FormData();
+  for (const [key, value] of Object.entries({
+    firstName: "Alice",
+    lastName: "Smith",
+    professionalTitle: "Architecte",
+    biography: "Mon expérience",
+    city: "Lomé",
+    countryCode: "tg",
+    expertise: "Architecture, Conseil, Architecture",
+    languages: "Français, Anglais",
+    visibility: "PLATFORM",
+  }))
+    form.set(key, value);
+  return form;
+}
+
+databaseTest(
+  "mentor profile edits persist only allowed fields and enforce account eligibility",
+  async () => {
+    const mentor = await user("MENTOR");
+    const other = await user("MENTOR");
+    const form = profileForm();
+    form.set("userId", other.id);
+    form.set("verificationStatus", "REVOKED");
+    form.set("email", "changed@example.test");
+    await saveMentorProfile(mentor.id, form, db);
+    const saved = await db.user.findUniqueOrThrow({
+      where: { id: mentor.id },
+      include: { mentorProfile: true },
+    });
+    assert.equal(saved.firstName, "Alice");
+    assert.equal(saved.email, mentor.email);
+    assert.equal(saved.mentorProfile!.countryCode, "TG");
+    assert.deepEqual(saved.mentorProfile!.expertise, ["Architecture", "Conseil"]);
+    assert.equal(saved.mentorProfile!.verificationStatus, "APPROVED");
+    assert.ok(saved.mentorProfile!.visibilityRequestedAt);
+    assert.equal((await db.user.findUniqueOrThrow({ where: { id: other.id } })).firstName, "Test");
+    const privateForm = profileForm();
+    privateForm.set("visibility", "PRIVATE");
+    await saveMentorProfile(mentor.id, privateForm, db);
+    assert.equal(
+      (await db.mentorProfile.findUniqueOrThrow({ where: { userId: mentor.id } }))
+        .visibilityRequestedAt,
+      null,
+    );
+    const invalid = profileForm();
+    invalid.set("biography", "x".repeat(4001));
+    await assert.rejects(saveMentorProfile(mentor.id, invalid, db), AuthError);
+    const founder = await user("FOUNDER");
+    await assert.rejects(saveMentorProfile(founder.id, profileForm(), db), AuthError);
+    const candidate = await newMentorCandidate();
+    await assert.rejects(saveMentorProfile(candidate.id, profileForm(), db), AuthError);
+    await db.user.update({ where: { id: mentor.id }, data: { accountStatus: "SUSPENDED" } });
+    await assert.rejects(saveMentorProfile(mentor.id, profileForm(), db), AuthError);
+  },
+);
+
+databaseTest(
+  "additional mentor documents stay pending without revoking approved candidature",
+  async () => {
+    await withMentorUploads(async (onboarding, folder) => {
+      const mentor = await user("MENTOR");
+      await db.mentorDocument.create({
+        data: {
+          mentorUserId: mentor.id,
+          documentType: "CV",
+          originalFilename: "approved.pdf",
+          privateStorageKey: randomUUID(),
+          mimeType: "application/pdf",
+          sizeBytes: BigInt(100),
+          checksum: hash,
+          scanStatus: "CLEAN",
+          reviewStatus: "APPROVED",
+        },
+      });
+      assert.ok(await getMentorDashboard(mentor.id, db));
+      await onboarding.submit(mentor.id, { ...mentorSubmission(), charterAccepted: false }, true);
+      const docs = await db.mentorDocument.findMany({ where: { mentorUserId: mentor.id } });
+      assert.equal(docs.length, 2);
+      const added = docs.find((doc) => doc.reviewStatus === "PENDING")!;
+      assert.equal(added.scanStatus, "PENDING");
+      assert.equal((await readdir(folder)).length, 1);
+      assert.ok(await getMentorDashboard(mentor.id, db));
+      const candidate = await newMentorCandidate();
+      await assert.rejects(onboarding.submit(candidate.id, mentorSubmission(), true), AuthError);
+      await db.user.update({ where: { id: mentor.id }, data: { accountStatus: "SUSPENDED" } });
+      await assert.rejects(onboarding.submit(mentor.id, mentorSubmission(), true), AuthError);
+      assert.equal((await readdir(folder)).length, 1);
+    });
   },
 );

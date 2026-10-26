@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MentorProfile } from "./mentor-profile";
 import { Brand } from "./brand";
 import { Icon } from "./icon";
 import { logout } from "@/app/actions/auth";
@@ -25,14 +26,6 @@ const requestLabels: Record<string, string> = {
   DECLINED: "Demande déclinée",
   CANCELLED: "Demande annulée",
   EXPIRED: "Demande expirée",
-};
-const documentLabels: Record<string, string> = {
-  APPROVED: "Accepté",
-  PENDING: "En attente",
-  IN_REVIEW: "En cours d’examen",
-  REJECTED: "À compléter",
-  REVOKED: "À réexaminer",
-  DRAFT: "Brouillon",
 };
 const date = (value: string) =>
   new Intl.DateTimeFormat("fr-FR", { dateStyle: "long", timeZone: "UTC" }).format(new Date(value));
@@ -116,19 +109,6 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
           ))}
         </nav>
         <div className="md-sidebar-bottom">
-          <div className="md-sidebar-note">
-            <Icon name="leaf" size={24} />
-            <p>
-              Le lien
-              <br />
-              <em>nous élève.</em>
-            </p>
-            <span>
-              Un regard partagé.
-              <br />
-              De nouveaux possibles.
-            </span>
-          </div>
           <button type="button" className="md-sidebar-user" onClick={() => go("profile")}>
             <span className="md-avatar">{initials}</span>
             <span>
@@ -480,68 +460,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
               )}
             </section>
           )}
-          {view === "profile" && (
-            <div className="md-profile-grid">
-              <section className="md-card md-profile-card">
-                <div className="md-profile-heading">
-                  <span className="md-avatar md-large-avatar">{initials}</span>
-                  <div>
-                    <h2>
-                      {firstName} {data.lastName}
-                    </h2>
-                    <p>{data.professionalTitle || "Mentor Conex"}</p>
-                  </div>
-                </div>
-                {data.biography && <p className="md-biography">{data.biography}</p>}
-                <dl className="md-profile-details">
-                  <div>
-                    <dt>Email</dt>
-                    <dd>{data.email || "Non renseigné"}</dd>
-                  </div>
-                  <div>
-                    <dt>Localisation</dt>
-                    <dd>
-                      {[data.city, data.countryCode].filter(Boolean).join(", ") || "Non renseignée"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Expertises</dt>
-                    <dd>{data.expertise.join(", ") || "À compléter"}</dd>
-                  </div>
-                  <div>
-                    <dt>Langues</dt>
-                    <dd>{data.languages.join(", ") || "À compléter"}</dd>
-                  </div>
-                  <div>
-                    <dt>Visibilité</dt>
-                    <dd>
-                      <Icon name="lock" size={14} />
-                      {data.visibility === "PRIVATE"
-                        ? "Profil privé"
-                        : "Visibilité demandée sur Conex"}
-                    </dd>
-                  </div>
-                </dl>
-              </section>
-              <section className="md-card md-profile-card">
-                <span className="md-eyebrow">VOTRE CANDIDATURE</span>
-                <h2>Mes justificatifs</h2>
-                <p className="md-muted">Ces pièces sont réservées à l’examen de votre dossier.</p>
-                <ul className="md-documents">
-                  {data.documents.map((doc) => (
-                    <li key={doc.id}>
-                      <Icon name="document" size={20} />
-                      <span>
-                        {doc.name}
-                        <small>{doc.type === "CV" ? "CV" : "Justificatif d’expérience"}</small>
-                      </span>
-                      <span className="md-tag">{documentLabels[doc.status] ?? doc.status}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            </div>
-          )}
+          {view === "profile" && <MentorProfile data={data} />}
           {view === "membership" && (
             <div className="md-membership-grid">
               <section className="md-card md-membership-card">

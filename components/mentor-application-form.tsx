@@ -5,9 +5,11 @@ import { submitMentorApplication } from "@/app/actions/mentor";
 
 const accept = ".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp";
 export function MentorApplicationForm({
+  resubmission = false,
   professionalTitle,
   biography,
 }: {
+  resubmission?: boolean;
   professionalTitle?: string | null;
   biography?: string | null;
 }) {
@@ -62,7 +64,11 @@ export function MentorApplicationForm({
         </p>
       )}
       <button type="submit" className="auth-submit" disabled={pending}>
-        {pending ? "Envoi en cours…" : "Soumettre mon dossier"}
+        {pending
+          ? "Envoi en cours…"
+          : resubmission
+            ? "Soumettre à nouveau mon dossier"
+            : "Soumettre mon dossier"}
       </button>
     </form>
   );

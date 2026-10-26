@@ -497,7 +497,7 @@ Les champs métier du profil professionnel sont modélisés ; seuls l’activit�
 le texte d’expérience sont pour le moment proposés avec le dépôt. Le CV reste
 facultatif lorsqu’un autre justificatif est fourni. L’approbation globale exige
 au moins une preuve acceptée et la charte ; l’analyse technique ne remplace pas
-la décision administrative. Les paiements, l’édition du profil et les actions détaillées de demande
+la décision administrative. Le profil est modifiable et les justificatifs supplémentaires restent en attente d’examen sans annuler la validation existante. Aucune modification du schéma n’est nécessaire. Les paiements et les actions détaillées de demande
 et de suivi constituent les étapes suivantes.
 
 Le tableau de bord mentor utilise maintenant ces relations pour ses six vues :

@@ -41,8 +41,8 @@ export function createMentorOnboardingService(
   directory = path.join(process.cwd(), "uploads", "private", "mentors"),
 ) {
   return {
-    async submit(userId: string, input: MentorSubmission) {
-      if (!input.charterAccepted)
+    async submit(userId: string, input: MentorSubmission, additionalDocuments = false) {
+      if (!additionalDocuments && !input.charterAccepted)
         throw new AuthError("Veuillez accepter les engagements du mentor.");
       if (
         !Array.isArray(input.documents) ||
@@ -114,9 +114,15 @@ export function createMentorOnboardingService(
           )
             throw new AuthError("Ce dépôt est réservé aux mentors connectés.");
           const profile = user.mentorProfile;
-          if (profile.verificationStatus === "APPROVED")
+          if (
+            additionalDocuments &&
+            (profile.verificationStatus !== "APPROVED" || !profile.charterAcceptedAt)
+          )
+            throw new AuthError("Votre candidature doit être validée avant cet ajout.");
+          if (!additionalDocuments && profile.verificationStatus === "APPROVED")
             throw new AuthError("Votre candidature est déjà validée.");
           if (
+            !additionalDocuments &&
             ["PENDING", "IN_REVIEW"].includes(profile.verificationStatus) &&
             profile.documents.length > 0
           )
@@ -139,16 +145,17 @@ export function createMentorOnboardingService(
               },
             });
           }
-          await tx.mentorProfile.update({
-            where: { userId },
-            data: {
-              verificationStatus: "PENDING",
-              submittedAt: new Date(),
-              charterAcceptedAt: profile.charterAcceptedAt ?? new Date(),
-              professionalTitle: professionalTitle || profile.professionalTitle,
-              biography: biography || profile.biography,
-            },
-          });
+          if (!additionalDocuments)
+            await tx.mentorProfile.update({
+              where: { userId },
+              data: {
+                verificationStatus: "PENDING",
+                submittedAt: new Date(),
+                charterAcceptedAt: profile.charterAcceptedAt ?? new Date(),
+                professionalTitle: professionalTitle || profile.professionalTitle,
+                biography: biography || profile.biography,
+              },
+            });
         });
         committed = true;
       } finally {

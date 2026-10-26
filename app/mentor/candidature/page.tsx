@@ -16,6 +16,8 @@ export default async function MentorApplication() {
   const profile = await getAuthenticatedProfile();
   const destination = mentorDestination(profile);
   if (destination !== "/mentor/candidature") redirect(destination ?? "/compte");
+  const rejected = profile.mentorStatus === "REJECTED";
+  const revoked = profile.mentorStatus === "REVOKED";
   const needsUpdate = ["REJECTED", "REVOKED"].includes(profile.mentorStatus);
   return (
     <div className="auth-page">
@@ -30,8 +32,20 @@ export default async function MentorApplication() {
       <main className="welcome-container certification-main">
         <section className="certification-card">
           <span className="welcome-eyebrow">VOTRE CANDIDATURE MENTOR</span>
-          <h1>
-            Faisons connaissance <em>avec votre expérience.</em>
+          <h1 className={needsUpdate ? "mentor-application-rejected" : undefined}>
+            {rejected ? (
+              <>
+                Votre dernière candidature <em>a été refusée.</em>
+              </>
+            ) : revoked ? (
+              <>
+                Votre validation mentor <em>a été retirée.</em>
+              </>
+            ) : (
+              <>
+                Faisons connaissance <em>avec votre expérience.</em>
+              </>
+            )}
           </h1>
           <p>
             {needsUpdate
@@ -39,6 +53,7 @@ export default async function MentorApplication() {
               : "Votre candidature n’est pas encore validée. Envoyez votre CV ou tout document attestant de votre expérience : diplôme, certificat ou attestation professionnelle."}
           </p>
           <MentorApplicationForm
+            resubmission={needsUpdate}
             professionalTitle={profile.mentorProfessionalTitle}
             biography={profile.mentorBiography}
           />
