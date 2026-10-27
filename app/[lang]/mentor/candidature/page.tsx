@@ -13,7 +13,7 @@ import "@/app/panel.css";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator();
   return {
-    title: t("Votre candidature mentor — Conex"),
+    title: t("Votre candidature mentor — Connex"),
     robots: { index: false, follow: false },
   };
 }
@@ -62,7 +62,7 @@ export default async function MentorApplication() {
           <p>
             {needsUpdate
               ? t(
-                  "Votre dossier doit être complété. Déposez de nouveaux justificatifs pour permettre à l’équipe Conex de réexaminer votre candidature.",
+                  "Votre dossier doit être complété. Déposez de nouveaux justificatifs pour permettre à l’équipe Connex de réexaminer votre candidature.",
                 )
               : t(
                   "Votre candidature n’est pas encore validée. Envoyez votre CV ou tout document attestant de votre expérience : diplôme, certificat ou attestation professionnelle.",
@@ -75,7 +75,7 @@ export default async function MentorApplication() {
           />
           <p className="certification-privacy">
             {" "}
-            {t("Vos documents restent confidentiels et sont examinés par l’équipe Conex.")}{" "}
+            {t("Vos documents restent confidentiels et sont examinés par l’équipe Connex.")}{" "}
           </p>
         </section>
       </main>

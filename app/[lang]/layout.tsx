@@ -14,7 +14,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { lang } = await params;
   return {
-    title: lang === "en" ? "Conex — Connections that help us grow" : "Conex — Le lien nous élève",
+    title: lang === "en" ? "Connex — Connections that help us grow" : "Connex — Le lien nous élève",
     description:
       lang === "en"
         ? "A space for African entrepreneurs and diaspora professionals to connect and share experience."

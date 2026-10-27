@@ -1,4 +1,5 @@
 import "server-only";
+import { isMentorPreviewEnabled, previewRoleAllowed } from "@/lib/release";
 import { createHash, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import type { PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
@@ -62,7 +63,11 @@ function sessionData() {
   return { token, expiresAt, tokenHash: digest(token) };
 }
 
-export function createAuthService(db: PrismaClient = getDb()) {
+export function createAuthService(
+  db: PrismaClient = getDb(),
+  options: { mentorPreview?: boolean } = {},
+) {
+  const mentorPreview = options.mentorPreview ?? isMentorPreviewEnabled();
   // Atomic, persistent per-email window, shared across server processes.
   // A production edge must also limit requests per trusted client IP.
   async function throttle(email: string, operation: "login" | "register") {
@@ -90,6 +95,8 @@ export function createAuthService(db: PrismaClient = getDb()) {
       role: unknown;
       adultConfirmed: unknown;
     }) {
+      if (mentorPreview && input.role !== "MENTOR")
+        throw new AuthError("Les inscriptions sont actuellement réservées aux mentors.");
       const { email, password } = credentials(input, true);
       if (typeof input.passwordConfirmation !== "string" || password !== input.passwordConfirmation)
         throw new AuthError("Les deux mots de passe doivent être identiques.");
@@ -136,7 +143,7 @@ export function createAuthService(db: PrismaClient = getDb()) {
     async login(input: { email: unknown; password: unknown }) {
       const { email, password } = credentials(input, false);
       await throttle(email, "login");
-      const user = await db.user.findUnique({ where: { email } });
+      const user = await db.user.findUnique({ where: { email }, include: { roles: true } });
       const valid = await verifyPassword(password, user?.passwordHash ?? DUMMY_HASH);
       if (
         !valid ||
@@ -146,6 +153,8 @@ export function createAuthService(db: PrismaClient = getDb()) {
       ) {
         throw new AuthError("Email ou mot de passe incorrect.");
       }
+      if (mentorPreview && !previewRoleAllowed(user.roles))
+        throw new AuthError("L’accès des porteurs de projet n’est pas encore ouvert.");
       const session = sessionData();
       await db.session.create({
         data: { userId: user.id, tokenHash: session.tokenHash, expiresAt: session.expiresAt },
@@ -162,7 +171,8 @@ export function createAuthService(db: PrismaClient = getDb()) {
       if (
         !session ||
         session.expiresAt <= new Date() ||
-        ["SUSPENDED", "CLOSED"].includes(session.user.accountStatus)
+        ["SUSPENDED", "CLOSED"].includes(session.user.accountStatus) ||
+        (mentorPreview && !previewRoleAllowed(session.user.roles))
       )
         return null;
       return session.user;

@@ -18,7 +18,7 @@ const navigation = [
 ] as const;
 type View = (typeof navigation)[number]["id"];
 const requestLabels: Record<string, string> = {
-  PENDING_REVIEW: "Examen par Conex",
+  PENDING_REVIEW: "Examen par Connex",
   REJECTED: "Demande non retenue",
   INVITED: "Rencontre à organiser",
   INTRO_SCHEDULED: "Rencontre programmée",
@@ -122,7 +122,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
               <strong>
                 {firstName} {data.lastName}
               </strong>
-              <small>{t("Mentor Conex")}</small>
+              <small>{t("Mentor Connex")}</small>
             </span>
             <Icon name="chevron" size={15} />
           </button>
@@ -181,7 +181,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                       : view === "mentorships"
                         ? t("Un lien se construit, un échange après l’autre.")
                         : view === "profile"
-                          ? t("Votre parcours, votre expertise, votre place dans Conex.")
+                          ? t("Votre parcours, votre expertise, votre place dans Connex.")
                           : t("Un engagement pour transmettre dans la durée.")}
               </p>
             </div>
@@ -294,7 +294,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                       </span>
                       <div>
                         <h3>{t("Candidature validée")}</h3>
-                        <p>{t("Bienvenue dans le cercle Conex.")}</p>
+                        <p>{t("Bienvenue dans le cercle Connex.")}</p>
                       </div>
                     </li>
                     <li className={data.membershipActive ? "done" : "current"}>
@@ -346,7 +346,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                     <h3>
                       {data.visibility === "PRIVATE"
                         ? t("Votre profil reste privé.")
-                        : t("Votre visibilité sur Conex.")}
+                        : t("Votre visibilité sur Connex.")}
                     </h3>
                     <p>{t("Vos justificatifs restent confidentiels.")}</p>
                     {action("profile", t("Voir mon profil"))}
@@ -441,7 +441,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                   <EmptyState icon="message" title={t("Tout commence par un intérêt partagé.")}>
                     {" "}
                     {t(
-                      "Vos demandes et leurs prochaines étapes apparaîtront ici, de l’examen par Conex à la rencontre.",
+                      "Vos demandes et leurs prochaines étapes apparaîtront ici, de l’examen par Connex à la rencontre.",
                     )}{" "}
                   </EmptyState>
                   <div className="md-centered-action">
@@ -497,7 +497,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                 <span className="md-small-icon">
                   <Icon name="wallet" size={24} />
                 </span>
-                <span className="md-eyebrow">{t("VOTRE ENGAGEMENT CONEX")}</span>
+                <span className="md-eyebrow">{t("VOTRE ENGAGEMENT CONNEX")}</span>
                 <h2>
                   {" "}
                   {t("Une adhésion.")} <br />
@@ -532,7 +532,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                   {
                     icon: "compass",
                     title: t("Des projets validés"),
-                    text: t("Des parcours examinés par Conex, avec des besoins identifiés."),
+                    text: t("Des parcours examinés par Connex, avec des besoins identifiés."),
                   },
                   {
                     icon: "people",
@@ -557,7 +557,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
             </div>
           )}
           <footer className="md-footer">
-            <span>{t("CONEX · LE LIEN NOUS ÉLÈVE")}</span>
+            <span>{t("CONNEX · LE LIEN NOUS ÉLÈVE")}</span>
             <button type="button" onClick={() => go("requests")}>
               {" "}
               {t("Mes demandes de rencontre")} <Icon name="arrow" size={14} />

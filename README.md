@@ -1,4 +1,4 @@
-# Conex
+# Connex
 
 Base de plateforme de compagnonnage entre entrepreneurs africains et professionnels de la diaspora.
 
@@ -38,7 +38,7 @@ Un aperçu autonome HTML/CSS/JS de l’accueil est disponible dans `exports/cone
 - `components/splash-screen.tsx` : introduction modale CNX, lettres avec rebond puis « A solution by HubCity ».
 - `components/auth-entry.tsx` : formulaires reliés aux Server Actions et à PostgreSQL.
 - `lib/auth/` : mots de passe hachés, sessions et limitation des tentatives ; voir [l’authentification V1](docs/authentication-v1.md).
-- `components/brand.tsx` : signature Conex partagée.
+- `components/brand.tsx` : signature Connex partagée.
 - `components/home-sections.tsx` : cartes des deux parcours, confiance, FAQ native et invitation finale, adaptées de la maquette V4.
 - `components/journey.tsx` : étapes du compagnonnage avec sélection porteur/mentor et contenu distinct pour chaque rôle.
 - `components/workspace.tsx` : communauté, favoris temporaires et ressources de démonstration.
@@ -67,3 +67,7 @@ L’inscription et la connexion créent maintenant de vrais comptes et sessions.
 ## Multilingue
 
 Français/anglais : routes `/fr` et `/en`, sélecteur persistant et traduction de l’accueil, de l’authentification, des espaces mentor et porteur, de la certification et de la démonstration. Voir [le périmètre et les conventions](docs/i18n.md).
+
+## Préversion mentor
+
+`MENTOR_PREVIEW_MODE="true"` limite le parcours public à l’inscription mentor, au dépôt et à la validation. Un mentor approuvé voit une page d’attente d’ouverture, sans tableau de bord ni étape d’adhésion. Les inscriptions, connexions et anciennes sessions porteur sont bloquées dans ce mode. Le backend complet est conservé ; aucune modification du schéma n’est nécessaire. Voir [les modalités de préversion](docs/mentor-preview.md).

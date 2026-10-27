@@ -1467,3 +1467,13 @@
     font-size: clamp(44px, min(24vw, 18vh), 90px);
   }
 }
+
+.welcome-preview-notice {
+  padding-block: 15px;
+  color: var(--forest);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.cnx-pathway-card[aria-disabled="true"] {
+  cursor: default;
+}

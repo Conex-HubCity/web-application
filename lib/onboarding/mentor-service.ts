@@ -129,7 +129,7 @@ export function createMentorOnboardingService(
             return;
           if (profile.documents.length + prepared.length > 20)
             throw new AuthError(
-              "Vous avez atteint la limite de documents. Contactez l’équipe Conex.",
+              "Vous avez atteint la limite de documents. Contactez l’équipe Connex.",
             );
           await mkdir(directory, { recursive: true, mode: 0o700 });
           for (const file of prepared) {

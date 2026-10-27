@@ -12,11 +12,13 @@ type Role = "porteur" | "mentor";
 export function AuthEntry({
   mode,
   initialRole = "porteur",
+  mentorPreview = false,
 }: {
   mode: "register" | "login";
   initialRole?: Role;
+  mentorPreview?: boolean;
 }) {
-  const role = initialRole;
+  const role = mentorPreview ? "mentor" : initialRole;
   const t = useTranslations();
   const [state, action, pending] = useActionState(authenticate.bind(null, mode), null);
   const register = mode === "register";
@@ -69,9 +71,13 @@ export function AuthEntry({
                 : t(
                     "Créez votre compte pour préparer votre profil et votre parcours d’accompagnement.",
                   )
-              : t("Connectez-vous à votre parcours de mentor ou de porteur de projet.")}
+              : t(
+                  mentorPreview
+                    ? "Connectez-vous à votre compte mentor."
+                    : "Connectez-vous à votre parcours de mentor ou de porteur de projet.",
+                )}
           </p>
-          {register && (
+          {register && !mentorPreview && (
             <div className="auth-role-tabs" aria-label={t("Mon parcours")}>
               <Link
                 href="/inscription/porteur"
@@ -156,7 +162,7 @@ export function AuthEntry({
               <label className="auth-checkbox">
                 <input name="adultConfirmed" type="checkbox" required />
                 <span>
-                  {t("Je confirme avoir 18 ans ou plus, condition d’accès au pilote Conex.")}
+                  {t("Je confirme avoir 18 ans ou plus, condition d’accès au pilote Connex.")}
                 </span>
               </label>
             )}
@@ -171,15 +177,21 @@ export function AuthEntry({
             </button>
           </form>
           <p className="auth-switch">
-            {register ? t("Déjà un compte ?") : t("Vous découvrez Conex ?")}{" "}
-            <Link href={register ? "/connexion" : "/#les-parcours"}>
+            {register ? t("Déjà un compte ?") : t("Vous découvrez Connex ?")}{" "}
+            <Link
+              href={
+                register ? "/connexion" : mentorPreview ? "/inscription/mentor" : "/#les-parcours"
+              }
+            >
               {register ? t("Se connecter") : t("Créer mon compte")}
             </Link>
           </p>
-          <Link href="/espace" className="auth-demo-link">
-            {" "}
-            {t("Explorer l’espace de démonstration")} <Icon name="diagonal" size={14} />
-          </Link>
+          {!mentorPreview && (
+            <Link href="/espace" className="auth-demo-link">
+              {" "}
+              {t("Explorer l’espace de démonstration")} <Icon name="diagonal" size={14} />
+            </Link>
+          )}
         </div>
         <aside className="auth-aside">
           <div className="auth-aside-photo">
@@ -204,7 +216,7 @@ export function AuthEntry({
                 <>
                   {" "}
                   {t("Vos rencontres.")} <br />
-                  <em>{t("Votre espace Conex.")}</em>
+                  <em>{t("Votre espace Connex.")}</em>
                 </>
               ) : mentor ? (
                 <>
@@ -230,8 +242,12 @@ export function AuthEntry({
                 : mentor
                   ? [
                       t("Présentez votre parcours et votre expertise."),
-                      t("L’équipe Conex vérifie votre candidature."),
-                      t("Après validation, votre adhésion active vos accès."),
+                      t("L’équipe Connex vérifie votre candidature."),
+                      t(
+                        mentorPreview
+                          ? "Après validation, vous serez informé de l’ouverture de votre espace."
+                          : "Après validation, votre adhésion active vos accès.",
+                      ),
                     ]
                   : [
                       t("Créez votre compte, même avant certification."),
@@ -252,7 +268,7 @@ export function AuthEntry({
                   )
                 : mentor
                   ? t(
-                      "Chaque mise en relation passe par Conex et nécessite l’accord explicite des deux parties.",
+                      "Chaque mise en relation passe par Connex et nécessite l’accord explicite des deux parties.",
                     )
                   : t(
                       "Votre profil reste privé avant validation. Votre certificat et les pièces sensibles restent confidentiels.",

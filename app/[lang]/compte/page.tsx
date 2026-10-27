@@ -1,3 +1,5 @@
+import { isMentorPreviewEnabled } from "@/lib/release";
+import { MentorPreview } from "@/components/mentor-preview";
 import { getTranslator } from "@/lib/i18n/server";
 import { getLocale } from "@/lib/i18n/server";
 import { localizePath } from "@/lib/i18n/config";
@@ -16,7 +18,7 @@ import { getMentorDashboard } from "@/lib/domain/mentor-dashboard";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator();
   return {
-    title: t("Mon compte — Conex"),
+    title: t("Mon compte — Connex"),
     robots: { index: false, follow: false },
   };
 }
@@ -27,6 +29,11 @@ export default async function Account() {
   const profile = await getAuthenticatedProfile();
   const mentorRedirect = mentorDestination(profile);
   if (mentorRedirect) redirect(localizePath(mentorRedirect, await getLocale()));
+  if (isMentorPreviewEnabled()) {
+    if (profile.isMentor && profile.isMentorApproved)
+      return <MentorPreview firstName={profile.firstName} />;
+    redirect(localizePath("/", await getLocale()));
+  }
   if (profile.isFounder && !profile.isCertified)
     redirect(localizePath("/certification", await getLocale()));
   if (profile.isMentor) {
@@ -126,7 +133,9 @@ export default async function Account() {
                 <div>
                   <span className="panel-step-state">{t("À VENIR")}</span>
                   <h2>{t("Les bonnes rencontres")}</h2>
-                  <p>{t("Après validation du projet, Conex accompagne votre mise en relation.")}</p>
+                  <p>
+                    {t("Après validation du projet, Connex accompagne votre mise en relation.")}
+                  </p>
                 </div>
               </article>
             </section>
@@ -139,7 +148,7 @@ export default async function Account() {
               <p>
                 {" "}
                 {t(
-                  "Votre candidature a été validée. Retrouvez ici la suite de votre parcours mentor et vos prochaines étapes avec Conex.",
+                  "Votre candidature a été validée. Retrouvez ici la suite de votre parcours mentor et vos prochaines étapes avec Connex.",
                 )}{" "}
               </p>
             </div>

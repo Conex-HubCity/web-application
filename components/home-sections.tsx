@@ -8,7 +8,7 @@ const commitments = [
   {
     icon: "people",
     title: "La confiance avant la rencontre",
-    text: "Certification des porteurs, validation des projets et vérification des mentors : chaque étape a son propre contrôle par Conex.",
+    text: "Certification des porteurs, validation des projets et vérification des mentors : chaque étape a son propre contrôle par Connex.",
   },
   {
     icon: "lock",
@@ -26,7 +26,7 @@ const questions = [
   {
     question: "Puis-je créer mon compte avant d’être certifié ?",
     answer:
-      "Oui. Vous pouvez créer votre compte et préparer votre profil avant la certification. Votre profil reste privé et non visible dans le catalogue tant que l’équipe Conex n’a pas vérifié votre certificat WoeAcademy Niveau Rouge. Vous pourrez ensuite soumettre votre pitch, qui fera l’objet d’une validation distincte.",
+      "Oui. Vous pouvez créer votre compte et préparer votre profil avant la certification. Votre profil reste privé et non visible dans le catalogue tant que l’équipe Connex n’a pas vérifié votre certificat WoeAcademy Niveau Rouge. Vous pourrez ensuite soumettre votre pitch, qui fera l’objet d’une validation distincte.",
   },
   {
     question: "L’inscription est-elle gratuite ?",
@@ -36,7 +36,7 @@ const questions = [
   {
     question: "Comment se forme le binôme avec un mentor ?",
     answer:
-      "Un mentor actif manifeste son intérêt pour un projet validé. Conex examine la compatibilité et organise une rencontre introductive. Le mentorat est activé uniquement après la validation de l’équipe et l’accord explicite du porteur de projet et du mentor.",
+      "Un mentor actif manifeste son intérêt pour un projet validé. Connex examine la compatibilité et organise une rencontre introductive. Le mentorat est activé uniquement après la validation de l’équipe et l’accord explicite du porteur de projet et du mentor.",
   },
   {
     question: "Qui peut consulter les documents de mon projet ?",
@@ -49,19 +49,30 @@ const questions = [
       "Non. Le compagnonnage aide d’abord à faire mûrir le projet. Les dotations et contributions relèvent d’une phase ultérieure, d’un processus de sélection distinct et des fonds réellement disponibles. Aucun financement ni montant n’est garanti.",
   },
   {
-    question: "Conex et WoeAcademy sont-ils la même plateforme ?",
+    question: "Connex et WoeAcademy sont-ils la même plateforme ?",
     answer:
-      "Non. WoeAcademy assure la formation et la certification. Conex est une plateforme autonome de transmission et de mentorat. Le certificat WoeAcademy Niveau Rouge est le prérequis de validation des profils entrepreneurs ; Conex ne remplace pas le parcours pédagogique.",
+      "Non. WoeAcademy assure la formation et la certification. Connex est une plateforme autonome de transmission et de mentorat. Le certificat WoeAcademy Niveau Rouge est le prérequis de validation des profils entrepreneurs ; Connex ne remplace pas le parcours pédagogique.",
   },
   {
-    question: "À qui s’adresse le pilote Conex ?",
+    question: "À qui s’adresse le pilote Connex ?",
     answer:
       "Le pilote est réservé aux personnes majeures : porteurs de projets en Afrique et professionnels expérimentés de la diaspora africaine. Les pays de lancement et les modalités d’ouverture seront précisés avant le démarrage du pilote.",
   },
 ];
 
-export async function HomeSections() {
+export async function HomeSections({ mentorPreview = false }: { mentorPreview?: boolean }) {
   const t = await getTranslator();
+  function PathwayCard({ role, children }: { role: string; children: React.ReactNode }) {
+    return mentorPreview && role === "porteur" ? (
+      <div className="cnx-pathway-card" aria-disabled="true">
+        {children}
+      </div>
+    ) : (
+      <Link href={`/inscription/${role}`} className="cnx-pathway-card">
+        {children}
+      </Link>
+    );
+  }
   const pathways = [
     {
       role: "porteur",
@@ -126,11 +137,7 @@ export async function HomeSections() {
           </div>
           <div className="cnx-pathway-grid">
             {pathways.map((pathway) => (
-              <Link
-                href={`/inscription/${pathway.role}`}
-                key={pathway.role}
-                className="cnx-pathway-card"
-              >
+              <PathwayCard role={pathway.role} key={pathway.role}>
                 <Image
                   src={`/assets/conex/${pathway.image}`}
                   alt=""
@@ -151,23 +158,27 @@ export async function HomeSections() {
                   <h3>{pathway.title}</h3>
                   <p>{pathway.text}</p>
                   <span className="cnx-pathway-link">
-                    {pathway.action}
+                    {mentorPreview && pathway.role === "porteur"
+                      ? t("Bientôt disponible")
+                      : pathway.action}
                     <Icon name="arrow" size={18} />
                   </span>
                 </div>
-              </Link>
+              </PathwayCard>
             ))}
           </div>
           <p className="cnx-pathway-footnote">
             <Icon name="compass" size={18} />{" "}
             {t(
-              "Vous pouvez créer votre compte avant la certification. La validation du profil et celle du projet restent deux étapes distinctes.",
+              mentorPreview
+                ? "Le parcours porteur de projet ouvrira dans une prochaine version."
+                : "Vous pouvez créer votre compte avant la certification. La validation du profil et celle du projet restent deux étapes distinctes.",
             )}{" "}
           </p>
         </div>
       </section>
 
-      <Journey />
+      <Journey mentorPreview={mentorPreview} />
 
       <section id="la-confiance" className="cnx-trust cnx-section" aria-labelledby="trust-title">
         <div className="welcome-container cnx-trust-grid">
@@ -184,7 +195,7 @@ export async function HomeSections() {
               <p>
                 {" "}
                 {t(
-                  "Un accompagnement a besoin de clarté, de respect et de liberté. C’est le cadre dans lequel Conex fait naître les rencontres.",
+                  "Un accompagnement a besoin de clarté, de respect et de liberté. C’est le cadre dans lequel Connex fait naître les rencontres.",
                 )}{" "}
               </p>
             </div>
@@ -245,12 +256,16 @@ export async function HomeSections() {
             <p>
               {" "}
               {t(
-                "Quelques repères pour comprendre votre parcours et rejoindre Conex en connaissance de cause.",
+                "Quelques repères pour comprendre votre parcours et rejoindre Connex en connaissance de cause.",
               )}{" "}
             </p>
-            <Link className="cnx-inline-link" href="/inscription/porteur">
+            <Link
+              className="cnx-inline-link"
+              href={mentorPreview ? "/inscription/mentor" : "/inscription/porteur"}
+            >
               {" "}
-              {t("Commencer mon parcours")} <Icon name="arrow" size={18} />
+              {t(mentorPreview ? "Devenir mentor" : "Commencer mon parcours")}{" "}
+              <Icon name="arrow" size={18} />
             </Link>
           </div>
           <div className="cnx-faq-items">
@@ -264,7 +279,15 @@ export async function HomeSections() {
                   </span>
                 </summary>
                 <div className="cnx-faq-answer">
-                  <p>{t(item.answer)}</p>
+                  <p>
+                    {t(
+                      mentorPreview && index === 0
+                        ? "Les inscriptions des porteurs de projet ne sont pas encore ouvertes. Cette première version est réservée aux candidatures mentors."
+                        : mentorPreview && index === 1
+                          ? "La candidature mentor est gratuite. Après acceptation de votre dossier, nous vous informerons de l’ouverture de votre espace. Aucun paiement n’est demandé dans cette préversion."
+                          : item.answer,
+                    )}
+                  </p>
                 </div>
               </details>
             ))}
@@ -290,14 +313,21 @@ export async function HomeSections() {
               )}{" "}
             </p>
             <div className="welcome-hero-actions">
-              <Link className="hero-join hero-join-founder" href="/inscription/porteur">
-                {" "}
-                {t("Je porte un projet")}{" "}
-                <span>
-                  <Icon name="diagonal" size={18} />
-                </span>
-              </Link>
-              <Link className="hero-join hero-join-mentor" href="/inscription/mentor">
+              {!mentorPreview && (
+                <Link className="hero-join hero-join-founder" href="/inscription/porteur">
+                  {" "}
+                  {t("Je porte un projet")}{" "}
+                  <span>
+                    <Icon name="diagonal" size={18} />
+                  </span>
+                </Link>
+              )}
+              <Link
+                className={
+                  mentorPreview ? "hero-join hero-join-founder" : "hero-join hero-join-mentor"
+                }
+                href="/inscription/mentor"
+              >
                 {" "}
                 {t("Devenir mentor")} <Icon name="arrow" size={18} />
               </Link>

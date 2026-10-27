@@ -35,7 +35,7 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
               <h2>
                 {data.firstName} {data.lastName}
               </h2>
-              <p>{data.professionalTitle || t("Mentor Conex")}</p>
+              <p>{data.professionalTitle || t("Mentor Connex")}</p>
             </div>
           </div>
           {!editing && (
@@ -132,7 +132,7 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
                 {t("Visibilité")}{" "}
                 <select name="visibility" defaultValue={data.visibility}>
                   <option value="PRIVATE">{t("Profil privé")}</option>
-                  <option value="PLATFORM">{t("Visible sur Conex")}</option>
+                  <option value="PLATFORM">{t("Visible sur Connex")}</option>
                 </select>
               </label>
             </fieldset>
@@ -187,7 +187,7 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
                 <dt>{t("Visibilité")}</dt>
                 <dd>
                   <Icon name="lock" size={14} />
-                  {data.visibility === "PRIVATE" ? t("Profil privé") : t("Visible sur Conex")}
+                  {data.visibility === "PRIVATE" ? t("Profil privé") : t("Visible sur Connex")}
                 </dd>
               </div>
             </dl>

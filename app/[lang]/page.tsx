@@ -1,3 +1,4 @@
+import { isMentorPreviewEnabled } from "@/lib/release";
 import { getTranslator } from "@/lib/i18n/server";
 import Image from "next/image";
 import { Link } from "@/components/i18n";
@@ -9,6 +10,7 @@ import "@/app/home-sections.css";
 
 export default async function Home() {
   const t = await getTranslator();
+  const mentorPreview = isMentorPreviewEnabled();
   return (
     <div className="welcome-page">
       <SplashScreen />
@@ -29,6 +31,13 @@ export default async function Home() {
         </nav>
       </header>
       <main id="welcome-main">
+        {mentorPreview && (
+          <p className="welcome-preview-notice welcome-container">
+            {t(
+              "Les candidatures mentors sont ouvertes. Le parcours porteur de projet sera disponible prochainement.",
+            )}
+          </p>
+        )}
         <section className="welcome-masthead" aria-labelledby="welcome-title">
           <div className="welcome-hero-image">
             <Image
@@ -55,25 +64,36 @@ export default async function Home() {
               <p className="welcome-lead">
                 {" "}
                 {t(
-                  "Les bonnes rencontres ouvrent de nouveaux possibles. Conex relie les entrepreneurs africains aux professionnels de la diaspora pour avancer ensemble.",
+                  "Les bonnes rencontres ouvrent de nouveaux possibles. Connex relie les entrepreneurs africains aux professionnels de la diaspora pour avancer ensemble.",
                 )}{" "}
               </p>
-              <div className="welcome-hero-actions" aria-label={t("Choisir mon parcours")}>
-                <Link className="hero-join hero-join-founder" href="/inscription/porteur">
-                  {" "}
-                  {t("Je porte un projet")}{" "}
-                  <span>
-                    <Icon name="diagonal" size={18} />
-                  </span>
-                </Link>
-                <Link className="hero-join hero-join-mentor" href="/inscription/mentor">
-                  {" "}
-                  {t("Devenir mentor")} <Icon name="arrow" size={18} />
-                </Link>
-              </div>
+              {mentorPreview ? (
+                <div className="welcome-hero-actions">
+                  <Link className="hero-join hero-join-founder" href="/inscription/mentor">
+                    {t("Devenir mentor")}{" "}
+                    <span>
+                      <Icon name="diagonal" size={18} />
+                    </span>
+                  </Link>
+                </div>
+              ) : (
+                <div className="welcome-hero-actions" aria-label={t("Choisir mon parcours")}>
+                  <Link className="hero-join hero-join-founder" href="/inscription/porteur">
+                    {" "}
+                    {t("Je porte un projet")}{" "}
+                    <span>
+                      <Icon name="diagonal" size={18} />
+                    </span>
+                  </Link>
+                  <Link className="hero-join hero-join-mentor" href="/inscription/mentor">
+                    {" "}
+                    {t("Devenir mentor")} <Icon name="arrow" size={18} />
+                  </Link>
+                </div>
+              )}
               <p className="welcome-existing">
                 {" "}
-                {t("Déjà membre ou mentor ?")}{" "}
+                {t(mentorPreview ? "Déjà inscrit comme mentor ?" : "Déjà membre ou mentor ?")}{" "}
                 <Link href="/connexion">
                   {" "}
                   {t("Connectez-vous")} <span aria-hidden="true">↗</span>
@@ -105,24 +125,26 @@ export default async function Home() {
             </div>
           </div>
         </section>
-        <section
-          className="welcome-prerequisite welcome-container"
-          aria-label={t("Prérequis du parcours entrepreneur")}
-        >
-          <span className="prerequisite-icon">
-            <Icon name="compass" size={21} />
-          </span>
-          <p>
-            <strong>{t("Votre compte est le premier pas.")}</strong>{" "}
-            {t(
-              "Vous pouvez le créer avant d’être certifié. La certification WoeAcademy Niveau Rouge est nécessaire pour valider votre profil ; votre projet fera ensuite l’objet d’une validation distincte.",
-            )}{" "}
-          </p>
-          <a href="#comment-ca-marche" aria-label={t("Comprendre les étapes du parcours")}>
-            <Icon name="arrow" size={20} />
-          </a>
-        </section>
-        <HomeSections />
+        {!mentorPreview && (
+          <section
+            className="welcome-prerequisite welcome-container"
+            aria-label={t("Prérequis du parcours entrepreneur")}
+          >
+            <span className="prerequisite-icon">
+              <Icon name="compass" size={21} />
+            </span>
+            <p>
+              <strong>{t("Votre compte est le premier pas.")}</strong>{" "}
+              {t(
+                "Vous pouvez le créer avant d’être certifié. La certification WoeAcademy Niveau Rouge est nécessaire pour valider votre profil ; votre projet fera ensuite l’objet d’une validation distincte.",
+              )}{" "}
+            </p>
+            <a href="#comment-ca-marche" aria-label={t("Comprendre les étapes du parcours")}>
+              <Icon name="arrow" size={20} />
+            </a>
+          </section>
+        )}
+        <HomeSections mentorPreview={mentorPreview} />
       </main>
       <footer className="welcome-footer welcome-container">
         <div>
@@ -138,7 +160,7 @@ export default async function Home() {
             {" "}
             {t("Accéder à mon espace")} <Icon name="arrow" size={15} />
           </Link>
-          <span>© 2026 Conex · A solution by HubCity</span>
+          <span>© 2026 Connex · A solution by HubCity</span>
         </div>
       </footer>
     </div>

@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { isMentorPreviewEnabled } from "../lib/release";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { readFile, readdir, mkdtemp, rm } from "node:fs/promises";
@@ -183,7 +184,7 @@ test("replacement boundary is exactly 30 elapsed days, and both conditions are m
 databaseTest(
   "registration persists private role profiles and hashed sessions, without approving accounts",
   async () => {
-    const auth = createAuthService(db);
+    const auth = createAuthService(db, { mentorPreview: false });
     for (const role of ["FOUNDER", "MENTOR"] as const) {
       const email = `${randomUUID()}@example.test`;
       const session = await auth.register({
@@ -381,7 +382,7 @@ databaseTest(
 databaseTest(
   "auth rejects privileged signup, invalid input, bad passwords, disabled accounts and throttles persistently",
   async () => {
-    const auth = createAuthService(db);
+    const auth = createAuthService(db, { mentorPreview: false });
     const input = {
       email: `${randomUUID()}@example.test`,
       password: "Pass123!",
@@ -422,7 +423,10 @@ databaseTest(
     const email = `${randomUUID()}@example.test`;
     const results = await Promise.allSettled(
       Array.from({ length: 7 }, () =>
-        createAuthService(db).login({ email, password: "unknown account passphrase" }),
+        createAuthService(db, { mentorPreview: false }).login({
+          email,
+          password: "unknown account passphrase",
+        }),
       ),
     );
     assert.equal(
@@ -1237,6 +1241,71 @@ databaseTest(
       await db.user.update({ where: { id: mentor.id }, data: { accountStatus: "SUSPENDED" } });
       await assert.rejects(onboarding.submit(mentor.id, mentorSubmission(), true), AuthError);
       assert.equal((await readdir(folder)).length, 1);
+    });
+  },
+);
+
+test("mentor preview is enabled only by the explicit server flag", () => {
+  assert.equal(isMentorPreviewEnabled("true"), true);
+  for (const value of ["false", "", "TRUE", "1"])
+    assert.equal(isMentorPreviewEnabled(value), false);
+});
+
+databaseTest(
+  "mentor preview rejects founder registration, login and existing sessions; full mode remains available",
+  async () => {
+    const preview = createAuthService(db, { mentorPreview: true });
+    const full = createAuthService(db, { mentorPreview: false });
+    const email = `preview-${randomUUID()}@example.test`;
+    const input = {
+      email,
+      password: "preview account password",
+      passwordConfirmation: "preview account password",
+      firstName: "Preview",
+      lastName: "Test",
+      role: "FOUNDER",
+      adultConfirmed: true,
+    };
+    await assert.rejects(preview.register(input), AuthError);
+    assert.equal(await db.user.count({ where: { email } }), 0);
+    const session = await full.register(input);
+    const account = await db.user.findUniqueOrThrow({ where: { email } });
+    assert.ok(await full.getSession(session.token));
+    assert.equal(await preview.getSession(session.token), null);
+    const sessionsBefore = await db.session.count({ where: { userId: account.id } });
+    await assert.rejects(preview.login({ email, password: input.password }), AuthError);
+    assert.equal(await db.session.count({ where: { userId: account.id } }), sessionsBefore);
+    assert.ok(await full.login({ email, password: input.password }));
+  },
+);
+
+databaseTest(
+  "mentor preview preserves mentor registration, sign-in and document submission",
+  async () => {
+    const auth = createAuthService(db, { mentorPreview: true });
+    const input = {
+      email: `preview-${randomUUID()}@example.test`,
+      password: "preview mentor password",
+      passwordConfirmation: "preview mentor password",
+      firstName: "Preview",
+      lastName: "Mentor",
+      role: "MENTOR",
+      adultConfirmed: true,
+    };
+    const registered = await auth.register(input);
+    const actor = await auth.getSession(registered.token);
+    assert.ok(actor);
+    assert.equal(actor.accountStatus, "PENDING_VERIFICATION");
+    const login = await auth.login({ email: input.email, password: input.password });
+    assert.equal((await auth.getSession(login.token))?.id, actor.id);
+    await withMentorUploads(async (onboarding) => {
+      await onboarding.submit(actor.id, mentorSubmission());
+      assert.equal(
+        (await db.mentorProfile.findUniqueOrThrow({ where: { userId: actor.id } }))
+          .verificationStatus,
+        "PENDING",
+      );
+      assert.equal(await db.mentorDocument.count({ where: { mentorUserId: actor.id } }), 1);
     });
   },
 );

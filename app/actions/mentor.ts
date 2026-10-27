@@ -1,4 +1,5 @@
 "use server";
+import { isMentorPreviewEnabled } from "@/lib/release";
 import { actionPath } from "@/lib/i18n/action-locale";
 
 import { saveMentorProfile } from "@/lib/domain/mentor-profile";
@@ -59,6 +60,8 @@ export async function updateMentorProfile(
 ): Promise<MentorProfileState> {
   const user = await getCurrentUser();
   if (!user) redirect(await actionPath("/connexion"));
+  if (isMentorPreviewEnabled())
+    return { error: "Votre espace mentor sera disponible prochainement." };
   try {
     await saveMentorProfile(user.id, form);
   } catch (error) {
@@ -79,6 +82,8 @@ export async function uploadMentorDocuments(
 ): Promise<MentorProfileState> {
   const user = await getCurrentUser();
   if (!user) redirect(await actionPath("/connexion"));
+  if (isMentorPreviewEnabled())
+    return { error: "Votre espace mentor sera disponible prochainement." };
   const type = form.get("documentType");
   if (type !== "CV" && type !== "OTHER_EVIDENCE")
     return { error: "Choisissez un type de document." };

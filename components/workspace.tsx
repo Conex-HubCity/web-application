@@ -61,12 +61,12 @@ export function Workspace() {
         {t("Aller au contenu")}{" "}
       </a>
       <aside className="sidebar">
-        <Link href="/" className="brand" aria-label={t("Conex, accueil")}>
+        <Link href="/" className="brand" aria-label={t("Connex, accueil")}>
           <span className="brand-symbol" aria-hidden="true">
             <i />
             <i />
           </span>
-          conex<span className="brand-period">.</span>
+          connex<span className="brand-period">.</span>
         </Link>
         <div className="workspace-label">
           <span className="live-dot" /> {t("L’ESPACE DES POSSIBLES")}{" "}
@@ -103,7 +103,7 @@ export function Workspace() {
           <button className="sidebar-profile" onClick={() => setupDialog.current?.showModal()}>
             <span className="avatar">{name ? name.charAt(0).toUpperCase() : "C"}</span>
             <span>
-              <strong>{name || t("Votre espace Conex")}</strong>
+              <strong>{name || t("Votre espace Connex")}</strong>
               <small>{name ? t("Profil de démonstration") : t("Compléter mon profil")}</small>
             </span>
             <Icon name="chevron" size={16} />
@@ -111,7 +111,7 @@ export function Workspace() {
           <div className="initiative">
             {" "}
             {t("Une initiative de")} <strong>HubCity</strong>
-            <span>© 2026 Conex</span>
+            <span>© 2026 Connex</span>
           </div>
         </div>
       </aside>
@@ -147,7 +147,7 @@ export function Workspace() {
             <div>
               <div className="eyebrow">{t("GRANDIR, ENSEMBLE")}</div>
               <h1>
-                {isHome ? `${t("Bienvenue")}${name ? `, ${name}` : t(" sur Conex")}` : t(active)}
+                {isHome ? `${t("Bienvenue")}${name ? `, ${name}` : t(" sur Connex")}` : t(active)}
                 <span className="gold-period">.</span>
               </h1>
               <p>
@@ -414,7 +414,7 @@ export function Workspace() {
           )}
           <footer className="page-footer">
             <span>
-              CONEX <i>·</i> {t("Le lien nous élève.")}{" "}
+              CONNEX <i>·</i> {t("Le lien nous élève.")}{" "}
             </span>
             <span>{t("Prototype · profils et contenus illustratifs")}</span>
           </footer>

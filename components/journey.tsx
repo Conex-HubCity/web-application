@@ -19,7 +19,7 @@ const journeys = {
       ],
       [
         "Faire valider votre certification",
-        "Déposez votre certificat WoeAcademy Niveau Rouge. L’équipe Conex le vérifie ; votre profil reste privé avant validation.",
+        "Déposez votre certificat WoeAcademy Niveau Rouge. L’équipe Connex le vérifie ; votre profil reste privé avant validation.",
       ],
       [
         "Donner forme à votre projet",
@@ -27,7 +27,7 @@ const journeys = {
       ],
       [
         "Prendre le temps de la rencontre",
-        "Un mentor manifeste son intérêt. Conex examine la demande et organise un échange. Le compagnonnage commence avec votre accord à tous les deux.",
+        "Un mentor manifeste son intérêt. Connex examine la demande et organise un échange. Le compagnonnage commence avec votre accord à tous les deux.",
       ],
       [
         "Avancer dans la durée",
@@ -47,7 +47,7 @@ const journeys = {
       ],
       [
         "Rejoindre un cercle de confiance",
-        "L’équipe Conex vérifie votre identité et votre expertise. Après validation, la confirmation de votre adhésion active vos accès.",
+        "L’équipe Connex vérifie votre identité et votre expertise. Après validation, la confirmation de votre adhésion active vos accès.",
       ],
       [
         "Découvrir les projets validés",
@@ -55,20 +55,36 @@ const journeys = {
       ],
       [
         "Faire une demande de rencontre",
-        "Vous proposez une mise en relation. Conex en examine la compatibilité et organise un échange, puis recueille le consentement de chacun.",
+        "Vous proposez une mise en relation. Connex en examine la compatibilité et organise un échange, puis recueille le consentement de chacun.",
       ],
       [
         "Accompagner avec régularité",
-        "Définissez des objectifs communs, partagez votre regard et rédigez les bilans mensuels. L’équipe Conex reste présente en cas de besoin.",
+        "Définissez des objectifs communs, partagez votre regard et rédigez les bilans mensuels. L’équipe Connex reste présente en cas de besoin.",
       ],
     ],
   },
 };
 
-export function Journey() {
+export function Journey({ mentorPreview = false }: { mentorPreview?: boolean }) {
   const t = useTranslations();
-  const [role, setRole] = useState<"porteur" | "mentor">("porteur");
-  const journey = journeys[role];
+  const [role, setRole] = useState<"porteur" | "mentor">(mentorPreview ? "mentor" : "porteur");
+  const journey =
+    mentorPreview && role === "mentor"
+      ? {
+          ...journeys.mentor,
+          steps: [
+            journeys.mentor.steps[0],
+            [
+              "Faire examiner votre candidature",
+              "Transmettez vos justificatifs d’expérience. L’équipe Connex examine votre dossier avant de valider votre compte mentor.",
+            ],
+            [
+              "Être informé de l’ouverture",
+              "Une fois votre candidature acceptée, nous vous informerons par email lorsque votre espace mentor sera disponible.",
+            ],
+          ],
+        }
+      : journeys[role];
 
   return (
     <section
@@ -149,10 +165,14 @@ export function Journey() {
                 </li>
               ))}
             </ol>
-            <Link className="cnx-inline-link" href={`/inscription/${role}`}>
-              {t(journey.action)}
-              <Icon name="arrow" size={18} />
-            </Link>
+            {mentorPreview && role === "porteur" ? (
+              <span className="cnx-inline-link">{t("Bientôt disponible")}</span>
+            ) : (
+              <Link className="cnx-inline-link" href={`/inscription/${role}`}>
+                {t(journey.action)}
+                <Icon name="arrow" size={18} />
+              </Link>
+            )}
           </div>
         </div>
       </div>

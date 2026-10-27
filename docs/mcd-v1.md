@@ -1,4 +1,4 @@
-# Conex — MCD V1 et premières règles de données
+# Connex — MCD V1 et premières règles de données
 
 Statut : MCD synchronisé avec les 16 modèles du schéma Prisma le 21 octobre 2026.
 Les diagrammes reprennent les colonnes et clés du schéma actuel, y compris les sessions,
@@ -347,7 +347,7 @@ du CV ou d’un diplôme particulier n’est fixé à ce stade.
 | `PLATFORM` | Profil proposé à la visibilité dans la plateforme, sous réserve des conditions d’activation.                                                         |
 
 Implémentation actuelle : profil privé par défaut. `PLATFORM` signifie une visibilité dans
-l’espace Conex autorisé, pas une publication sur Internet ni une indexation dans
+l’espace Connex autorisé, pas une publication sur Internet ni une indexation dans
 les moteurs de recherche.
 
 Le choix de visibilité ne doit pas activer un compte, valider une candidature ou
@@ -356,7 +356,7 @@ préférence et des droits applicables : compte actif, vérification mentor acce
 et adhésion active. Le passage en privé retire le mentor du catalogue, sans
 annuler les demandes ni les compagnonnages existants.
 
-Un profil privé reste identifiable par l’équipe Conex et par ses interlocuteurs
+Un profil privé reste identifiable par l’équipe Connex et par ses interlocuteurs
 autorisés dans une demande ou un mentorat. « Privé » ne signifie pas anonyme.
 
 À confirmer : le passage de privé à visible prend-il effet automatiquement quand
@@ -506,3 +506,7 @@ requêtes d’activité sont limitées au mentor authentifié, et les projets r�
 restent filtrés par les droits existants. Cette interface ne nécessite aucun
 changement de schéma. Voir le [parcours mentor](mentor-onboarding-v1.md) pour
 les vues réalisées et les actions restant à brancher.
+
+## Préversion mentor
+
+`MENTOR_PREVIEW_MODE="true"` limite le parcours public à l’inscription mentor, au dépôt et à la validation. Un mentor approuvé voit une page d’attente d’ouverture, sans tableau de bord ni étape d’adhésion. Les inscriptions, connexions et anciennes sessions porteur sont bloquées dans ce mode. Le backend complet est conservé ; aucune modification du schéma n’est nécessaire. Voir [les modalités de préversion](mentor-preview.md).

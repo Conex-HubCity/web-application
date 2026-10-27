@@ -339,3 +339,40 @@
 .certification-card h1.mentor-application-rejected em {
   color: #a12f35;
 }
+
+.mentor-preview-card {
+  max-width: 680px;
+}
+.mentor-preview-notice {
+  display: flex;
+  gap: 16px;
+  margin: 28px 0;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--soft-green);
+  color: var(--forest);
+}
+.mentor-preview-notice > svg {
+  flex-shrink: 0;
+}
+.mentor-preview-notice h2 {
+  font:
+    400 23px/1.35 Georgia,
+    serif;
+  margin: 0 0 12px;
+}
+.mentor-preview-notice p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.8;
+}
+@media (max-width: 480px) {
+  .mentor-preview-notice {
+    padding: 20px 16px;
+    gap: 12px;
+  }
+  .mentor-preview-notice h2 {
+    font-size: 21px;
+  }
+}

@@ -8,7 +8,7 @@ const root = process.cwd();
 const output = path.join(root, "exports", "conex-preview");
 const url = new URL(process.argv[2] ?? "http://localhost:3000/");
 if (!["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)) {
-  throw new Error("Export the locally running Conex homepage only.");
+  throw new Error("Export the locally running Connex homepage only.");
 }
 const response = await fetch(url);
 if (!response.ok) throw new Error(`Homepage returned ${response.status}`);

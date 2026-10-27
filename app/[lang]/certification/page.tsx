@@ -1,3 +1,4 @@
+import { isMentorPreviewEnabled } from "@/lib/release";
 import { getTranslator } from "@/lib/i18n/server";
 import { getLocale } from "@/lib/i18n/server";
 import { localizePath } from "@/lib/i18n/config";
@@ -12,12 +13,13 @@ import "@/app/panel.css";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator();
   return {
-    title: t("Votre certification — Conex"),
+    title: t("Votre certification — Connex"),
     robots: { index: false, follow: false },
   };
 }
 
 export default async function Certification() {
+  if (isMentorPreviewEnabled()) redirect(localizePath("/inscription/mentor", await getLocale()));
   const t = await getTranslator();
   const profile = await getAuthenticatedProfile();
   if (!profile.isFounder || profile.isCertified)

@@ -121,11 +121,11 @@ parser = Parser()
 parser.feed(sys.stdin.read())
 page = find(parser.root, lambda node: node.has("welcome-page"))
 if page is None:
-    raise ValueError("The source did not contain the Conex homepage")
+    raise ValueError("The source did not contain the Connex homepage")
 page = transform(page)
 print('''<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow,noarchive"><title>Conex — Version de développement</title>
+<meta name="robots" content="noindex,nofollow,noarchive"><title>Connex — Version de développement</title>
 <link rel="icon" href="./assets/favicon.svg"><link rel="stylesheet" href="./style.css">
 <script src="./script.js" defer></script></head><body>''')
 print(render(page))

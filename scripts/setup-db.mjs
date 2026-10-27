@@ -44,7 +44,7 @@ if (decodeURIComponent(url.pathname.slice(1)) !== "postgres") {
       const migrationTable = tables.rows.some((row) => row.table_name === "_prisma_migrations");
       if (!migrationTable)
         throw new Error(
-          "La base conex contient déjà des tables sans historique Conex ; aucune réinitialisation effectuée.",
+          "La base conex contient déjà des tables sans historique Connex ; aucune réinitialisation effectuée.",
         );
       const ownMigration = await dedicated.query(
         "SELECT 1 FROM _prisma_migrations WHERE migration_name = $1 AND finished_at IS NOT NULL",
@@ -52,7 +52,7 @@ if (decodeURIComponent(url.pathname.slice(1)) !== "postgres") {
       );
       if (!ownMigration.rowCount)
         throw new Error(
-          "La base conex n’est pas identifiée comme une base Conex existante ; aucune réinitialisation effectuée.",
+          "La base conex n’est pas identifiée comme une base Connex existante ; aucune réinitialisation effectuée.",
         );
     }
   } finally {

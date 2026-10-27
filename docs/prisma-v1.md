@@ -1,10 +1,10 @@
-﻿# Conex — backend et Prisma V1
+﻿# Connex — backend et Prisma V1
 
 Le [schéma Prisma](../prisma/schema.prisma) traduit le [MCD](mcd-v1.md). Les migrations, les services métier et [l’inscription/connexion V1](authentication-v1.md) sont implémentés. Les interfaces des parcours métier restent à brancher.
 
 ## Base et migrations
 
-La base locale dédiée est `conex`. La commande `npm run db:setup` peut la préparer lorsque `.env` vise encore la base technique locale `postgres` : elle conserve les identifiants, crée une base dédiée si nécessaire et met à jour uniquement l’URL locale. Elle refuse de réinitialiser une base existante non identifiée comme Conex.
+La base locale dédiée est `conex`. La commande `npm run db:setup` peut la préparer lorsque `.env` vise encore la base technique locale `postgres` : elle conserve les identifiants, crée une base dédiée si nécessaire et met à jour uniquement l’URL locale. Elle refuse de réinitialiser une base existante non identifiée comme Connex.
 
 Les migrations sont versionnées dans `prisma/migrations/` :
 
