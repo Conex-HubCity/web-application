@@ -1,5 +1,6 @@
 "use server";
-import { actionPath } from "@/lib/i18n/action-locale";
+import { createEmailVerificationService } from "@/lib/auth/email-verification";
+import { actionPath, getActionLocale } from "@/lib/i18n/action-locale";
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -13,6 +14,7 @@ export async function authenticate(
   _state: AuthState,
   form: FormData,
 ): Promise<AuthState> {
+  let needsVerification = false;
   try {
     const service = createAuthService();
     const credentials = { email: form.get("email"), password: form.get("password") };
@@ -31,6 +33,15 @@ export async function authenticate(
           : null;
     if (!session) return { error: "Demande invalide." };
     await saveSession(session);
+    const user = await service.getSession(session.token);
+    needsVerification = Boolean(user && !user.emailVerifiedAt);
+    if (user && needsVerification) {
+      try {
+        await createEmailVerificationService().issue(user.id, await getActionLocale());
+      } catch {
+        /* The verification page reports failed delivery and allows a bounded retry. */
+      }
+    }
   } catch (error) {
     if (error instanceof AuthError) return { error: error.message };
     // Never return database errors or log credentials, hashes or tokens.
@@ -39,7 +50,7 @@ export async function authenticate(
       error: "Le service est momentanément indisponible. Réessayez dans quelques instants.",
     };
   }
-  redirect(await actionPath("/compte"));
+  redirect(await actionPath(needsVerification ? "/verification-email" : "/compte"));
 }
 
 export async function logout() {

@@ -62,7 +62,7 @@ Le compte porteur peut précéder la certification ; le profil reste privé avan
 
 ## Limites du prototype
 
-L’inscription et la connexion créent maintenant de vrais comptes et sessions. Les nouveaux comptes restent en attente de vérification ; l’envoi des emails, la vérification du contact et la récupération de mot de passe restent à réaliser. La certification, le stockage privé, les paiements, les rendez-vous et le mentorat disposent d’un socle métier mais attendent leurs interfaces et intégrations. La recherche et les favoris de `/espace` restent une démonstration en mémoire, distincte de `/compte`.
+L’inscription et la connexion créent maintenant de vrais comptes et sessions. Les nouveaux comptes confirment leur email par OTP envoyé en SMTP avant d’accéder au dépôt. La récupération de mot de passe reste à réaliser. La certification, le stockage privé, les paiements, les rendez-vous et le mentorat disposent d’un socle métier mais attendent leurs interfaces et intégrations. La recherche et les favoris de `/espace` restent une démonstration en mémoire, distincte de `/compte`.
 
 ## Multilingue
 
@@ -71,3 +71,11 @@ Français/anglais : routes `/fr` et `/en`, sélecteur persistant et traduction d
 ## Préversion mentor
 
 `MENTOR_PREVIEW_MODE="true"` limite le parcours public à l’inscription mentor, au dépôt et à la validation. Un mentor approuvé voit une page d’attente d’ouverture, sans tableau de bord ni étape d’adhésion. Les inscriptions, connexions et anciennes sessions porteur sont bloquées dans ce mode. Le backend complet est conservé ; aucune modification du schéma n’est nécessaire. Voir [les modalités de préversion](docs/mentor-preview.md).
+
+## Administration minimale
+
+Consultation des utilisateurs et des candidatures mentors dans `/fr/admin` et `/en/admin`, avec recherche, filtres, fiches et téléchargements privés réservés au rôle `ADMIN`. Aucun changement de schéma. Voir [le fonctionnement admin](docs/admin-v1.md).
+
+## Confirmation email
+
+L’email doit être confirmé par un code OTP avant l’accès aux fonctionnalités protégées, y compris pour les comptes admin existants. Renseigner le SMTP et le secret privé dans `.env`. Voir [la configuration et les limites OTP](docs/email-verification.md).

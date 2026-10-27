@@ -376,3 +376,34 @@
     font-size: 21px;
   }
 }
+
+.email-otp-input {
+  letter-spacing: 0.5em;
+  font-size: 25px !important;
+  text-align: center;
+}
+.email-verification-forms {
+  margin-top: 24px;
+}
+.email-resend-form {
+  margin-top: 20px;
+  display: grid;
+  gap: 14px;
+}
+.email-resend-form p {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.email-resend-button {
+  background: transparent;
+  color: var(--forest);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  justify-self: start;
+}
+.email-resend-button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}

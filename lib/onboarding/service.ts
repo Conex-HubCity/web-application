@@ -129,6 +129,8 @@ export function createOnboardingService(
           ) {
             throw new AuthError("Ce dépôt est réservé aux porteurs de projet connectés.");
           }
+          if (!user.emailVerifiedAt)
+            throw new AuthError("Confirmez votre email avant de poursuivre.");
           if (
             await tx.certificationEvidence.findFirst({
               where: { founderUserId: user.id, ...approvedCertificationFilter() },

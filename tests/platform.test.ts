@@ -1,8 +1,11 @@
 import "dotenv/config";
+import { createEmailVerificationService } from "../lib/auth/email-verification";
+import { createAdminService } from "../lib/admin/service";
+import { readAdminDocument } from "../lib/admin/documents";
 import { isMentorPreviewEnabled } from "../lib/release";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
-import { readFile, readdir, mkdtemp, rm } from "node:fs/promises";
+import { readFile, writeFile, readdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { after, before, test } from "node:test";
@@ -348,6 +351,8 @@ databaseTest(
       const file = new File(["certificate"], "document.pdf", { type: "application/pdf" });
       await assert.rejects(onboarding.uploadCertification(mentor.id, file), AuthError);
       assert.equal((await readdir(folder)).length, 0);
+      await assert.rejects(onboarding.uploadCertification(founder.id, file), AuthError);
+      await db.user.update({ where: { id: founder.id }, data: { emailVerifiedAt: new Date() } });
       assert.deepEqual(await onboarding.uploadCertification(founder.id, file), {
         certified: false,
       });
@@ -360,7 +365,7 @@ databaseTest(
       assert.equal((await onboarding.getProfile(founder.id))?.isCertified, false);
       const stored = await db.user.findUniqueOrThrow({ where: { id: founder.id } });
       assert.equal(stored.accountStatus, "PENDING_VERIFICATION");
-      assert.equal(stored.emailVerifiedAt, null);
+      assert.ok(stored.emailVerifiedAt);
       await db.user.update({ where: { id: founder.id }, data: { accountStatus: "SUSPENDED" } });
       assert.equal(await onboarding.getProfile(founder.id), null);
       await assert.rejects(onboarding.uploadCertification(founder.id, file), AuthError);
@@ -721,7 +726,7 @@ test("initial migration runs on an isolated PostgreSQL engine without applicatio
     const tables = await embedded.query<{ count: number }>(
       "SELECT count(*)::int AS count FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'",
     );
-    assert.equal(tables.rows[0].count, 16);
+    assert.equal(tables.rows[0].count, 17);
     await assert.rejects(
       embedded.query(
         "INSERT INTO users(id,password_hash,first_name,updated_at) VALUES ($1,'test','No contact',now())",
@@ -872,7 +877,7 @@ async function newMentorCandidate() {
   });
   await db.user.update({
     where: { id: mentor.id },
-    data: { accountStatus: "PENDING_VERIFICATION", emailVerifiedAt: null },
+    data: { accountStatus: "ACTIVE", emailVerifiedAt: new Date() },
   });
   return mentor;
 }
@@ -892,7 +897,7 @@ function mentorSubmission() {
 }
 
 databaseTest(
-  "mentor onboarding gates pending accounts; submission is private, pending and idempotent",
+  "mentor onboarding gates verified accounts; submission is private, pending and idempotent",
   async () => {
     await withMentorUploads(async (onboarding, folder) => {
       const mentor = await newMentorCandidate();
@@ -928,8 +933,8 @@ databaseTest(
         where: { id: mentor.id },
         include: { mentorProfile: true },
       });
-      assert.equal(stored.accountStatus, "PENDING_VERIFICATION");
-      assert.equal(stored.emailVerifiedAt, null);
+      assert.equal(stored.accountStatus, "ACTIVE");
+      assert.ok(stored.emailVerifiedAt);
       assert.ok(stored.mentorProfile?.submittedAt);
       assert.ok(stored.mentorProfile?.charterAcceptedAt);
       assert.equal(stored.mentorProfile?.visibilityPreference, "PRIVATE");
@@ -1299,6 +1304,16 @@ databaseTest(
     const login = await auth.login({ email: input.email, password: input.password });
     assert.equal((await auth.getSession(login.token))?.id, actor.id);
     await withMentorUploads(async (onboarding) => {
+      await assert.rejects(onboarding.submit(actor.id, mentorSubmission()), AuthError);
+      let code = "";
+      const verification = createEmailVerificationService(db, {
+        secret: "test-secret-".repeat(4),
+        send: async (message) => {
+          code = message.code;
+        },
+      });
+      await verification.issue(actor.id, "fr");
+      await verification.verify(actor.id, code);
       await onboarding.submit(actor.id, mentorSubmission());
       assert.equal(
         (await db.mentorProfile.findUniqueOrThrow({ where: { userId: actor.id } }))
@@ -1309,3 +1324,272 @@ databaseTest(
     });
   },
 );
+
+databaseTest(
+  "admin lists and details enforce fresh roles and never expose authentication or storage secrets",
+  async () => {
+    const admin = await user("ADMIN");
+    const mentor = await user("MENTOR");
+    const founder = await user("FOUNDER");
+    const consoleService = createAdminService(db);
+    await assert.rejects(consoleService.listUsers(mentor.id), expectCode("ADMIN_REQUIRED"));
+    await assert.rejects(
+      consoleService.getApplication(founder.id, mentor.id),
+      expectCode("ADMIN_REQUIRED"),
+    );
+    await withMentorUploads(async (onboarding) => {
+      const candidate = await newMentorCandidate();
+      await onboarding.submit(candidate.id, mentorSubmission());
+      const stored = await db.user.findUniqueOrThrow({ where: { id: candidate.id } });
+      const users = await consoleService.listUsers(admin.id, {
+        q: stored.email!,
+        role: "MENTOR",
+        page: "99999",
+      });
+      assert.equal(users.total, 1);
+      assert.equal(users.page, 1);
+      assert.equal(users.rows[0].id, candidate.id);
+      const applications = await consoleService.listApplications(admin.id, {
+        q: stored.email!,
+        status: "PENDING",
+      });
+      assert.equal(applications.total, 1);
+      assert.equal(applications.rows[0]._count.documents, 1);
+      assert.equal(
+        (await consoleService.listApplications(admin.id, { q: stored.email!, status: "APPROVED" }))
+          .total,
+        0,
+      );
+      const application = await consoleService.getApplication(admin.id, candidate.id);
+      assert.equal(application?.documents.length, 1);
+      const detail = await consoleService.getUser(admin.id, candidate.id);
+      assert.equal(detail?.email, stored.email);
+      const payload = JSON.stringify({ users, applications, application, detail }, (_key, value) =>
+        typeof value === "bigint" ? value.toString() : value,
+      );
+      for (const secret of ["passwordHash", "tokenHash", "privateStorageKey", "checksum"])
+        assert.ok(!payload.includes(secret));
+      await assert.rejects(consoleService.getUser(admin.id, "invalid-id"), expectCode("NOT_FOUND"));
+    });
+    await db.userRole.delete({ where: { userId_role: { userId: admin.id, role: "ADMIN" } } });
+    await assert.rejects(consoleService.listUsers(admin.id), expectCode("ADMIN_REQUIRED"));
+    const disabled = await user("ADMIN");
+    await db.user.update({ where: { id: disabled.id }, data: { accountStatus: "SUSPENDED" } });
+    await assert.rejects(
+      consoleService.listApplications(disabled.id),
+      expectCode("ADMIN_REQUIRED"),
+    );
+  },
+);
+
+databaseTest(
+  "private admin document reads verify permission, storage boundaries and file integrity",
+  async () => {
+    const admin = await user("ADMIN");
+    const mentor = await newMentorCandidate();
+    await withMentorUploads(async (onboarding, folder) => {
+      await onboarding.submit(mentor.id, mentorSubmission());
+      const doc = await db.mentorDocument.findFirstOrThrow({ where: { mentorUserId: mentor.id } });
+      await assert.rejects(
+        readAdminDocument(mentor.id, doc.id, db, folder),
+        expectCode("ADMIN_REQUIRED"),
+      );
+      const file = await readAdminDocument(admin.id, doc.id, db, folder);
+      assert.equal(file.name, "cv.pdf");
+      assert.ok(file.buffer.toString().startsWith("%PDF-"));
+      await writeFile(path.join(folder, path.basename(doc.privateStorageKey)), "corrupted content");
+      await assert.rejects(
+        readAdminDocument(admin.id, doc.id, db, folder),
+        expectCode("NOT_FOUND"),
+      );
+      await db.mentorDocument.update({ where: { id: doc.id }, data: { scanStatus: "REJECTED" } });
+      await assert.rejects(
+        readAdminDocument(admin.id, doc.id, db, folder),
+        expectCode("NOT_FOUND"),
+      );
+      const invalid = await db.mentorDocument.create({
+        data: {
+          mentorUserId: mentor.id,
+          documentType: "CV",
+          originalFilename: "bad.pdf",
+          privateStorageKey: "../../.env",
+          mimeType: "application/pdf",
+          sizeBytes: BigInt(20),
+          checksum: hash,
+        },
+      });
+      await assert.rejects(
+        readAdminDocument(admin.id, invalid.id, db, folder),
+        expectCode("NOT_FOUND"),
+      );
+    });
+  },
+);
+
+databaseTest(
+  "email OTP verifies ownership once, rotates sessions and never approves mentor evidence",
+  async () => {
+    const userAccount = await newMentorCandidate();
+    await db.user.update({
+      where: { id: userAccount.id },
+      data: { accountStatus: "PENDING_VERIFICATION", emailVerifiedAt: null },
+    });
+    let code = "";
+    const verification = createEmailVerificationService(db, {
+      secret: "otp-test-secret-".repeat(4),
+      send: async (message) => {
+        code = message.code;
+      },
+    });
+    const oldToken = "b".repeat(64);
+    await db.session.create({
+      data: {
+        userId: userAccount.id,
+        tokenHash: (await import("node:crypto"))
+          .createHash("sha256")
+          .update(oldToken)
+          .digest("hex"),
+        expiresAt: new Date(Date.now() + 86400000),
+      },
+    });
+    await verification.issue(userAccount.id, "en");
+    assert.match(code, /^\d{6}$/);
+    const record = await db.emailVerification.findUniqueOrThrow({
+      where: { userId: userAccount.id },
+    });
+    assert.equal(record.deliveryStatus, "SENT");
+    assert.notEqual(record.codeHash, code);
+    assert.equal(record.codeHash.length, 64);
+    const another = await newMentorCandidate();
+    await db.user.update({
+      where: { id: another.id },
+      data: { emailVerifiedAt: null, accountStatus: "PENDING_VERIFICATION" },
+    });
+    await assert.rejects(verification.verify(another.id, code), AuthError);
+    const session = await verification.verify(userAccount.id, code);
+    const auth = createAuthService(db, { mentorPreview: false });
+    assert.equal(await auth.getSession(oldToken), null);
+    assert.ok((await auth.getSession(session.token))?.emailVerifiedAt);
+    const saved = await db.user.findUniqueOrThrow({
+      where: { id: userAccount.id },
+      include: { mentorProfile: true },
+    });
+    assert.equal(saved.accountStatus, "ACTIVE");
+    assert.ok(saved.emailVerifiedAt);
+    assert.equal(saved.mentorProfile!.verificationStatus, "DRAFT");
+    await assert.rejects(verification.verify(userAccount.id, code), AuthError);
+  },
+);
+
+databaseTest("OTP expiry, resend, attempt limits and delivery failures fail closed", async () => {
+  const mentor = await newMentorCandidate();
+  await db.user.update({
+    where: { id: mentor.id },
+    data: { accountStatus: "PENDING_VERIFICATION", emailVerifiedAt: null },
+  });
+  let time = Date.now();
+  const codes: string[] = [];
+  const options = {
+    secret: "otp-test-secret-".repeat(4),
+    now: () => new Date(time),
+    send: async (message: { code: string }) => {
+      codes.push(message.code);
+    },
+  };
+  const verification = createEmailVerificationService(db, options);
+  await verification.issue(mentor.id, "fr");
+  await assert.rejects(verification.issue(mentor.id, "fr"), AuthError);
+  const first = await db.emailVerification.findUniqueOrThrow({ where: { userId: mentor.id } });
+  time += 61000;
+  await verification.issue(mentor.id, "fr");
+  const second = await db.emailVerification.findUniqueOrThrow({ where: { userId: mentor.id } });
+  assert.notEqual(first.id, second.id);
+  assert.equal(second.sendCount, 2);
+  if (codes[0] !== codes[1])
+    await assert.rejects(verification.verify(mentor.id, codes[0]), AuthError);
+  const bad = codes[1] === "000000" ? "111111" : "000000";
+  while (
+    (await db.emailVerification.findUniqueOrThrow({ where: { userId: mentor.id } })).attempts < 5
+  )
+    await assert.rejects(verification.verify(mentor.id, bad), AuthError);
+  await assert.rejects(verification.verify(mentor.id, codes[1]), AuthError);
+  time += 61000;
+  await assert.rejects(verification.issue(mentor.id, "fr"), AuthError);
+  time += 16 * 60000;
+  await verification.issue(mentor.id, "fr");
+  const latest = codes.at(-1)!;
+  time += 10 * 60000;
+  await assert.rejects(verification.verify(mentor.id, latest), AuthError);
+  time += 16 * 60000;
+  const failed = createEmailVerificationService(db, {
+    ...options,
+    send: async () => {
+      throw new Error("SMTP failure");
+    },
+  });
+  await assert.rejects(failed.issue(mentor.id, "fr"), AuthError);
+  assert.equal(
+    (await db.emailVerification.findUniqueOrThrow({ where: { userId: mentor.id } })).deliveryStatus,
+    "FAILED",
+  );
+  assert.equal(
+    (await db.user.findUniqueOrThrow({ where: { id: mentor.id } })).emailVerifiedAt,
+    null,
+  );
+});
+
+databaseTest(
+  "OTP cannot verify changed email or disabled accounts and admin reads require verification",
+  async () => {
+    const admin = await user("ADMIN");
+    await db.user.update({
+      where: { id: admin.id },
+      data: { accountStatus: "PENDING_VERIFICATION", emailVerifiedAt: null },
+    });
+    await assert.rejects(createAdminService(db).listUsers(admin.id), expectCode("ADMIN_REQUIRED"));
+    let code = "";
+    const verification = createEmailVerificationService(db, {
+      secret: "otp-test-secret-".repeat(4),
+      send: async (message) => {
+        code = message.code;
+      },
+    });
+    await verification.issue(admin.id, "fr");
+    await db.user.update({
+      where: { id: admin.id },
+      data: { email: `changed-${randomUUID()}@example.test` },
+    });
+    await assert.rejects(verification.verify(admin.id, code), AuthError);
+    await db.user.update({ where: { id: admin.id }, data: { accountStatus: "SUSPENDED" } });
+    await assert.rejects(verification.issue(admin.id, "fr"), AuthError);
+    await assert.rejects(verification.verify(admin.id, code), AuthError);
+  },
+);
+
+databaseTest("OTP resend quota and concurrent confirmation are serialized", async () => {
+  const mentor = await newMentorCandidate();
+  await db.user.update({
+    where: { id: mentor.id },
+    data: { accountStatus: "PENDING_VERIFICATION", emailVerifiedAt: null },
+  });
+  let time = Date.now();
+  let code = "";
+  const service = createEmailVerificationService(db, {
+    secret: "otp-test-secret-".repeat(4),
+    now: () => new Date(time),
+    send: async (message) => {
+      code = message.code;
+    },
+  });
+  for (let i = 0; i < 5; i++) {
+    await service.issue(mentor.id, "fr");
+    time += 61000;
+  }
+  await assert.rejects(service.issue(mentor.id, "fr"), AuthError);
+  const results = await Promise.allSettled([
+    service.verify(mentor.id, code),
+    service.verify(mentor.id, code),
+  ]);
+  assert.equal(results.filter((result) => result.status === "fulfilled").length, 1);
+  assert.equal(await db.session.count({ where: { userId: mentor.id } }), 1);
+});

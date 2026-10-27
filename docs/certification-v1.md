@@ -13,3 +13,7 @@ In production, or with the flag disabled, files remain pending review/scanning a
 The account panel shows the real first/last name, role, certification state and an existing project's title if present. It introduces the next project/mentorship steps; project editing remains subsequent work. Mentor submission and review waiting are now implemented separately; see [mentor onboarding](mentor-onboarding-v1.md). Certification does not automatically activate the account or verify the email, and existing business authorization checks still apply.
 
 Integration tests cover local arbitrary-file approval, owner isolation, idempotent concurrent uploads, immutable test origin, revocation, production exclusion, ordinary pending uploads, empty/oversized files and suspended/mentor rejection.
+
+## Email confirmé avant accès
+
+La confirmation email par OTP est désormais obligatoire avant les dépôts et les fonctionnalités protégées. Elle reste distincte de l’acceptation du compte mentor et de la certification WoeAcademy. Les modes de simulation des justificatifs ne confirment jamais un email. Voir [la configuration OTP et SMTP](email-verification.md).

@@ -27,6 +27,7 @@ const labels = { FOUNDER: "porteur de projet", MENTOR: "mentor", ADMIN: "adminis
 export default async function Account() {
   const t = await getTranslator();
   const profile = await getAuthenticatedProfile();
+  if (profile.roles.includes("ADMIN")) redirect(localizePath("/admin", await getLocale()));
   const mentorRedirect = mentorDestination(profile);
   if (mentorRedirect) redirect(localizePath(mentorRedirect, await getLocale()));
   if (isMentorPreviewEnabled()) {

@@ -10,6 +10,8 @@ const DUMMY_HASH = `scrypt-v1:${"0".repeat(32)}:${"0".repeat(128)}`;
 const publicUser = {
   id: true,
   firstName: true,
+  email: true,
+  emailVerifiedAt: true,
   accountStatus: true,
   roles: { select: { role: true } },
 } as const;
@@ -57,7 +59,7 @@ function credentials(input: { email: unknown; password: unknown }, register: boo
   return { email, password };
 }
 
-function sessionData() {
+export function sessionData() {
   const token = randomBytes(32).toString("hex");
   const expiresAt = new Date(Date.now() + SESSION_MS);
   return { token, expiresAt, tokenHash: digest(token) };

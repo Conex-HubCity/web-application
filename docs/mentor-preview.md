@@ -29,3 +29,7 @@ Passer `MENTOR_PREVIEW_MODE="false"`, reconstruire puis redémarrer. Les inscrip
 ## Vérification de cette version
 
 33 tests réussis, lint et compilation de production réussis. Vérification en navigateur avec des comptes temporaires : inscription mentor réelle, refus d’une inscription falsifiée en porteur, dépôt d’un justificatif, attente, refus, puis page d’acceptation sans tableau de bord. Le français et l’anglais et les largeurs 1440, 390 et 320 pixels ont été contrôlés sans erreur d’hydratation. Le mode complet a été vérifié séparément : inscription porteur, anciennes sessions porteur, démonstration et tableau de bord mentor retrouvent leur fonctionnement. Les comptes et fichiers de contrôle ont été supprimés.
+
+## Email confirmé avant accès
+
+La confirmation email par OTP est désormais obligatoire avant les dépôts et les fonctionnalités protégées. Elle reste distincte de l’acceptation du compte mentor et de la certification WoeAcademy. Les modes de simulation des justificatifs ne confirment jamais un email. Voir [la configuration OTP et SMTP](email-verification.md).

@@ -1,6 +1,6 @@
 # Connex — MCD V1 et premières règles de données
 
-Statut : MCD synchronisé avec les 16 modèles du schéma Prisma le 21 octobre 2026.
+Statut : MCD synchronisé avec les 17 modèles du schéma Prisma le 27 octobre 2026.
 Les diagrammes reprennent les colonnes et clés du schéma actuel, y compris les sessions,
 les preuves de validation mentor et les certifications de test.
 Les migrations sont appliquées dans la base locale dédiée `conex`. Voir les
@@ -39,6 +39,7 @@ erDiagram
     USERS ||--o| FOUNDER_PROFILES : possede
     USERS ||--o{ USER_ROLES : dispose_de
     USERS ||--o{ SESSIONS : ouvre
+    USERS ||--o| EMAIL_VERIFICATIONS : confirme_email
     FOUNDER_PROFILES ||--o{ CERTIFICATION_EVIDENCES : depose
     FOUNDER_PROFILES ||--o| PROJECTS : porte
     PROJECTS ||--|{ PROJECT_REVISIONS : conserve
@@ -55,6 +56,21 @@ erDiagram
         datetime email_verified_at
         datetime phone_verified_at
         string account_status
+        datetime created_at
+        datetime updated_at
+    }
+    EMAIL_VERIFICATIONS {
+        uuid user_id PK,FK
+        uuid id UK
+        string email
+        string code_hash
+        datetime expires_at
+        int attempts
+        int send_count
+        datetime window_started_at
+        datetime last_sent_at
+        string delivery_status
+        datetime consumed_at
         datetime created_at
         datetime updated_at
     }
@@ -481,17 +497,17 @@ Le [parcours mentor V1](mentor-onboarding-v1.md) est branché : contrôle serveu
 l’entrée du tableau de bord, dépôt privé des pièces et page d’attente. Aucun champ
 Prisma supplémentaire n’est nécessaire.
 
-| Étape               | Règle et état actuel                                                                                                                                      |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Inscription         | Compte `PENDING_VERIFICATION`, rôle `MENTOR`, profil `DRAFT`, visibilité `PRIVATE`.                                                                       |
-| Dépôt initial       | Autorisé au mentor authentifié, même avant vérification du contact. CV et/ou justificatifs, engagements acceptés, activité et expérience facultatives.    |
-| Fichiers            | Jusqu’à cinq fichiers et 5 Mio au total par soumission ; PDF, Word ou images. Stockage privé, contrôle du format, états technique et métier `PENDING`.    |
-| Soumission          | Profil `PENDING`, `submitted_at` et `charter_accepted_at` renseignés. Redirection vers `/mentor/validation`.                                              |
-| Validation          | Décisions par pièce puis décision globale avec les preuves retenues. Backend existant ; interface d’examen et analyse antivirus à brancher.               |
-| Tableau de bord     | Accès après candidature approuvée, engagements acceptés et présence d’une pièce acceptée, contrôlée et non retirée. Contrôle refait côté serveur.         |
-| Refus ou retrait    | Retour au dépôt après refus/révocation ou absence de pièces disponibles. L’historique est conservé.                                                       |
-| Contact et adhésion | Restent indépendants de l’accès au tableau de bord. Les actions métier sur les projets exigent toujours compte actif, contact vérifié et adhésion active. |
-| Visibilité          | Le dépôt et l’approbation ne publient jamais le CV. Préférence `PRIVATE` conservée par défaut.                                                            |
+| Étape               | Règle et état actuel                                                                                                                                       |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inscription         | Compte `PENDING_VERIFICATION`, rôle `MENTOR`, profil `DRAFT`, visibilité `PRIVATE`.                                                                        |
+| Dépôt initial       | Autorisé au mentor authentifié après confirmation de son email par OTP. CV et/ou justificatifs, engagements acceptés, activité et expérience facultatives. |
+| Fichiers            | Jusqu’à cinq fichiers et 5 Mio au total par soumission ; PDF, Word ou images. Stockage privé, contrôle du format, états technique et métier `PENDING`.     |
+| Soumission          | Profil `PENDING`, `submitted_at` et `charter_accepted_at` renseignés. Redirection vers `/mentor/validation`.                                               |
+| Validation          | Décisions par pièce puis décision globale avec les preuves retenues. Backend existant ; interface d’examen et analyse antivirus à brancher.                |
+| Tableau de bord     | Accès après candidature approuvée, engagements acceptés et présence d’une pièce acceptée, contrôlée et non retirée. Contrôle refait côté serveur.          |
+| Refus ou retrait    | Retour au dépôt après refus/révocation ou absence de pièces disponibles. L’historique est conservé.                                                        |
+| Contact et adhésion | Restent indépendants de l’accès au tableau de bord. Les actions métier sur les projets exigent toujours compte actif, contact vérifié et adhésion active.  |
+| Visibilité          | Le dépôt et l’approbation ne publient jamais le CV. Préférence `PRIVATE` conservée par défaut.                                                             |
 
 Les champs métier du profil professionnel sont modélisés ; seuls l’activité et
 le texte d’expérience sont pour le moment proposés avec le dépôt. Le CV reste
@@ -510,3 +526,11 @@ les vues réalisées et les actions restant à brancher.
 ## Préversion mentor
 
 `MENTOR_PREVIEW_MODE="true"` limite le parcours public à l’inscription mentor, au dépôt et à la validation. Un mentor approuvé voit une page d’attente d’ouverture, sans tableau de bord ni étape d’adhésion. Les inscriptions, connexions et anciennes sessions porteur sont bloquées dans ce mode. Le backend complet est conservé ; aucune modification du schéma n’est nécessaire. Voir [les modalités de préversion](mentor-preview.md).
+
+## Administration minimale
+
+Consultation des utilisateurs et des candidatures mentors dans `/fr/admin` et `/en/admin`, avec recherche, filtres, fiches et téléchargements privés réservés au rôle `ADMIN`. Aucun changement de schéma. Voir [le fonctionnement admin](admin-v1.md).
+
+## Vérification email obligatoire
+
+Le parcours ajoute `EmailVerification` (`email_verifications`), lié en zéro ou un à `User`. Code à six chiffres, dix minutes, HMAC privé, cinq essais et cinq envois par fenêtre de quinze minutes, délai de renvoi d’une minute. La confirmation active le compte et remplace ses sessions sans approuver sa candidature ni ses preuves. Les routes protégées et les services de dépôt/admin exigent désormais `email_verified_at`. Voir [le parcours OTP](email-verification.md).

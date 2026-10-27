@@ -53,6 +53,7 @@ export async function saveMentorProfile(
       user.mentorProfile?.verificationStatus !== "APPROVED"
     )
       throw new AuthError("La modification est réservée aux mentors validés.");
+    if (!user.emailVerifiedAt) throw new AuthError("Confirmez votre email avant de poursuivre.");
     await tx.user.update({ where: { id: userId }, data: { firstName, lastName } });
     await tx.mentorProfile.update({
       where: { userId },

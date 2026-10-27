@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "export:preview": "node scripts/export-preview.mjs",
-    "test": "node --conditions=react-server --import tsx --test tests/platform.test.ts tests/i18n.test.ts",
+    "test": "node --conditions=react-server --import tsx --test tests/platform.test.ts tests/i18n.test.ts tests/smtp.test.ts",
     "format": "prettier --write . && prisma format",
     "format:check": "prettier --check .",
     "postinstall": "prisma generate",
@@ -20,13 +20,15 @@
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:check": "node scripts/check-db.mjs",
-    "db:setup": "node scripts/setup-db.mjs"
+    "db:setup": "node scripts/setup-db.mjs",
+    "admin:grant": "node scripts/grant-admin.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
     "dotenv": "18.0.8",
     "next": "16.4.2",
+    "nodemailer": "^10.2.1",
     "pg": "8.23.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -36,6 +38,7 @@
     "@electric-sql/pglite": "0.4.3",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.2",
     "@types/pg": "8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",

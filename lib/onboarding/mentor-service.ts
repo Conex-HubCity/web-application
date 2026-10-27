@@ -113,6 +113,8 @@ export function createMentorOnboardingService(
             !user.mentorProfile
           )
             throw new AuthError("Ce dépôt est réservé aux mentors connectés.");
+          if (!user.emailVerifiedAt)
+            throw new AuthError("Confirmez votre email avant de poursuivre.");
           const profile = user.mentorProfile;
           if (
             additionalDocuments &&

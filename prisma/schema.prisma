@@ -7,6 +7,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum EmailDeliveryStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
 enum Role {
   FOUNDER
   MENTOR
@@ -119,6 +125,7 @@ model User {
   updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   roles               UserRole[]
+  emailVerification   EmailVerification?
   sessions            Session[]
   mentorProfile       MentorProfile?
   founderProfile      FounderProfile?
@@ -143,6 +150,25 @@ model Session {
   @@index([userId])
   @@index([expiresAt])
   @@map("sessions")
+}
+
+model EmailVerification {
+  userId          String              @id @map("user_id") @db.Uuid
+  id              String              @unique @default(uuid()) @db.Uuid
+  email           String              @db.VarChar(254)
+  codeHash        String              @map("code_hash") @db.Char(64)
+  expiresAt       DateTime            @map("expires_at") @db.Timestamptz(3)
+  attempts        Int                 @default(0)
+  sendCount       Int                 @default(1) @map("send_count")
+  windowStartedAt DateTime            @map("window_started_at") @db.Timestamptz(3)
+  lastSentAt      DateTime            @map("last_sent_at") @db.Timestamptz(3)
+  deliveryStatus  EmailDeliveryStatus @default(PENDING) @map("delivery_status")
+  consumedAt      DateTime?           @map("consumed_at") @db.Timestamptz(3)
+  createdAt       DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("email_verifications")
 }
 
 model AuthThrottle {

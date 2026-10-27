@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext } from "react";
+import { Suspense, createContext, useContext } from "react";
 import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { localizePath, type Locale } from "@/lib/i18n/config";
@@ -30,7 +30,7 @@ export function Link({ href, ...props }: React.ComponentProps<typeof NextLink>) 
     />
   );
 }
-export function LanguageSwitcher() {
+function LanguageSwitcherControl() {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
@@ -54,5 +54,26 @@ export function LanguageSwitcher() {
         EN
       </option>
     </select>
+  );
+}
+
+export function LanguageSwitcher() {
+  const locale = useLocale();
+  return (
+    <Suspense
+      fallback={
+        <select
+          className="cnx-language-select"
+          aria-label={locale === "fr" ? "Langue" : "Language"}
+          value={locale}
+          disabled
+        >
+          <option value="fr">FR</option>
+          <option value="en">EN</option>
+        </select>
+      }
+    >
+      <LanguageSwitcherControl />
+    </Suspense>
   );
 }

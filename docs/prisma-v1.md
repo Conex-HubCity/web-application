@@ -98,6 +98,10 @@ Sans URL configurée, les tests PostgreSQL sont explicitement ignorés ; les rè
 
 ## Intégrations suivantes
 
-L’authentification et le dépôt privé des certificats WoeAcademy sont branchés. Le [dépôt des pièces mentor et la page d’attente](mentor-onboarding-v1.md) sont également branchés. La vérification email/téléphone, l’interface administrative de validation et l’analyse antivirus restent à réaliser. Les méthodes de fichiers attendent des métadonnées produites par un traitement serveur fiable, jamais un résultat antivirus déclaré par le client. Les limites de fichiers et référentiels de secteurs/langues restent à fixer.
+L’authentification et le dépôt privé des certificats WoeAcademy sont branchés. Le [dépôt des pièces mentor et la page d’attente](mentor-onboarding-v1.md) sont également branchés. La vérification email OTP est branchée ; la vérification téléphone, les décisions administratives depuis l’interface et l’analyse antivirus restent à réaliser. Les méthodes de fichiers attendent des métadonnées produites par un traitement serveur fiable, jamais un résultat antivirus déclaré par le client. Les limites de fichiers et référentiels de secteurs/langues restent à fixer.
 
 Paiements et reçus, calendrier détaillé, notifications, signalements et journal d’audit global sont les modules suivants. `Membership` est contrôlé pour autoriser les accès mais aucun paiement réel n’est simulé ou confirmé automatiquement.
+
+## Codes de confirmation email
+
+Le modèle `EmailVerification` et la table `email_verifications` conservent une demande par utilisateur, le condensat HMAC du code, sa durée, les limites d’essai et de renvoi et son état de livraison. La cinquième migration ajoute cette table sans confirmer les comptes existants. Voir [le parcours OTP](email-verification.md).

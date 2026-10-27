@@ -19,7 +19,9 @@ export function proxy(request: NextRequest) {
   // Only redirect existing legacy entry points. Unknown locales remain 404s.
   if (
     pathname !== "/" &&
-    !/^\/(connexion|inscription|compte|certification|mentor|espace)(\/|$)/.test(pathname)
+    !/^\/(connexion|inscription|compte|certification|mentor|espace|admin|verification-email)(\/|$)/.test(
+      pathname,
+    )
   )
     return NextResponse.next();
   const locale = preferredLocale(
