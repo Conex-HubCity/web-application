@@ -1,6 +1,6 @@
 # Connex — MCD V1 et premières règles de données
 
-Statut : MCD synchronisé avec les 17 modèles du schéma Prisma le 27 octobre 2026.
+Statut : MCD synchronisé avec les 17 modèles du schéma Prisma le 28 octobre 2026.
 Les diagrammes reprennent les colonnes et clés du schéma actuel, y compris les sessions,
 les preuves de validation mentor et les certifications de test.
 Les migrations sont appliquées dans la base locale dédiée `conex`. Voir les
@@ -96,6 +96,7 @@ erDiagram
         string visibility_preference
         datetime visibility_requested_at
         datetime charter_accepted_at
+        string charter_version
         datetime created_at
         datetime updated_at
     }
@@ -534,3 +535,7 @@ Consultation des utilisateurs et des candidatures mentors dans `/fr/admin` et `/
 ## Vérification email obligatoire
 
 Le parcours ajoute `EmailVerification` (`email_verifications`), lié en zéro ou un à `User`. Code à six chiffres, dix minutes, HMAC privé, cinq essais et cinq envois par fenêtre de quinze minutes, délai de renvoi d’une minute. La confirmation active le compte et remplace ses sessions sans approuver sa candidature ni ses preuves. Les routes protégées et les services de dépôt/admin exigent désormais `email_verified_at`. Voir [le parcours OTP](email-verification.md).
+
+## Acceptation de la charte Hubcity
+
+La charte complète est obligatoire à l’inscription mentor et consultable avant validation. `MENTOR_PROFILES.charter_accepted_at` et `charter_version` enregistrent la date et l’édition acceptée. Le dépôt ou la resoumission du dossier permet aussi l’acceptation explicite de cette édition pour les comptes antérieurs, sans attribution rétroactive. Voir [la documentation de la charte](mentor-charter.md).

@@ -1,4 +1,5 @@
 import "server-only";
+import { MENTOR_CHARTER_VERSION } from "@/lib/mentor-charter";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, writeFile, unlink } from "node:fs/promises";
 import path from "node:path";
@@ -43,7 +44,7 @@ export function createMentorOnboardingService(
   return {
     async submit(userId: string, input: MentorSubmission, additionalDocuments = false) {
       if (!additionalDocuments && !input.charterAccepted)
-        throw new AuthError("Veuillez accepter les engagements du mentor.");
+        throw new AuthError("Veuillez accepter la charte du mentorat de Hubcity.");
       if (
         !Array.isArray(input.documents) ||
         input.documents.length < 1 ||
@@ -153,7 +154,11 @@ export function createMentorOnboardingService(
               data: {
                 verificationStatus: "PENDING",
                 submittedAt: new Date(),
-                charterAcceptedAt: profile.charterAcceptedAt ?? new Date(),
+                charterAcceptedAt:
+                  profile.charterVersion === MENTOR_CHARTER_VERSION && profile.charterAcceptedAt
+                    ? profile.charterAcceptedAt
+                    : new Date(),
+                charterVersion: MENTOR_CHARTER_VERSION,
                 professionalTitle: professionalTitle || profile.professionalTitle,
                 biography: biography || profile.biography,
               },

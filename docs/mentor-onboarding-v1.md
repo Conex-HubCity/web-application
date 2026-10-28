@@ -11,7 +11,7 @@ Les deux pages mentor vérifient aussi la session, le rôle et l’état en base
 
 ## Dépôt et soumission
 
-Le formulaire propose un CV, d’autres justificatifs, une activité et une présentation d’expérience facultatives. Il exige au moins une pièce et l’acceptation des engagements du mentor affichés dans le formulaire. Le CV n’est pas obligatoire lorsqu’un autre justificatif est déposé.
+Le formulaire propose un CV, d’autres justificatifs, une activité et une présentation d’expérience facultatives. Il exige au moins une pièce et l’acceptation de la charte complète de Hubcity, accessible par lien. Cette charte est également obligatoire dès l’inscription ; sa date et sa version sont enregistrées dans le profil. Le CV n’est pas obligatoire lorsqu’un autre justificatif est déposé.
 
 Limites V1 : cinq documents maximum par envoi et 5 Mio au total, PDF, Word (DOC/DOCX) et images JPG/PNG/WebP. Le serveur valide les limites, les types et les signatures de fichiers ; ce contrôle ne remplace pas l’analyse antivirus. L’ensemble des dépôts non retirés est limité à vingt pièces par mentor.
 

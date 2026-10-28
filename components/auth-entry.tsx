@@ -2,6 +2,7 @@
 import { useTranslations } from "@/components/i18n";
 
 import Image from "next/image";
+import { MENTOR_CHARTER_PATH } from "@/lib/mentor-charter";
 import { Link } from "@/components/i18n";
 import { useActionState } from "react";
 import { authenticate } from "@/app/actions/auth";
@@ -163,6 +164,18 @@ export function AuthEntry({
                 <input name="adultConfirmed" type="checkbox" required />
                 <span>
                   {t("Je confirme avoir 18 ans ou plus, condition d’accès au pilote Connex.")}
+                </span>
+              </label>
+            )}
+            {register && mentor && (
+              <label className="auth-checkbox">
+                <input name="charterAccepted" type="checkbox" required />
+                <span>
+                  {t("J’ai lu et j’accepte la")}{" "}
+                  <Link href={MENTOR_CHARTER_PATH} target="_blank" rel="noopener noreferrer">
+                    {t("charte du mentorat de Hubcity")}
+                  </Link>
+                  .
                 </span>
               </label>
             )}

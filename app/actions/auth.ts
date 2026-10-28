@@ -27,6 +27,7 @@ export async function authenticate(
             lastName: form.get("lastName"),
             role: form.get("role"),
             adultConfirmed: form.get("adultConfirmed") === "on",
+            charterAccepted: form.get("charterAccepted") === "on",
           })
         : mode === "login"
           ? await service.login(credentials)

@@ -1,3 +1,4 @@
+import { MENTOR_CHARTER_VERSION } from "../lib/mentor-charter";
 import "dotenv/config";
 import { createEmailVerificationService } from "../lib/auth/email-verification";
 import { createAdminService } from "../lib/admin/service";
@@ -198,6 +199,7 @@ databaseTest(
         lastName: "  Johnson  ",
         role,
         adultConfirmed: true,
+        charterAccepted: true,
       });
       const account = await auth.getSession(session.token);
       assert.ok(account);
@@ -217,6 +219,8 @@ databaseTest(
       else {
         assert.equal(stored.mentorProfile?.visibilityPreference, "PRIVATE");
         assert.equal(stored.mentorProfile?.verificationStatus, "DRAFT");
+        assert.ok(stored.mentorProfile?.charterAcceptedAt);
+        assert.equal(stored.mentorProfile?.charterVersion, MENTOR_CHARTER_VERSION);
       }
       await assert.rejects(
         auth.register({
@@ -227,6 +231,7 @@ databaseTest(
           lastName: "Smith",
           role,
           adultConfirmed: true,
+          charterAccepted: true,
         }),
         AuthError,
       );
@@ -396,6 +401,7 @@ databaseTest(
       lastName: "Johnson",
       role: "MENTOR",
       adultConfirmed: true,
+      charterAccepted: true,
     };
     await assert.rejects(auth.register({ ...input, role: "ADMIN" }), AuthError);
     await assert.rejects(auth.register({ ...input, lastName: "  " }), AuthError);
@@ -413,6 +419,9 @@ databaseTest(
       auth.register({ ...input, passwordConfirmation: undefined }),
       /identiques/,
     );
+    for (const charterAccepted of [false, undefined, "true", "on"]) {
+      await assert.rejects(auth.register({ ...input, charterAccepted }), /charte du mentorat/);
+    }
     assert.equal(await db.user.count({ where: { email: input.email } }), 0);
     const session = await auth.register(input);
     const account = (await auth.getSession(session.token))!;
@@ -937,6 +946,7 @@ databaseTest(
       assert.ok(stored.emailVerifiedAt);
       assert.ok(stored.mentorProfile?.submittedAt);
       assert.ok(stored.mentorProfile?.charterAcceptedAt);
+      assert.equal(stored.mentorProfile?.charterVersion, MENTOR_CHARTER_VERSION);
       assert.equal(stored.mentorProfile?.visibilityPreference, "PRIVATE");
     });
   },
@@ -1270,6 +1280,7 @@ databaseTest(
       lastName: "Test",
       role: "FOUNDER",
       adultConfirmed: true,
+      charterAccepted: true,
     };
     await assert.rejects(preview.register(input), AuthError);
     assert.equal(await db.user.count({ where: { email } }), 0);
@@ -1296,6 +1307,7 @@ databaseTest(
       lastName: "Mentor",
       role: "MENTOR",
       adultConfirmed: true,
+      charterAccepted: true,
     };
     const registered = await auth.register(input);
     const actor = await auth.getSession(registered.token);
@@ -1593,3 +1605,34 @@ databaseTest("OTP resend quota and concurrent confirmation are serialized", asyn
   assert.equal(results.filter((result) => result.status === "fulfilled").length, 1);
   assert.equal(await db.session.count({ where: { userId: mentor.id } }), 1);
 });
+
+databaseTest(
+  "mentor charter records explicit new-version consent and preserves its original date",
+  async () => {
+    await withMentorUploads(async (onboarding) => {
+      const previous = new Date("2026-10-01T12:00:00Z");
+      for (const charterVersion of [null, "earlier-summary", MENTOR_CHARTER_VERSION]) {
+        const mentor = await newMentorCandidate();
+        await db.mentorProfile.update({
+          where: { userId: mentor.id },
+          data: { charterAcceptedAt: previous, charterVersion },
+        });
+        await assert.rejects(
+          onboarding.submit(mentor.id, { ...mentorSubmission(), charterAccepted: false }),
+          /charte du mentorat/,
+        );
+        const unchanged = await db.mentorProfile.findUniqueOrThrow({
+          where: { userId: mentor.id },
+        });
+        assert.equal(unchanged.charterVersion, charterVersion);
+        assert.equal(unchanged.charterAcceptedAt?.getTime(), previous.getTime());
+        await onboarding.submit(mentor.id, mentorSubmission());
+        const accepted = await db.mentorProfile.findUniqueOrThrow({ where: { userId: mentor.id } });
+        assert.equal(accepted.charterVersion, MENTOR_CHARTER_VERSION);
+        if (charterVersion === MENTOR_CHARTER_VERSION)
+          assert.equal(accepted.charterAcceptedAt?.getTime(), previous.getTime());
+        else assert.ok(accepted.charterAcceptedAt! > previous);
+      }
+    });
+  },
+);

@@ -42,18 +42,22 @@ test("SMTP delivers the OTP message to an isolated loopback capture server", asy
   const address = server.address();
   assert.ok(address && typeof address !== "string");
   try {
-    await sendVerificationEmail(
-      { to: "recipient@example.test", code: "123456", locale: "en" },
-      {
-        NODE_ENV: "test",
-        SMTP_HOST: "127.0.0.1",
-        SMTP_PORT: String(address.port),
-        SMTP_FROM: "sender@example.test",
-        SMTP_SECURE: "false",
-        SMTP_REQUIRE_TLS: "false",
-      },
-    );
-    assert.equal(messages.length, 1);
+    for (const from of ["sender@example.test", "kiosk <noreply@example.test>"]) {
+      await sendVerificationEmail(
+        { to: "recipient@example.test", code: "123456", locale: "en" },
+        {
+          NODE_ENV: "test",
+          SMTP_HOST: "127.0.0.1",
+          SMTP_PORT: String(address.port),
+          SMTP_FROM: from,
+          SMTP_SECURE: "false",
+          SMTP_REQUIRE_TLS: "false",
+        },
+      );
+    }
+    assert.equal(messages.length, 2);
+    assert.match(messages[0], /From: Connex <sender@example.test>/);
+    assert.match(messages[1], /From: kiosk <noreply@example.test>/);
     assert.ok(messages[0].includes("123456"));
     assert.ok(messages[0].includes("Your Connex verification code"));
     assert.ok(messages[0].includes("recipient@example.test"));
@@ -77,4 +81,20 @@ test("SMTP rejects missing configuration and unencrypted production delivery", a
     }),
     AuthError,
   );
+});
+
+test("SMTP rejects multiple sender mailboxes and header line breaks", async () => {
+  for (const from of [
+    "one@example.test,two@example.test",
+    "Sender <one@example.test> <two@example.test>",
+    "Sender <one@example.test>\r\nBcc: another@example.test",
+  ]) {
+    await assert.rejects(
+      sendVerificationEmail(
+        { to: "recipient@example.test", code: "123456", locale: "en" },
+        { SMTP_HOST: "127.0.0.1", SMTP_PORT: "1", SMTP_FROM: from },
+      ),
+      AuthError,
+    );
+  }
 });

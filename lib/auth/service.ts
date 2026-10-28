@@ -1,4 +1,5 @@
 import "server-only";
+import { MENTOR_CHARTER_VERSION } from "@/lib/mentor-charter";
 import { isMentorPreviewEnabled, previewRoleAllowed } from "@/lib/release";
 import { createHash, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import type { PrismaClient } from "@/generated/prisma/client";
@@ -96,6 +97,7 @@ export function createAuthService(
       lastName: unknown;
       role: unknown;
       adultConfirmed: unknown;
+      charterAccepted?: unknown;
     }) {
       if (mentorPreview && input.role !== "MENTOR")
         throw new AuthError("Les inscriptions sont actuellement réservées aux mentors.");
@@ -112,6 +114,8 @@ export function createAuthService(
         throw new AuthError("Choisissez un parcours d’inscription valide.");
       if (input.adultConfirmed !== true)
         throw new AuthError("Vous devez confirmer avoir 18 ans ou plus.");
+      if (input.role === "MENTOR" && input.charterAccepted !== true)
+        throw new AuthError("Veuillez accepter la charte du mentorat de Hubcity.");
       await throttle(email, "register");
       const passwordHash = await hashPassword(password);
       const session = sessionData();
@@ -127,7 +131,14 @@ export function createAuthService(
             roles: { create: { role: input.role } },
             ...(input.role === "FOUNDER"
               ? { founderProfile: { create: { adultConfirmedAt: new Date() } } }
-              : { mentorProfile: { create: {} } }),
+              : {
+                  mentorProfile: {
+                    create: {
+                      charterAcceptedAt: new Date(),
+                      charterVersion: MENTOR_CHARTER_VERSION,
+                    },
+                  },
+                }),
             sessions: { create: { tokenHash: session.tokenHash, expiresAt: session.expiresAt } },
           },
         });

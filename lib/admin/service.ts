@@ -165,6 +165,7 @@ export function createAdminService(db: PrismaClient = getDb()) {
           verificationStatus: true,
           submittedAt: true,
           charterAcceptedAt: true,
+          charterVersion: true,
           user: { select: userFields },
           documents: {
             orderBy: { uploadedAt: "desc" },

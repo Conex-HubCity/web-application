@@ -1,5 +1,6 @@
 "use client";
-import { useTranslations } from "@/components/i18n";
+import { useTranslations, Link } from "@/components/i18n";
+import { MENTOR_CHARTER_PATH } from "@/lib/mentor-charter";
 
 import { useActionState } from "react";
 import { submitMentorApplication } from "@/app/actions/mentor";
@@ -51,28 +52,15 @@ export function MentorApplicationForm({
           "Au moins un document. PDF, Word ou images ; cinq fichiers et 5 Mo au total maximum.",
         )}{" "}
       </p>
-      <details className="mentor-charter">
-        <summary>{t("Les engagements du mentor")}</summary>
-        <ul>
-          <li>{t("Préserver la confidentialité des projets et des documents reçus.")}</li>
-          <li>
-            {" "}
-            {t(
-              "Présenter son expérience avec exactitude et respecter ses disponibilités annoncées.",
-            )}{" "}
-          </li>
-          <li>
-            {" "}
-            {t(
-              "Construire une relation choisie, respectueuse et sans promesse de financement ou d’emploi.",
-            )}{" "}
-          </li>
-          <li>{t("Participer aux échanges et aux bilans convenus avec le porteur de projet.")}</li>
-        </ul>
-      </details>
       <label className="auth-checkbox">
         <input name="charterAccepted" type="checkbox" required />
-        <span>{t("Je m’engage à respecter les engagements du mentor ci-dessus.")}</span>
+        <span>
+          {t("J’ai lu et j’accepte la")}{" "}
+          <Link href={MENTOR_CHARTER_PATH} target="_blank" rel="noopener noreferrer">
+            {t("charte du mentorat de Hubcity")}
+          </Link>
+          .
+        </span>
       </label>
       {state?.error && (
         <p className="auth-error" role="alert">

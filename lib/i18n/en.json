@@ -624,5 +624,13 @@
   "Patientez une minute avant de demander un nouveau code.": "Wait one minute before requesting a new code.",
   "Saisissez le code à 6 chiffres reçu par email.": "Enter the 6-digit code received by email.",
   "Code invalide ou expiré. Demandez un nouveau code.": "Invalid or expired code. Request a new code.",
-  "Confirmez votre email avant de poursuivre.": "Verify your email before continuing."
+  "Confirmez votre email avant de poursuivre.": "Verify your email before continuing.",
+  "J’ai lu et j’accepte la": "I have read and accept the",
+  "charte du mentorat de Hubcity": "Hubcity mentoring charter",
+  "Veuillez accepter la charte du mentorat de Hubcity.": "Please accept the Hubcity mentoring charter.",
+  "Charte du mentorat — Hubcity": "Mentoring charter — Hubcity",
+  "Charte du mentorat de Hubcity": "Hubcity mentoring charter",
+  "Télécharger la charte (Word)": "Download the charter (Word)",
+  "Le texte de référence de cette charte est en français.": "The reference text of this charter is in French.",
+  "Version de la charte": "Charter version"
 }

@@ -44,6 +44,7 @@ export default async function Application({ params }: { params: Promise<{ userId
               ["Langues", profile.languages.join(", ")],
               ["Soumission", adminDate(profile.submittedAt, locale)],
               ["Engagements acceptés", adminDate(profile.charterAcceptedAt, locale)],
+              ["Version de la charte", profile.charterVersion],
             ].map(([label, value]) => (
               <div key={label}>
                 <dt>{t(label!)}</dt>

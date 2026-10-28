@@ -10,12 +10,17 @@ export async function sendVerificationEmail(
   const host = env.SMTP_HOST?.trim();
   const port = Number(env.SMTP_PORT || 587);
   const from = env.SMTP_FROM?.trim();
+  // A single mailbox, with an optional display name; never accept header line breaks.
+  const mailbox =
+    from && !/[\r\n]/.test(from) ? /^(?:([^<>]+?)\s*<([^<>\s]+)>|([^<>\s]+))$/.exec(from) : null;
+  const fromAddress = mailbox?.[2] ?? mailbox?.[3];
+  const fromName = mailbox?.[1]?.trim().replace(/^"(.*)"$/, "$1") || "Connex";
   const secure = env.SMTP_SECURE === "true";
   const requireTLS = env.SMTP_REQUIRE_TLS !== "false";
   if (
     !host ||
-    !from ||
-    !/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(from) ||
+    !fromAddress ||
+    !/^[^\s@<>,;]+@[^\s@<>,;]+\.[^\s@<>,;]+$/.test(fromAddress) ||
     !Number.isInteger(port) ||
     port < 1 ||
     port > 65535 ||
@@ -40,7 +45,7 @@ export async function sendVerificationEmail(
   try {
     const en = message.locale === "en";
     const info = await transport.sendMail({
-      from: { name: "Connex", address: from },
+      from: { name: fromName, address: fromAddress },
       to: message.to,
       subject: en ? "Your Connex verification code" : "Votre code de vérification Connex",
       text: en
