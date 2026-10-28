@@ -31,7 +31,7 @@ const questions = [
   {
     question: "L’inscription est-elle gratuite ?",
     answer:
-      "L’inscription est gratuite pour les porteurs de projets. Les mentors présentent d’abord leur candidature : leur identité et leur expertise sont vérifiées avant le paiement d’une adhésion. Les conditions et la durée de cette adhésion seront précisées avant son ouverture.",
+      "La création du compte est gratuite. Après confirmation de l’email, une contribution unique de 30 USD permet de soutenir le fonctionnement de Connex. Vous pouvez ensuite vous arrêter là ou déposer vos justificatifs pour proposer votre candidature mentor.",
   },
   {
     question: "Comment se forme le binôme avec un mentor ?",
@@ -284,7 +284,7 @@ export async function HomeSections({ mentorPreview = false }: { mentorPreview?: 
                       mentorPreview && index === 0
                         ? "Les inscriptions des porteurs de projet ne sont pas encore ouvertes. Cette première version est réservée aux candidatures mentors."
                         : mentorPreview && index === 1
-                          ? "La candidature mentor est gratuite. Après acceptation de votre dossier, nous vous informerons de l’ouverture de votre espace. Aucun paiement n’est demandé dans cette préversion."
+                          ? "La création du compte est gratuite. Après confirmation de l’email, une contribution unique de 30 USD permet de soutenir le fonctionnement de Connex. Vous pouvez ensuite vous arrêter là ou déposer vos justificatifs pour proposer votre candidature mentor."
                           : item.answer,
                     )}
                   </p>

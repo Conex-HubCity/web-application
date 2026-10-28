@@ -73,10 +73,17 @@ export function Journey({ mentorPreview = false }: { mentorPreview?: boolean }) 
       ? {
           ...journeys.mentor,
           steps: [
-            journeys.mentor.steps[0],
+            [
+              "Créer votre compte et soutenir Connex",
+              "Confirmez votre email, puis contribuez à hauteur de 30 USD en un paiement unique pour soutenir le fonctionnement de Connex.",
+            ],
+            [
+              "Choisir la suite",
+              "Vous pouvez simplement soutenir Connex, sans déposer de documents, ou poursuivre une candidature mentor.",
+            ],
             [
               "Faire examiner votre candidature",
-              "Transmettez vos justificatifs d’expérience. L’équipe Connex examine votre dossier avant de valider votre compte mentor.",
+              "Si vous souhaitez devenir mentor, présentez votre expérience et vos justificatifs. L’équipe Connex examine votre dossier avant de valider votre candidature.",
             ],
             [
               "Être informé de l’ouverture",

@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "export:preview": "node scripts/export-preview.mjs",
-    "test": "node --conditions=react-server --import tsx --test tests/platform.test.ts tests/i18n.test.ts tests/smtp.test.ts",
+    "test": "node --conditions=react-server --import tsx --test tests/platform.test.ts tests/i18n.test.ts tests/smtp.test.ts tests/stripe-webhook.test.ts",
     "format": "prettier --write . && prisma format",
     "format:check": "prettier --check .",
     "postinstall": "prisma generate",
@@ -32,7 +32,8 @@
     "pg": "8.23.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "server-only": "0.0.1"
+    "server-only": "0.0.1",
+    "stripe": "^23.0.1"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.4.3",

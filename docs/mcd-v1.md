@@ -1,6 +1,6 @@
 # Connex — MCD V1 et premières règles de données
 
-Statut : MCD synchronisé avec les 17 modèles du schéma Prisma le 28 octobre 2026.
+Statut : MCD synchronisé avec les 19 modèles du schéma Prisma le 28 octobre 2026.
 Les diagrammes reprennent les colonnes et clés du schéma actuel, y compris les sessions,
 les preuves de validation mentor et les certifications de test.
 Les migrations sont appliquées dans la base locale dédiée `conex`. Voir les
@@ -46,6 +46,9 @@ erDiagram
     MENTOR_PROFILES ||--o{ MEMBERSHIPS : adhere
     MENTOR_PROFILES ||--o{ MENTOR_DOCUMENTS : fournit
 
+    USERS ||--o{ CONTRIBUTION_PAYMENTS : soutient
+    CONTRIBUTION_PAYMENTS ||--o{ STRIPE_WEBHOOK_EVENTS : confirme
+
     USERS {
         uuid id PK
         string email UK
@@ -58,6 +61,29 @@ erDiagram
         string account_status
         datetime created_at
         datetime updated_at
+    }
+    CONTRIBUTION_PAYMENTS {
+        uuid id PK
+        uuid user_id FK
+        int amount
+        string currency
+        string status
+        string locale
+        string email
+        boolean livemode
+        string stripe_session_id UK
+        string stripe_payment_intent_id UK
+        int refunded_amount
+        datetime paid_at
+        datetime refunded_at
+        datetime created_at
+        datetime updated_at
+    }
+    STRIPE_WEBHOOK_EVENTS {
+        string id PK
+        string type
+        uuid payment_id FK
+        datetime processed_at
     }
     EMAIL_VERIFICATIONS {
         uuid user_id PK,FK
@@ -526,7 +552,7 @@ les vues réalisées et les actions restant à brancher.
 
 ## Préversion mentor
 
-`MENTOR_PREVIEW_MODE="true"` limite le parcours public à l’inscription mentor, au dépôt et à la validation. Un mentor approuvé voit une page d’attente d’ouverture, sans tableau de bord ni étape d’adhésion. Les inscriptions, connexions et anciennes sessions porteur sont bloquées dans ce mode. Le backend complet est conservé ; aucune modification du schéma n’est nécessaire. Voir [les modalités de préversion](mentor-preview.md).
+`MENTOR_PREVIEW_MODE="true"` limite le parcours public à l’inscription, au soutien financier unique, puis éventuellement au dépôt mentor et à la validation. Un mentor approuvé voit une page d’attente d’ouverture, sans tableau de bord ni étape d’adhésion. Les inscriptions, connexions et anciennes sessions porteur sont bloquées dans ce mode. Le backend complet est conservé ; aucune modification du schéma n’est nécessaire. Voir [les modalités de préversion](mentor-preview.md).
 
 ## Administration minimale
 
@@ -539,3 +565,9 @@ Le parcours ajoute `EmailVerification` (`email_verifications`), lié en zéro ou
 ## Acceptation de la charte Hubcity
 
 La charte complète est obligatoire à l’inscription mentor et consultable avant validation. `MENTOR_PROFILES.charter_accepted_at` et `charter_version` enregistrent la date et l’édition acceptée. Le dépôt ou la resoumission du dossier permet aussi l’acceptation explicite de cette édition pour les comptes antérieurs, sans attribution rétroactive. Voir [la documentation de la charte](mentor-charter.md).
+
+## Soutien financier et candidature facultative
+
+Après inscription et vérification email, une contribution unique de 30 USD précède le dépôt de documents. La personne peut soutenir Connex puis s’arrêter, sans justificatif. Le dépôt est facultatif pour soutenir la plateforme ; il reste indispensable pour demander une validation mentor. Le serveur vérifie un `ContributionPayment` réellement `PAID` dans le bon environnement avant tout dépôt.
+
+Cette contribution ne crée pas d’abonnement et reste distincte du modèle `Membership` conservé pour les droits métier futurs. Les confirmations et remboursements Stripe sont dédupliqués par `StripeWebhookEvent`. Aucun paiement n’est fabriqué pour les comptes existants. Voir [l’intégration Stripe](stripe-contributions.md).

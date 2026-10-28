@@ -1,4 +1,5 @@
 import "server-only";
+import { stripeLiveMode } from "@/lib/payments/config";
 import { MENTOR_CHARTER_VERSION } from "@/lib/mentor-charter";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, writeFile, unlink } from "node:fs/promises";
@@ -116,6 +117,15 @@ export function createMentorOnboardingService(
             throw new AuthError("Ce dépôt est réservé aux mentors connectés.");
           if (!user.emailVerifiedAt)
             throw new AuthError("Confirmez votre email avant de poursuivre.");
+          if (
+            !(await tx.contributionPayment.findFirst({
+              where: { userId, livemode: stripeLiveMode(), status: "PAID" },
+              select: { id: true },
+            }))
+          )
+            throw new AuthError(
+              "Votre contribution doit être confirmée avant le dépôt de documents.",
+            );
           const profile = user.mentorProfile;
           if (
             additionalDocuments &&

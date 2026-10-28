@@ -1,4 +1,5 @@
 import "server-only";
+import { stripeLiveMode } from "@/lib/payments/config";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, writeFile, unlink } from "node:fs/promises";
 import path from "node:path";
@@ -25,6 +26,11 @@ export function createOnboardingService(
           lastName: true,
           accountStatus: true,
           roles: { select: { role: true } },
+          contributionPayments: {
+            where: { status: "PAID", livemode: stripeLiveMode() },
+            select: { id: true },
+            take: 1,
+          },
           mentorProfile: {
             select: {
               verificationStatus: true,
@@ -74,6 +80,7 @@ export function createOnboardingService(
         roles: user.roles.map(({ role }) => role),
         isFounder,
         isMentor: user.roles.some(({ role }) => role === "MENTOR"),
+        hasContribution: user.contributionPayments.length > 0,
         mentorStatus: user.mentorProfile?.verificationStatus ?? "DRAFT",
         isMentorApproved:
           user.mentorProfile?.verificationStatus === "APPROVED" &&

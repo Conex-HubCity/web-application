@@ -13,6 +13,14 @@ enum EmailDeliveryStatus {
   FAILED
 }
 
+enum ContributionStatus {
+  PENDING
+  PAID
+  FAILED
+  EXPIRED
+  REFUNDED
+}
+
 enum Role {
   FOUNDER
   MENTOR
@@ -124,15 +132,16 @@ model User {
   createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  roles               UserRole[]
-  emailVerification   EmailVerification?
-  sessions            Session[]
-  mentorProfile       MentorProfile?
-  founderProfile      FounderProfile?
-  validationDecisions ValidationDecision[] @relation("ValidationReviewer")
-  reviewedRequests    MentorshipRequest[]  @relation("RequestReviewer")
-  authoredFollowUps   FollowUp[]           @relation("FollowUpAuthor")
-  reviewedFollowUps   FollowUp[]           @relation("FollowUpReviewer")
+  contributionPayments ContributionPayment[]
+  roles                UserRole[]
+  emailVerification    EmailVerification?
+  sessions             Session[]
+  mentorProfile        MentorProfile?
+  founderProfile       FounderProfile?
+  validationDecisions  ValidationDecision[]  @relation("ValidationReviewer")
+  reviewedRequests     MentorshipRequest[]   @relation("RequestReviewer")
+  authoredFollowUps    FollowUp[]            @relation("FollowUpAuthor")
+  reviewedFollowUps    FollowUp[]            @relation("FollowUpReviewer")
 
   @@index([accountStatus, createdAt])
   @@map("users")
@@ -482,4 +491,38 @@ model FollowUp {
   @@index([authorUserId])
   @@index([reviewedByUserId])
   @@map("follow_ups")
+}
+
+model ContributionPayment {
+  id                    String               @id @default(uuid()) @db.Uuid
+  userId                String               @map("user_id") @db.Uuid
+  amount                Int                  @default(3000)
+  currency              String               @default("usd") @db.VarChar(3)
+  status                ContributionStatus   @default(PENDING)
+  locale                String               @db.VarChar(2)
+  email                 String               @db.VarChar(254)
+  livemode              Boolean              @default(false)
+  stripeSessionId       String?              @unique @map("stripe_session_id") @db.VarChar(255)
+  stripePaymentIntentId String?              @unique @map("stripe_payment_intent_id") @db.VarChar(255)
+  refundedAmount        Int                  @default(0) @map("refunded_amount")
+  paidAt                DateTime?            @map("paid_at") @db.Timestamptz(3)
+  refundedAt            DateTime?            @map("refunded_at") @db.Timestamptz(3)
+  createdAt             DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime             @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  events                StripeWebhookEvent[]
+
+  @@index([userId, livemode, status])
+  @@map("contribution_payments")
+}
+
+model StripeWebhookEvent {
+  id          String              @id @db.VarChar(255)
+  type        String              @db.VarChar(100)
+  paymentId   String              @map("payment_id") @db.Uuid
+  processedAt DateTime            @default(now()) @map("processed_at") @db.Timestamptz(3)
+  payment     ContributionPayment @relation(fields: [paymentId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@index([paymentId])
+  @@map("stripe_webhook_events")
 }

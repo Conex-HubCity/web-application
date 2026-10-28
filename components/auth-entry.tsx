@@ -78,6 +78,13 @@ export function AuthEntry({
                     : "Connectez-vous à votre parcours de mentor ou de porteur de projet.",
                 )}
           </p>
+          {register && mentor && (
+            <p className="auth-field-hint">
+              {t(
+                "Après confirmation de votre email, une contribution unique de 30 USD soutient le fonctionnement de Connex. Vous pourrez ensuite proposer votre candidature mentor si vous le souhaitez.",
+              )}
+            </p>
+          )}
           {register && !mentorPreview && (
             <div className="auth-role-tabs" aria-label={t("Mon parcours")}>
               <Link

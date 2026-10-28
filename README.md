@@ -79,3 +79,7 @@ Consultation des utilisateurs et des candidatures mentors dans `/fr/admin` et `/
 ## Confirmation email
 
 L’email doit être confirmé par un code OTP avant l’accès aux fonctionnalités protégées, y compris pour les comptes admin existants. Renseigner le SMTP et le secret privé dans `.env`. Voir [la configuration et les limites OTP](docs/email-verification.md).
+
+## Contribution Stripe
+
+Contribution unique de 30 USD après vérification email, avec candidature mentor facultative après paiement. Configurer les clés privées et le webhook selon [le guide Stripe](docs/stripe-contributions.md). Sans clés, le bouton de paiement reste désactivé.

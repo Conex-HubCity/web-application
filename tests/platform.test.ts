@@ -1,3 +1,6 @@
+import type Stripe from "stripe";
+import { createContributionService, type PaymentGateway } from "../lib/payments/service";
+import { PaymentError, stripeConfig, stripeLiveMode } from "../lib/payments/config";
 import { MENTOR_CHARTER_VERSION } from "../lib/mentor-charter";
 import "dotenv/config";
 import { createEmailVerificationService } from "../lib/auth/email-verification";
@@ -88,7 +91,7 @@ const expectCode = (code: string) => (error: unknown) =>
   error instanceof DomainError && error.code === code;
 
 async function user(role: Role) {
-  return db.user.create({
+  const created = await db.user.create({
     data: {
       email: `${randomUUID()}@example.test`,
       passwordHash: "test-only-hash",
@@ -108,6 +111,8 @@ async function user(role: Role) {
         : {}),
     },
   });
+  if (role === "MENTOR") await paidContribution(created.id);
+  return created;
 }
 
 async function fixture() {
@@ -735,7 +740,7 @@ test("initial migration runs on an isolated PostgreSQL engine without applicatio
     const tables = await embedded.query<{ count: number }>(
       "SELECT count(*)::int AS count FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'",
     );
-    assert.equal(tables.rows[0].count, 17);
+    assert.equal(tables.rows[0].count, 19);
     await assert.rejects(
       embedded.query(
         "INSERT INTO users(id,password_hash,first_name,updated_at) VALUES ($1,'test','No contact',now())",
@@ -1326,6 +1331,8 @@ databaseTest(
       });
       await verification.issue(actor.id, "fr");
       await verification.verify(actor.id, code);
+      await assert.rejects(onboarding.submit(actor.id, mentorSubmission()), /contribution/);
+      await paidContribution(actor.id);
       await onboarding.submit(actor.id, mentorSubmission());
       assert.equal(
         (await db.mentorProfile.findUniqueOrThrow({ where: { userId: actor.id } }))
@@ -1634,5 +1641,290 @@ databaseTest(
         else assert.ok(accepted.charterAcceptedAt! > previous);
       }
     });
+  },
+);
+
+async function paidContribution(userId: string) {
+  return db.contributionPayment.create({
+    data: {
+      userId,
+      email: "fixture@example.test",
+      locale: "fr",
+      livemode: stripeLiveMode(),
+      status: "PAID",
+      paidAt: new Date(),
+      stripeSessionId: `cs_test_${randomUUID().replaceAll("-", "")}`,
+      stripePaymentIntentId: `pi_${randomUUID().replaceAll("-", "")}`,
+    },
+  });
+}
+const stripeTestEnv = {
+  STRIPE_MODE: "test",
+  STRIPE_SECRET_KEY: "sk_test_fixture_only",
+  STRIPE_WEBHOOK_SECRET: "whsec_fixture_only",
+  APP_URL: "http://localhost:3000",
+};
+function stripeFixture() {
+  const sessions = new Map<string, Stripe.Checkout.Session>();
+  const keys = new Map<string, Stripe.Checkout.Session>();
+  const params: Stripe.Checkout.SessionCreateParams[] = [];
+  const intents = new Map<string, Stripe.PaymentIntent>();
+  let reads = 0;
+  const gateway: PaymentGateway = {
+    async createSession(input, key) {
+      params.push(input);
+      if (keys.has(key)) return keys.get(key)!;
+      const id = "cs_test_" + randomUUID().replaceAll("-", "");
+      const session = {
+        id,
+        mode: input.mode,
+        livemode: false,
+        amount_total: 3000,
+        currency: "usd",
+        client_reference_id: input.client_reference_id,
+        metadata: input.metadata,
+        payment_status: "unpaid",
+        status: "open",
+        url: "https://checkout.stripe.com/c/pay/" + id,
+        payment_intent: null,
+      } as Stripe.Checkout.Session;
+      keys.set(key, session);
+      sessions.set(id, session);
+      return session;
+    },
+    async retrieveSession(id) {
+      reads++;
+      const session = sessions.get(id);
+      if (!session) throw Error("missing fixture session");
+      return session;
+    },
+    async retrievePaymentIntent(id) {
+      const intent = intents.get(id);
+      if (!intent) throw Error("missing fixture intent");
+      return intent;
+    },
+  };
+  const payments = createContributionService(db, { gateway, env: stripeTestEnv });
+  return { payments, gateway, sessions, params, intents, reads: () => reads };
+}
+async function unpaidMentor() {
+  const mentor = await newMentorCandidate();
+  await db.contributionPayment.deleteMany({ where: { userId: mentor.id } });
+  return mentor;
+}
+function checkoutEvent(
+  session: Stripe.Checkout.Session,
+  type = "checkout.session.completed",
+  id = "evt_" + randomUUID(),
+) {
+  return { id, type, livemode: false, data: { object: session } } as unknown as Stripe.Event;
+}
+function settle(session: Stripe.Checkout.Session) {
+  session.payment_status = "paid";
+  session.status = "complete";
+  session.url = null;
+  session.payment_intent = "pi_" + randomUUID().replaceAll("-", "");
+}
+
+test("Stripe configuration fails closed without keys and separates test from live", () => {
+  assert.throws(() => stripeConfig({}), PaymentError);
+  assert.equal(stripeConfig(stripeTestEnv).live, false);
+  assert.throws(() => stripeConfig({ ...stripeTestEnv, STRIPE_MODE: "live" }), PaymentError);
+  assert.throws(
+    () => stripeConfig({ ...stripeTestEnv, APP_URL: "https://user:secret@example.test" }),
+    PaymentError,
+  );
+  assert.throws(
+    () => stripeConfig({ ...stripeTestEnv, APP_URL: "http://example.test" }),
+    PaymentError,
+  );
+});
+
+databaseTest(
+  "contribution checkout fixes USD 30 server-side and concurrent clicks reuse one session",
+  async () => {
+    const mentor = await unpaidMentor();
+    const f = stripeFixture();
+    assert.equal(
+      mentorDestination((await createOnboardingService(db).getProfile(mentor.id))!),
+      "/contribution",
+    );
+    const urls = await Promise.all([
+      f.payments.checkout(mentor.id, "fr"),
+      f.payments.checkout(mentor.id, "en"),
+    ]);
+    assert.equal(urls[0], urls[1]);
+    assert.equal(f.sessions.size, 1);
+    assert.equal(await db.contributionPayment.count({ where: { userId: mentor.id } }), 1);
+    const request = f.params[0];
+    assert.equal(request.mode, "payment");
+    assert.equal(request.ui_mode, "hosted_page");
+    assert.equal(request.line_items?.[0].price_data?.unit_amount, 3000);
+    assert.equal(request.line_items?.[0].price_data?.currency, "usd");
+    assert.ok(request.success_url?.startsWith("http://localhost:3000/fr/contribution/retour"));
+    assert.equal((await f.payments.status(mentor.id)).paid, false);
+    await withMentorUploads(async (onboarding) =>
+      assert.rejects(onboarding.submit(mentor.id, mentorSubmission()), /contribution/),
+    );
+  },
+);
+
+databaseTest(
+  "paid webhook is idempotent, permits support without documents, and never approves the mentor",
+  async () => {
+    const mentor = await unpaidMentor();
+    const f = stripeFixture();
+    await f.payments.checkout(mentor.id, "en");
+    const session = [...f.sessions.values()][0];
+    settle(session);
+    const event = checkoutEvent(session);
+    await Promise.all([f.payments.handleEvent(event), f.payments.handleEvent(event)]);
+    assert.equal(await db.stripeWebhookEvent.count({ where: { id: event.id } }), 1);
+    assert.equal((await f.payments.status(mentor.id)).paid, true);
+    assert.equal(await f.payments.checkout(mentor.id, "fr"), null);
+    assert.equal(await db.contributionPayment.count({ where: { userId: mentor.id } }), 1);
+    assert.equal(await db.mentorDocument.count({ where: { mentorUserId: mentor.id } }), 0);
+    const profile = await db.mentorProfile.findUniqueOrThrow({ where: { userId: mentor.id } });
+    assert.equal(profile.verificationStatus, "DRAFT");
+    assert.equal(await db.membership.count({ where: { mentorUserId: mentor.id } }), 0);
+    await withMentorUploads(async (onboarding) => onboarding.submit(mentor.id, mentorSubmission()));
+  },
+);
+
+databaseTest(
+  "return reconciliation checks ownership and retrieves Stripe state instead of trusting the URL",
+  async () => {
+    const mentor = await unpaidMentor();
+    const stranger = await unpaidMentor();
+    const f = stripeFixture();
+    await f.payments.checkout(mentor.id, "en");
+    const session = [...f.sessions.values()][0];
+    await assert.rejects(f.payments.reconcile(stranger.id, session.id), PaymentError);
+    assert.equal(f.reads(), 0);
+    assert.equal((await f.payments.reconcile(mentor.id, session.id)).paid, false);
+    settle(session);
+    assert.equal((await f.payments.reconcile(mentor.id, session.id)).paid, true);
+    assert.equal(
+      await db.stripeWebhookEvent.count({ where: { paymentId: session.metadata!.paymentId } }),
+      0,
+    );
+  },
+);
+
+databaseTest(
+  "expired checkout is replaced safely; completed unpaid checkout does not unlock uploads",
+  async () => {
+    const mentor = await unpaidMentor();
+    const f = stripeFixture();
+    await f.payments.checkout(mentor.id, "fr");
+    const first = [...f.sessions.values()][0];
+    first.status = "expired";
+    first.url = null;
+    await f.payments.handleEvent(checkoutEvent(first, "checkout.session.expired"));
+    await f.payments.checkout(mentor.id, "fr");
+    assert.equal(f.sessions.size, 2);
+    const next = [...f.sessions.values()][1];
+    next.status = "complete";
+    next.url = null;
+    await f.payments.handleEvent(checkoutEvent(next));
+    assert.equal((await f.payments.status(mentor.id)).paid, false);
+    await assert.rejects(f.payments.checkout(mentor.id, "fr"), /confirmation/);
+    assert.equal(f.sessions.size, 2);
+  },
+);
+
+databaseTest(
+  "Stripe rejects wrong amount, currency, account binding and test/live mismatches",
+  async () => {
+    const mentor = await unpaidMentor();
+    const f = stripeFixture();
+    await f.payments.checkout(mentor.id, "fr");
+    const session = [...f.sessions.values()][0];
+    settle(session);
+    for (const mutation of [
+      { amount_total: 1 },
+      { currency: "eur" },
+      { client_reference_id: randomUUID() },
+      { livemode: true },
+    ]) {
+      const changed = { ...session, ...mutation };
+      f.sessions.set(session.id, changed);
+      await assert.rejects(f.payments.handleEvent(checkoutEvent(changed)), PaymentError);
+    }
+    assert.equal((await f.payments.status(mentor.id)).paid, false);
+    assert.equal(
+      await db.stripeWebhookEvent.count({ where: { paymentId: session.metadata!.paymentId } }),
+      0,
+    );
+  },
+);
+
+databaseTest(
+  "full refunds revoke contribution access and late completed events cannot restore it",
+  async () => {
+    const mentor = await unpaidMentor();
+    const f = stripeFixture();
+    await f.payments.checkout(mentor.id, "fr");
+    const session = [...f.sessions.values()][0];
+    settle(session);
+    await f.payments.handleEvent(checkoutEvent(session));
+    const intentId = session.payment_intent as string;
+    f.intents.set(intentId, {
+      id: intentId,
+      metadata: session.metadata,
+      amount: 3000,
+      currency: "usd",
+      livemode: false,
+      status: "succeeded",
+    } as Stripe.PaymentIntent);
+    function refund(amount: number) {
+      return {
+        id: "evt_" + randomUUID(),
+        type: "charge.refunded",
+        livemode: false,
+        data: {
+          object: {
+            payment_intent: intentId,
+            amount: 3000,
+            amount_refunded: amount,
+            currency: "usd",
+            livemode: false,
+          },
+        },
+      } as unknown as Stripe.Event;
+    }
+    await f.payments.handleEvent(refund(1000));
+    assert.equal((await f.payments.status(mentor.id)).paid, true);
+    const full = refund(3000);
+    await Promise.all([f.payments.handleEvent(full), f.payments.handleEvent(full)]);
+    assert.equal((await f.payments.status(mentor.id)).paid, false);
+    await f.payments.handleEvent(checkoutEvent(session));
+    await f.payments.handleEvent(refund(500));
+    const row = await db.contributionPayment.findUniqueOrThrow({
+      where: { id: session.metadata!.paymentId },
+    });
+    assert.equal(row.status, "REFUNDED");
+    assert.equal(row.refundedAmount, 3000);
+    await withMentorUploads(async (onboarding) =>
+      assert.rejects(onboarding.submit(mentor.id, mentorSubmission()), /contribution/),
+    );
+  },
+);
+
+databaseTest(
+  "Stripe checkout denies founders, unverified and suspended mentors before calling Stripe",
+  async () => {
+    const f = stripeFixture();
+    const founder = await user("FOUNDER");
+    await assert.rejects(f.payments.checkout(founder.id, "fr"), PaymentError);
+    const mentor = await unpaidMentor();
+    await db.user.update({ where: { id: mentor.id }, data: { emailVerifiedAt: null } });
+    await assert.rejects(f.payments.checkout(mentor.id, "fr"), PaymentError);
+    await db.user.update({
+      where: { id: mentor.id },
+      data: { emailVerifiedAt: new Date(), accountStatus: "SUSPENDED" },
+    });
+    await assert.rejects(f.payments.checkout(mentor.id, "fr"), PaymentError);
+    assert.equal(f.sessions.size, 0);
   },
 );

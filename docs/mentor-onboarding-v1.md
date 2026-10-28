@@ -48,3 +48,7 @@ Le rendu et la navigation ont été vérifiés à 1440, 1280, 960, 768, 390 et 3
 ## Préversion mentor
 
 `MENTOR_PREVIEW_MODE="true"` limite le parcours public à l’inscription mentor, au dépôt et à la validation. Un mentor approuvé voit une page d’attente d’ouverture, sans tableau de bord ni étape d’adhésion. Les inscriptions, connexions et anciennes sessions porteur sont bloquées dans ce mode. Le backend complet est conservé ; aucune modification du schéma n’est nécessaire. Voir [les modalités de préversion](mentor-preview.md).
+
+## Contribution avant dépôt
+
+Le parcours inclut désormais une contribution unique de 30 USD après vérification email. Le soutien peut s’arrêter au remerciement sans document ; la candidature mentor est une poursuite facultative. Le dépôt direct est contrôlé côté serveur et nécessite un paiement confirmé dans le bon environnement Stripe. Voir [l’intégration Stripe](stripe-contributions.md).

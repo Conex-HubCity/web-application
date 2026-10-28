@@ -28,6 +28,13 @@ export default async function Account() {
   const t = await getTranslator();
   const profile = await getAuthenticatedProfile();
   if (profile.roles.includes("ADMIN")) redirect(localizePath("/admin", await getLocale()));
+  if (
+    profile.isMentor &&
+    profile.hasContribution &&
+    profile.mentorStatus === "DRAFT" &&
+    profile.mentorDocuments.length === 0
+  )
+    redirect(localizePath("/contribution", await getLocale()));
   const mentorRedirect = mentorDestination(profile);
   if (mentorRedirect) redirect(localizePath(mentorRedirect, await getLocale()));
   if (isMentorPreviewEnabled()) {

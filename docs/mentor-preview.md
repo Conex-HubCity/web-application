@@ -33,3 +33,7 @@ Passer `MENTOR_PREVIEW_MODE="false"`, reconstruire puis redémarrer. Les inscrip
 ## Email confirmé avant accès
 
 La confirmation email par OTP est désormais obligatoire avant les dépôts et les fonctionnalités protégées. Elle reste distincte de l’acceptation du compte mentor et de la certification WoeAcademy. Les modes de simulation des justificatifs ne confirment jamais un email. Voir [la configuration OTP et SMTP](email-verification.md).
+
+## Contribution avant dépôt
+
+Le parcours inclut désormais une contribution unique de 30 USD après vérification email. Le soutien peut s’arrêter au remerciement sans document ; la candidature mentor est une poursuite facultative. Le dépôt direct est contrôlé côté serveur et nécessite un paiement confirmé dans le bon environnement Stripe. Voir [l’intégration Stripe](stripe-contributions.md).
