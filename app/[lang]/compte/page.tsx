@@ -16,6 +16,7 @@ import { logout } from "@/app/actions/auth";
 import { mentorDestination } from "@/lib/onboarding/mentor-policy";
 import "@/app/panel.css";
 import "@/app/mentor-dashboard.css";
+import { mentorNavigation } from "@/lib/mentor-navigation";
 import { MentorDashboard } from "@/components/mentor-dashboard";
 import { getMentorDashboard } from "@/lib/domain/mentor-dashboard";
 
@@ -28,7 +29,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 const labels = { FOUNDER: "porteur de projet", MENTOR: "mentor", ADMIN: "administrateur" };
 
-export default async function Account() {
+export default async function Account({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string | string[] }>;
+}) {
   const t = await getTranslator();
   const profile = await getAuthenticatedProfile();
   if (profile.roles.includes("ADMIN")) redirect(localizePath("/admin", await getLocale()));
@@ -54,7 +59,11 @@ export default async function Account() {
   if (profile.isMentor) {
     const dashboard = await getMentorDashboard(profile.id);
     if (!dashboard) redirect(localizePath("/mentor/validation", await getLocale()));
-    return <MentorDashboard data={dashboard} />;
+    const requestedView = (await searchParams).view;
+    const initialView =
+      mentorNavigation.find((item) => item.id === requestedView && item.id !== "projects")?.id ??
+      "overview";
+    return <MentorDashboard key={initialView} data={dashboard} initialView={initialView} />;
   }
   return (
     <div className="panel-page">

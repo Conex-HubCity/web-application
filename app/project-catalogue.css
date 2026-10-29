@@ -596,3 +596,18 @@
     transform: none;
   }
 }
+
+/* Catalogue and project details use the mentor workspace spacing. */
+.mentor-shell .pc-workspace-content {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+@media (min-width: 961px) and (max-width: 1250px) {
+  .mentor-shell .pc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .mentor-shell .pc-detail-grid {
+    grid-template-columns: minmax(0, 1fr) 260px;
+  }
+}

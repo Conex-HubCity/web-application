@@ -1,1 +1,1 @@
-export { default } from "@/components/auth-loading";
+export { default } from "@/components/project-loading";

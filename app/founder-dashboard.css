@@ -800,10 +800,13 @@
     width: 16px;
     height: 16px;
   }
+  .fd-sidebar > form {
+    align-self: flex-end;
+    margin-top: 8px;
+  }
   .fd-logout {
-    position: absolute;
-    right: 20px;
-    top: 76px;
+    position: static;
+    padding: 8px 0 0;
     font-size: 9px;
   }
   .fd-logout svg {
