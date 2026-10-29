@@ -14,7 +14,7 @@ export function MentorShell({
   children,
   onNavigate,
 }: {
-  data: { firstName: string; lastName?: string | null; membershipActive?: boolean };
+  data: { firstName: string; lastName?: string | null };
   view: MentorView;
   children: ReactNode;
   onNavigate?: (view: MentorView) => void;
@@ -59,9 +59,6 @@ export function MentorShell({
             >
               <Icon name={item.icon} size={19} />
               <span>{t(item.label)}</span>
-              {item.id === "membership" && data.membershipActive === false && (
-                <i aria-label={t("Adhésion à activer")} />
-              )}
             </button>
           ))}
         </nav>

@@ -1,10 +1,16 @@
 import "server-only";
 import type { PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
-import { createPlatformService } from "./platform-service";
+import { requireProjectCatalogueMentor } from "./project-catalogue";
 import { DomainError } from "./policies";
 
 export async function getMentorDashboard(userId: string, db: PrismaClient = getDb()) {
+  try {
+    await requireProjectCatalogueMentor(userId, db);
+  } catch (error) {
+    if (error instanceof DomainError) return null;
+    throw error;
+  }
   const user = await db.user.findUnique({
     where: { id: userId },
     select: {
@@ -54,23 +60,7 @@ export async function getMentorDashboard(userId: string, db: PrismaClient = getD
     !profile.documents.some((doc) => doc.reviewStatus === "APPROVED" && doc.scanStatus === "CLEAN")
   )
     return null;
-  const now = new Date();
-  const [activeMembership, lastMembership, requests, mentorships] = await Promise.all([
-    db.membership.findFirst({
-      where: {
-        mentorUserId: userId,
-        status: "ACTIVE",
-        startsAt: { lte: now },
-        endsAt: { gt: now },
-      },
-      orderBy: { endsAt: "desc" },
-      select: { status: true, startsAt: true, endsAt: true },
-    }),
-    db.membership.findFirst({
-      where: { mentorUserId: userId },
-      orderBy: { createdAt: "desc" },
-      select: { status: true, startsAt: true, endsAt: true },
-    }),
+  const [requests, mentorships] = await Promise.all([
     db.mentorshipRequest.findMany({
       where: { mentorUserId: userId },
       orderBy: { updatedAt: "desc" },
@@ -116,42 +106,6 @@ export async function getMentorDashboard(userId: string, db: PrismaClient = getD
       },
     }),
   ]);
-  let canBrowse = Boolean(
-    activeMembership &&
-    user.accountStatus === "ACTIVE" &&
-    (user.emailVerifiedAt || user.phoneVerifiedAt),
-  );
-  let projects: {
-    id: string;
-    title: string;
-    summary: string | null;
-    sector: string | null;
-    supportNeeds: string | null;
-  }[] = [];
-  if (canBrowse) {
-    try {
-      const available = await createPlatformService(db).listAvailableProjects(userId);
-      projects = available
-        .flatMap((project) =>
-          project.currentRevision
-            ? [
-                {
-                  id: project.id,
-                  title: project.currentRevision.title,
-                  summary: project.currentRevision.summary,
-                  sector: project.currentRevision.sector,
-                  supportNeeds: project.currentRevision.supportNeeds.join(", ") || null,
-                },
-              ]
-            : [],
-        )
-        .slice(0, 6);
-    } catch (error) {
-      if (!(error instanceof DomainError)) throw error;
-      canBrowse = false;
-    }
-  }
-  const membership = activeMembership ?? lastMembership;
   return {
     firstName: user.firstName,
     lastName: user.lastName,
@@ -169,16 +123,6 @@ export async function getMentorDashboard(userId: string, db: PrismaClient = getD
       type: documentType,
       status: reviewStatus,
     })),
-    membership: membership
-      ? {
-          status: membership.status,
-          startsAt: membership.startsAt?.toISOString() ?? null,
-          endsAt: membership.endsAt?.toISOString() ?? null,
-        }
-      : null,
-    membershipActive: Boolean(activeMembership),
-    canBrowse,
-    projects,
     requests: requests.map((request) => ({
       id: request.id,
       status: request.status,

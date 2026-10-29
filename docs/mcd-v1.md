@@ -629,3 +629,7 @@ Cette présentation n’accorde pas une approbation formelle et n’active pas l
 ### Note d’évolution — identité du projet et droits d’édition
 
 Le porteur dispose d’un aperçu propriétaire séparé (`/compte/projet/apercu`) ; les routes mentor restent strictement réservées aux mentors autorisés. À terme, les changements de nom, concept ou pitch devront être historisés et contrôlés pour empêcher le remplacement déguisé d’un projet. L’édition actuelle est conservée jusqu’à définition de ce workflow ; aucune nouvelle entité ni restriction n’est introduite ici. Le remplacement restera soumis à l’absence de mentorat actif ET à 30 jours sans suivi selon les événements de référence convenus.
+
+### Accès mentor — contribution et validation
+
+Aucune étape « Mon adhésion » ni activation supplémentaire : une contribution unique `ContributionPayment` payée et un dossier mentor validé suffisent pour le tableau de bord et le catalogue, avec les contrôles de compte, email, charte et preuves. Le modèle historique `Membership` reste dans le schéma sans créer d’abonnement ni intervenir dans cet accès. Les données existantes sont conservées ; aucune migration n’est nécessaire.

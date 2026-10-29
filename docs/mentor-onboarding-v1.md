@@ -19,7 +19,7 @@ Les fichiers sont écrits sous `uploads/private/mentors/<uuid>`. Le nom d’orig
 
 La soumission inscrit les pièces en `scan_status=PENDING` et `review_status=PENDING`, puis la candidature en `verification_status=PENDING`, avec `submitted_at` et `charter_accepted_at`. Elle conserve le choix de visibilité privé par défaut. Le dépôt ne vérifie pas le contact et n’active ni le compte ni une adhésion. Le mode de simulation des certificats WoeAcademy ne s’applique jamais aux mentors.
 
-Le premier dépôt exige maintenant un email confirmé ; la session limitée créée après inscription ne peut pas le contourner. Les opérations métier existantes continuent d’exiger un compte actif et un contact vérifié. Le tableau de bord après approbation de candidature ne donne pas, à lui seul, accès aux projets : l’adhésion et les autres droits restent contrôlés par les services métier.
+Le premier dépôt exige maintenant un email confirmé ; la session limitée créée après inscription ne peut pas le contourner. Les opérations métier existantes continuent d’exiger un compte actif et un contact vérifié. L’accès au tableau de bord et au catalogue repose sur la contribution unique payée et la candidature validée, avec compte actif, email confirmé, charte et justificatif accepté. Aucune adhésion supplémentaire n’est nécessaire.
 
 Une transaction verrouille le compte pour éviter les doubles soumissions. Un dossier déjà en examen n’est pas déposé une seconde fois. Les fichiers nouvellement écrits sont supprimés si la transaction échoue. Les pièces antérieures restent dans l’historique lors d’une nouvelle soumission après refus.
 
@@ -52,3 +52,7 @@ Le rendu et la navigation ont été vérifiés à 1440, 1280, 960, 768, 390 et 3
 ## Contribution avant dépôt
 
 Le parcours inclut désormais une contribution unique de 30 USD après vérification email. Le soutien peut s’arrêter au remerciement sans document ; la candidature mentor est une poursuite facultative. Le dépôt direct est contrôlé côté serveur et nécessite un paiement confirmé dans le bon environnement Stripe. Voir [l’intégration Stripe](stripe-contributions.md).
+
+## Accès mentor après contribution et validation
+
+Le menu « Mon adhésion », son écran et les messages d’activation ont été retirés. La contribution unique confirmée dans le bon environnement et la validation du dossier donnent accès à l’espace mentor et aux projets. Le modèle historique `Membership` n’est ni créé ni renouvelé par ce parcours ; son absence ou son expiration ne bloque pas cet accès. Un remboursement ou le retrait de la validation ferme l’accès selon les contrôles serveur existants. Les demandes d’accompagnement restent en cours de développement.

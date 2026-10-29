@@ -1113,7 +1113,7 @@ databaseTest(
 );
 
 databaseTest(
-  "mentor dashboard reads only owned activity and protects the catalogue behind current rights",
+  "mentor dashboard requires paid approved access and ignores legacy membership expiry",
   async () => {
     const f = await fixture();
     await db.mentorDocument.create({
@@ -1141,15 +1141,11 @@ databaseTest(
     });
     const dashboard = await getMentorDashboard(f.mentor.id, db);
     assert.ok(dashboard);
-    assert.equal(dashboard.canBrowse, true);
-    assert.equal(dashboard.membershipActive, true);
+    assert.equal("membership" in dashboard, false);
+    assert.equal("membershipActive" in dashboard, false);
     assert.deepEqual(
       dashboard.requests.map((entry) => entry.id),
       [request.id],
-    );
-    assert.equal(
-      dashboard.projects.find((project) => project.id === f.project.id)?.supportNeeds,
-      "Stratégie, Commercialisation",
     );
     assert.doesNotMatch(
       JSON.stringify(dashboard),
@@ -1163,9 +1159,7 @@ databaseTest(
     });
     const expired = await getMentorDashboard(f.mentor.id, db);
     assert.ok(expired);
-    assert.equal(expired.membershipActive, false);
-    assert.equal(expired.canBrowse, false);
-    assert.deepEqual(expired.projects, []);
+    assert.equal("membershipActive" in expired, false);
     assert.deepEqual(
       expired.requests.map((entry) => entry.id),
       [request.id],

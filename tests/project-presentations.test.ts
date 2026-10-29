@@ -14,6 +14,7 @@ import {
   getFounderProjectPresentation,
   requireProjectCatalogueMentor,
 } from "../lib/domain/project-catalogue";
+import { getMentorDashboard } from "../lib/domain/mentor-dashboard";
 import { stripeLiveMode } from "../lib/payments/config";
 
 const connectionString = process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL;
@@ -282,6 +283,10 @@ databaseTest(
     const saved = await project(owner.id);
     assert.equal(await db.certificationEvidence.count({ where: { founderUserId: owner.id } }), 0);
     assert.equal(await db.membership.count({ where: { mentorUserId: reader.id } }), 0);
+    assert.ok(
+      await getMentorDashboard(reader.id, db),
+      "Payment and approval suffice without Membership",
+    );
     const listed = (await listProjectPresentations(reader.id, db)).find(
       (item) => item.id === saved.id,
     );
@@ -314,6 +319,7 @@ databaseTest(
     const saved = await project(owner.id);
     for (const options of [{ paid: false }, { approved: false }, { verified: false }]) {
       const reader = await mentor(options);
+      assert.equal(await getMentorDashboard(reader.id, db), null);
       await assert.rejects(
         listProjectPresentations(reader.id, db),
         errorCode("CATALOGUE_FORBIDDEN"),
