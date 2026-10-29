@@ -113,6 +113,9 @@ export async function saveFounderProject(
           "PROJECT_LOCKED",
           "Cette version ne peut plus être modifiée directement.",
         );
+      // Future policy: audit identity-changing edits (name, concept, pitch) and require
+      // a replacement review instead of allowing a different project under the same ID.
+      // Keep today's edit permissions until that workflow is explicitly implemented.
       await tx.projectRevision.update({
         where: { id: current.currentRevision.id },
         data: { ...data, presentedAt: current.currentRevision.presentedAt ?? new Date() },

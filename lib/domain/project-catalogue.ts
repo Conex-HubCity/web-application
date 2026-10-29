@@ -1,7 +1,7 @@
 import "server-only";
 import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
-import { isMentorPreviewEnabled } from "@/lib/release";
+import { requireFounderAccount } from "./founder-access";
 import { stripeLiveMode } from "@/lib/payments/config";
 import { DomainError } from "./policies";
 
@@ -202,38 +202,12 @@ export async function listProjectPresentations(
   });
 }
 
-/** Owners can preview their own visible presentation; mentors need full approval. */
+/** Mentor-only detail access. Ownership never bypasses mentor authorization. */
 export async function getProjectPresentation(
   viewerId: string,
   projectId: string,
   db: PrismaClient = getDb(),
 ): Promise<ProjectPresentation | null> {
-  if (!uuid.test(viewerId)) throw forbidden();
-  const viewer = await db.user.findUnique({
-    where: { id: viewerId },
-    select: {
-      accountStatus: true,
-      emailVerifiedAt: true,
-      roles: { select: { role: true } },
-      founderProfile: { select: { adultConfirmedAt: true } },
-      receivedInvitation: { select: { acceptedAt: true } },
-    },
-  });
-  if (!viewer || viewer.accountStatus !== "ACTIVE" || !viewer.emailVerifiedAt) throw forbidden();
-  const canOwn =
-    viewer.roles.some(({ role }) => role === "FOUNDER") &&
-    Boolean(viewer.founderProfile?.adultConfirmedAt) &&
-    (!isMentorPreviewEnabled() || Boolean(viewer.receivedInvitation?.acceptedAt));
-  if (canOwn) {
-    if (!uuid.test(projectId)) return null;
-    const owned = await db.project.findFirst({
-      where: { ...visiblePresentation, id: projectId, founderUserId: viewerId },
-      select: presentationSelect,
-    });
-    if (owned) return presentation(owned, viewerId);
-    // The same not-found response covers an unknown project and another owner's.
-    if (!viewer.roles.some(({ role }) => role === "MENTOR")) return null;
-  }
   await requireProjectCatalogueMentor(viewerId, db);
   if (!uuid.test(projectId)) return null;
   const row = await db.project.findFirst({
@@ -241,4 +215,22 @@ export async function getProjectPresentation(
     select: presentationSelect,
   });
   return row ? presentation(row, viewerId) : null;
+}
+
+/** Own-project preview: identity comes from the session, never a requested project ID. */
+export async function getFounderProjectPresentation(
+  founderId: string,
+  db: PrismaClient = getDb(),
+): Promise<ProjectPresentation | null> {
+  if (!uuid.test(founderId))
+    throw new DomainError(
+      "FOUNDER_UNAVAILABLE",
+      "Cet espace est réservé aux porteurs de projet autorisés.",
+    );
+  await requireFounderAccount(founderId, db);
+  const row = await db.project.findFirst({
+    where: { ...visiblePresentation, founderUserId: founderId },
+    select: presentationSelect,
+  });
+  return row ? presentation(row, founderId) : null;
 }

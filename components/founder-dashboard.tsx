@@ -68,7 +68,7 @@ export function FounderDashboard({ data }: { data: FounderDashboardData }) {
             {t("Mon projet")}
           </button>
           {project?.visible && (
-            <Link href={`/mentor/projets/${project.id}`}>
+            <Link href="/compte/projet/apercu">
               <Icon name="diagonal" />
               {t("Voir la présentation")}
             </Link>
@@ -189,7 +189,7 @@ export function FounderDashboard({ data }: { data: FounderDashboardData }) {
                       <Icon name="arrow" size={17} />
                     </button>
                     {project?.visible && (
-                      <Link href={`/mentor/projets/${project.id}`} className="fd-text-action">
+                      <Link href="/compte/projet/apercu" className="fd-text-action">
                         {t("Voir la présentation")}
                         <Icon name="diagonal" size={15} />
                       </Link>
@@ -297,7 +297,7 @@ export function FounderDashboard({ data }: { data: FounderDashboardData }) {
                 <h2>{project.title}</h2>
                 <p>{t("Cette version ne peut plus être modifiée directement.")}</p>
                 {project.visible && (
-                  <Link className="fd-primary" href={`/mentor/projets/${project.id}`}>
+                  <Link className="fd-primary" href="/compte/projet/apercu">
                     {t("Voir la présentation")}
                   </Link>
                 )}

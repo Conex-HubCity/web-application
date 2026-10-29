@@ -11,6 +11,7 @@ import { saveFounderProject, getFounderDashboard } from "../lib/domain/founder-d
 import {
   listProjectPresentations,
   getProjectPresentation,
+  getFounderProjectPresentation,
   requireProjectCatalogueMentor,
 } from "../lib/domain/project-catalogue";
 import { stripeLiveMode } from "../lib/payments/config";
@@ -291,7 +292,11 @@ databaseTest(
     const detail = await getProjectPresentation(reader.id, saved.id, db);
     assert.ok(detail);
     assertSafe(detail);
-    const own = await getProjectPresentation(owner.id, saved.id, db);
+    const own = await getFounderProjectPresentation(owner.id, db);
+    await assert.rejects(
+      getProjectPresentation(owner.id, saved.id, db),
+      errorCode("CATALOGUE_FORBIDDEN"),
+    );
     assert.equal(own?.isOwner, true);
     assert.equal(
       await db.mentorshipRequest.count({ where: { projectRevisionId: saved.currentRevisionId! } }),
@@ -322,7 +327,11 @@ databaseTest(
       listProjectPresentations(stranger.id, db),
       errorCode("CATALOGUE_FORBIDDEN"),
     );
-    assert.equal(await getProjectPresentation(stranger.id, saved.id, db), null);
+    await assert.rejects(
+      getProjectPresentation(stranger.id, saved.id, db),
+      errorCode("CATALOGUE_FORBIDDEN"),
+    );
+    assert.equal(await getFounderProjectPresentation(stranger.id, db), null);
     const reader = await mentor();
     await db.mentorProfile.update({
       where: { userId: reader.id },
@@ -447,3 +456,35 @@ databaseTest(
     assertSafe(detail);
   },
 );
+
+databaseTest("owner previews and mentor details have separate role gates", async () => {
+  const owner = await founder(),
+    other = await founder(),
+    reader = await mentor();
+  await saveFounderProject(owner.id, form(), db);
+  await saveFounderProject(other.id, form({ title: "Another private identity" }), db);
+  const saved = await project(owner.id);
+  assert.equal((await getFounderProjectPresentation(owner.id, db))?.id, saved.id);
+  assert.notEqual((await getFounderProjectPresentation(other.id, db))?.id, saved.id);
+  await assert.rejects(
+    getProjectPresentation(owner.id, saved.id, db),
+    errorCode("CATALOGUE_FORBIDDEN"),
+  );
+  await assert.rejects(
+    getFounderProjectPresentation(reader.id, db),
+    errorCode("FOUNDER_UNAVAILABLE"),
+  );
+  await assert.rejects(
+    getProjectPresentation(randomUUID(), saved.id, db),
+    errorCode("CATALOGUE_FORBIDDEN"),
+  );
+  await assert.rejects(
+    getFounderProjectPresentation(randomUUID(), db),
+    errorCode("FOUNDER_UNAVAILABLE"),
+  );
+  await db.user.update({ where: { id: owner.id }, data: { accountStatus: "SUSPENDED" } });
+  await assert.rejects(
+    getFounderProjectPresentation(owner.id, db),
+    errorCode("FOUNDER_UNAVAILABLE"),
+  );
+});

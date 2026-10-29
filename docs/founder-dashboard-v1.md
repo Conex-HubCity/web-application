@@ -22,7 +22,7 @@ Une image retirée de la présentation n’est plus accessible aux mentors si au
 
 Le catalogue `/mentor/projets` et les fiches `/mentor/projets/[projectId]` proposent recherche, filtre par secteur, miniatures, présentation complète, pitch et liens. Ils sont réservés aux mentors actifs, email confirmé, candidature acceptée, charte acceptée, preuve approuvée et contrôlée, contribution unique payée dans le bon environnement. L’ancien modèle `Membership` ne bloque pas la lecture de ces présentations.
 
-Les porteurs voient leur propre fiche, pas celles des autres. Une présentation d’un compte désactivé, non vérifié, d’une révision archivée ou rejetée/retirée n’entre pas dans le catalogue. Les emails, sessions, clés de stockage, certificats et fichiers confidentiels n’y figurent pas.
+Les porteurs consultent uniquement leur propre fiche via `/compte/projet/apercu`. Cette route déduit le projet du compte connecté, sans identifiant de projet fourni par le client. Les routes `/mentor/projets` et `/mentor/projets/[projectId]` refusent les porteurs, y compris le propriétaire du projet ; elles ne proposent aucune exception propriétaire. Les deux parcours partagent uniquement le composant visuel de présentation, sans partager leurs autorisations. Une présentation d’un compte désactivé, non vérifié, d’une révision archivée ou rejetée/retirée n’entre pas dans le catalogue. Les emails, sessions, clés de stockage, certificats et fichiers confidentiels n’y figurent pas.
 
 **Aucune demande d’accompagnement n’est activée.** Le bouton reste désactivé et affiche « En cours de développement ». Les écrans ne créent aucune demande, rencontre ni relation de mentorat.
 
@@ -33,3 +33,9 @@ Les porteurs voient leur propre fiche, pas celles des autres. Une présentation 
 Le compte porteur doit être actif, son email et sa majorité confirmés ; en préversion, une invitation acceptée reste nécessaire. L’inscription publique reste fermée. Le formulaire ne prend jamais l’identité ou le projet cible depuis le client. Le serveur vérifie aussi que l’image choisie appartient au porteur. Le remplacement d’un projet conserve les règles métier existantes ; cette interface ne crée pas un deuxième projet.
 
 Deux migrations ajoutent les données de présentation, le modèle `ProjectImage` et la protection de l’historique. Prisma et MCD comptent désormais 22 modèles. Les présentations anciennes sans lien de pitch ne sont pas automatiquement exposées : le porteur doit compléter la fiche.
+
+## Évolution prévue : modifications et identité du projet
+
+Le nom, la présentation et les autres champs restent modifiables pour le moment. Cette permission ne constitue pas une règle définitive. Une future version devra distinguer une correction de la transformation de la fiche en un nouveau projet : historique des changements significatifs (nom, concept, pitch), auteur et date, comparaison avant/après et éventuelle validation administrative. Les champs d’identité pourront devenir restreints après publication ou accompagnement, tandis que les liens et médias pourront conserver des permissions distinctes.
+
+Un renommage ou une réécriture ne devra pas contourner le remplacement du projet : aucun mentorat actif ET au moins 30 jours sans suivi, calculés depuis le dernier rendez-vous réalisé ou bilan approuvé, sinon depuis la première soumission. Ce mécanisme reste à concevoir et n’est pas ajouté à cette correction.

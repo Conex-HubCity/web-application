@@ -625,3 +625,7 @@ Cette contribution ne crée pas d’abonnement et reste distincte du modèle `Me
 Le formulaire publie une présentation consultable par les mentors validés : lien de pitch obligatoire, réseaux sociaux facultatifs, liens personnalisés et image de marque. `ProjectRevision.presented_at` porte cette visibilité ; `pitch_url`, `social_links`, `custom_links` et `branding_image_id` complètent la fiche. Le modèle `ProjectImage` conserve les variantes complète et miniature générées automatiquement.
 
 Cette présentation n’accorde pas une approbation formelle et n’active pas l’accompagnement. Les demandes restent désactivées avec « En cours de développement ». Les champs de revue, de certification et de publication du dossier confidentiel gardent leurs règles propres. Voir [l’espace porteur et les présentations](founder-dashboard-v1.md).
+
+### Note d’évolution — identité du projet et droits d’édition
+
+Le porteur dispose d’un aperçu propriétaire séparé (`/compte/projet/apercu`) ; les routes mentor restent strictement réservées aux mentors autorisés. À terme, les changements de nom, concept ou pitch devront être historisés et contrôlés pour empêcher le remplacement déguisé d’un projet. L’édition actuelle est conservée jusqu’à définition de ce workflow ; aucune nouvelle entité ni restriction n’est introduite ici. Le remplacement restera soumis à l’absence de mentorat actif ET à 30 jours sans suivi selon les événements de référence convenus.
