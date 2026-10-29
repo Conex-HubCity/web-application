@@ -7,7 +7,7 @@ import { Link } from "@/components/i18n";
 import { AdminBadge, AdminPagination, adminLabels, adminDate } from "@/components/admin/shared";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator();
-  return { title: t("Administration — Connex") };
+  return { title: t("Administration — CNX") };
 }
 export default async function Admin({ searchParams }: { searchParams: Promise<AdminQuery> }) {
   const actor = await requireAdmin();

@@ -41,3 +41,7 @@ Le parcours inclut désormais une contribution unique de 30 USD après vérifica
 ## Porteurs invités
 
 L’inscription publique reste fermée. Un administrateur peut désormais inviter un porteur depuis la liste des utilisateurs ; après définition du mot de passe par le destinataire, son invitation acceptée autorise la connexion à un accueil d’attente. Les porteurs ordinaires sans invitation acceptée restent bloqués. Voir [les invitations privées](password-links.md).
+
+## Catalogue des présentations
+
+Les mentors validés et contributeurs peuvent désormais consulter les présentations de projets depuis la page d’acceptation ou leur tableau de bord. La consultation du catalogue ne requiert pas l’ancienne adhésion métier. Les demandes d’accompagnement restent en cours de développement et désactivées. Les porteurs invités peuvent publier leur présentation avec un lien de pitch obligatoire, des liens facultatifs et un visuel généré en version complète et miniature. Voir [les présentations de projet](founder-dashboard-v1.md).

@@ -1,3 +1,4 @@
+import { getFounderDashboard, saveFounderProject } from "../lib/domain/founder-dashboard";
 import {
   createPasswordLinkService,
   passwordLinkOrigin,
@@ -745,7 +746,7 @@ test("initial migration runs on an isolated PostgreSQL engine without applicatio
     const tables = await embedded.query<{ count: number }>(
       "SELECT count(*)::int AS count FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'",
     );
-    assert.equal(tables.rows[0].count, 21);
+    assert.equal(tables.rows[0].count, 22);
     await assert.rejects(
       embedded.query(
         "INSERT INTO users(id,password_hash,first_name,updated_at) VALUES ($1,'test','No contact',now())",
@@ -2236,3 +2237,177 @@ databaseTest(
     assert.equal(await db.user.count({ where: { email } }), 0);
   },
 );
+
+async function dashboardFounder() {
+  const founder = await user("FOUNDER");
+  const admin = await user("ADMIN");
+  await db.accountInvitation.create({
+    data: { userId: founder.id, invitedById: admin.id, acceptedAt: new Date() },
+  });
+  return founder;
+}
+function projectForm(
+  input: {
+    title?: string;
+    summary?: string;
+    sector?: string;
+    stage?: string;
+    needs?: string[];
+  } = {},
+) {
+  const form = new FormData();
+  form.set("title", input.title ?? "A founder project");
+  form.set("summary", input.summary ?? "A solution for local producers.");
+  form.set("sector", input.sector ?? "Agriculture");
+  form.set("stage", input.stage ?? "IDEA");
+  form.set("pitchUrl", "https://example.test/pitch");
+  for (const need of input.needs ?? ["Stratégie"]) form.append("supportNeeds", need);
+  return form;
+}
+
+databaseTest(
+  "invited founder dashboard publishes and edits one mentor-visible presentation before certification",
+  async () => {
+    const founder = await dashboardFounder();
+    const empty = await getFounderDashboard(founder.id, db);
+    assert.equal(empty.project, null);
+    assert.equal(empty.certified, false);
+    await saveFounderProject(founder.id, projectForm({ title: "  My first project  " }), db);
+    const project = await db.project.findUniqueOrThrow({
+      where: { founderUserId: founder.id },
+      include: { currentRevision: true },
+    });
+    assert.equal(project.currentRevision?.title, "My first project");
+    assert.equal(project.currentRevision?.reviewStatus, "DRAFT");
+    assert.equal(project.currentRevision?.publishedAt, null);
+    assert.equal(project.currentRevision?.privatePitchStorageKey, null);
+    await saveFounderProject(
+      founder.id,
+      projectForm({ title: "My updated project", needs: ["Stratégie", "Produit et technologie"] }),
+      db,
+    );
+    assert.equal(await db.project.count({ where: { founderUserId: founder.id } }), 1);
+    assert.equal(await db.projectRevision.count({ where: { projectId: project.id } }), 1);
+    const dashboard = await getFounderDashboard(founder.id, db);
+    assert.equal(dashboard.project?.title, "My updated project");
+    assert.equal(dashboard.project?.visible, true);
+    assert.deepEqual(dashboard.project?.supportNeeds, ["Stratégie", "Produit et technologie"]);
+    assert.equal(dashboard.certified, false);
+    assert.equal(JSON.stringify(dashboard).includes("privatePitchStorageKey"), false);
+    await assert.rejects(
+      service.submitProject(founder.id, project.id),
+      expectCode("CERTIFICATION_REQUIRED"),
+    );
+  },
+);
+
+databaseTest(
+  "founder project actions ignore forged identity, publication and foreign project IDs",
+  async () => {
+    const owner = await dashboardFounder();
+    const other = await dashboardFounder();
+    const victim = await service.createProject(other.id, { title: "Another owner's project" });
+    const form = projectForm();
+    form.set("userId", other.id);
+    form.set("projectId", victim.id);
+    form.set("reviewStatus", "APPROVED");
+    form.set("publishedAt", new Date().toISOString());
+    form.set("privatePitchStorageKey", "forged");
+    await saveFounderProject(owner.id, form, db);
+    const own = await db.project.findUniqueOrThrow({
+      where: { founderUserId: owner.id },
+      include: { currentRevision: true },
+    });
+    assert.equal(own.currentRevision?.reviewStatus, "DRAFT");
+    assert.equal(own.currentRevision?.privatePitchStorageKey, null);
+    assert.equal(own.currentRevision?.publishedAt, null);
+    assert.equal(
+      (await db.projectRevision.findUniqueOrThrow({ where: { id: victim.currentRevisionId! } }))
+        .title,
+      "Another owner's project",
+    );
+  },
+);
+
+databaseTest(
+  "founder project dashboard denies other roles, unverified accounts and missing majority",
+  async () => {
+    for (const role of ["ADMIN", "MENTOR"] as const) {
+      const actor = await user(role);
+      await assert.rejects(getFounderDashboard(actor.id, db), expectCode("FOUNDER_UNAVAILABLE"));
+      await assert.rejects(
+        saveFounderProject(actor.id, projectForm(), db),
+        expectCode("FOUNDER_UNAVAILABLE"),
+      );
+    }
+    const founder = await dashboardFounder();
+    await db.user.update({ where: { id: founder.id }, data: { emailVerifiedAt: null } });
+    await assert.rejects(
+      saveFounderProject(founder.id, projectForm(), db),
+      expectCode("FOUNDER_UNAVAILABLE"),
+    );
+    await db.user.update({
+      where: { id: founder.id },
+      data: { emailVerifiedAt: new Date(), accountStatus: "SUSPENDED" },
+    });
+    await assert.rejects(getFounderDashboard(founder.id, db), expectCode("FOUNDER_UNAVAILABLE"));
+    await db.user.update({ where: { id: founder.id }, data: { accountStatus: "ACTIVE" } });
+    await db.founderProfile.update({
+      where: { userId: founder.id },
+      data: { adultConfirmedAt: null },
+    });
+    await assert.rejects(
+      saveFounderProject(founder.id, projectForm(), db),
+      expectCode("FOUNDER_UNAVAILABLE"),
+    );
+    assert.equal(await db.project.count({ where: { founderUserId: founder.id } }), 0);
+  },
+);
+
+databaseTest(
+  "submitted project versions are locked against edits from the founder form",
+  async () => {
+    const founder = await dashboardFounder();
+    await saveFounderProject(founder.id, projectForm(), db);
+    const project = await db.project.findUniqueOrThrow({ where: { founderUserId: founder.id } });
+    await db.projectRevision.update({
+      where: { id: project.currentRevisionId! },
+      data: {
+        reviewStatus: "SUBMITTED",
+        submittedAt: new Date(),
+        privatePitchStorageKey: randomUUID(),
+        pitchOriginalFilename: "fixture-pitch.pdf",
+        pitchSizeBytes: BigInt(100),
+        pitchChecksum: hash,
+        pitchScanStatus: "CLEAN",
+      },
+    });
+    await assert.rejects(
+      saveFounderProject(founder.id, projectForm({ title: "Forbidden change" }), db),
+      expectCode("PROJECT_LOCKED"),
+    );
+    assert.equal((await getFounderDashboard(founder.id, db)).project?.title, "A founder project");
+  },
+);
+
+databaseTest("project field limits and concurrent first saves preserve one project", async () => {
+  const founder = await dashboardFounder();
+  for (const input of [
+    { title: "x".repeat(201) },
+    { summary: "x".repeat(6001) },
+    { sector: "x".repeat(151) },
+    { needs: Array.from({ length: 11 }, (_, i) => "need" + i) },
+  ])
+    await assert.rejects(
+      saveFounderProject(founder.id, projectForm(input), db),
+      expectCode("INVALID_INPUT"),
+    );
+  const results = await Promise.allSettled([
+    saveFounderProject(founder.id, projectForm(), db),
+    saveFounderProject(founder.id, projectForm(), db),
+  ]);
+  assert.ok(results.some((result) => result.status === "fulfilled"));
+  assert.equal(await db.project.count({ where: { founderUserId: founder.id } }), 1);
+  const project = await db.project.findUniqueOrThrow({ where: { founderUserId: founder.id } });
+  assert.equal(await db.projectRevision.count({ where: { projectId: project.id } }), 1);
+});

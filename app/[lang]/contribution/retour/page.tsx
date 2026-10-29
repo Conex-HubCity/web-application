@@ -9,7 +9,7 @@ import { localizePath } from "@/lib/i18n/config";
 import { createContributionService } from "@/lib/payments/service";
 import "@/app/panel.css";
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: "Connex", robots: { index: false, follow: false } };
+  return { title: "CNX", robots: { index: false, follow: false } };
 }
 export default async function ContributionReturn({
   searchParams,

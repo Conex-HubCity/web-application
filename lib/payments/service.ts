@@ -164,9 +164,7 @@ export function createContributionService(
           !payment.stripeSessionId &&
           Date.now() - payment.createdAt.getTime() > 23 * 60 * 60 * 1000
         )
-          throw new PaymentError(
-            "Contactez l’équipe Connex pour vérifier votre précédent paiement.",
-          );
+          throw new PaymentError("Contactez l’équipe CNX pour vérifier votre précédent paiement.");
         const api = gateway();
         const metadata = { paymentId: payment.id, userId, purpose: "connex_support" };
         const session = payment.stripeSessionId
@@ -191,8 +189,8 @@ export function createContributionService(
                       product_data: {
                         name:
                           payment.locale === "en"
-                            ? "Connex platform contribution"
-                            : "Contribution au fonctionnement de Connex",
+                            ? "CNX platform contribution"
+                            : "Contribution au fonctionnement de CNX",
                       },
                     },
                   },

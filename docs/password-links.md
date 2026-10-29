@@ -20,7 +20,7 @@ Un compte existant ordinaire ou une invitation déjà acceptée n’est jamais c
 
 `FOUNDER_REGISTRATION_ENABLED="false"` ferme l’inscription publique des porteurs, même si `MENTOR_PREVIEW_MODE` est désactivé pour travailler sur le mode complet. La page d’inscription porteur redirige vers celle des mentors ; le service refuse également les soumissions directes. L’ouverture publique ultérieure exige explicitement `FOUNDER_REGISTRATION_ENABLED="true"` et un mode mentor non limité. Seuls les porteurs disposant d’une invitation enregistrée **et acceptée** peuvent se connecter en préversion. Une récupération de mot de passe d’un porteur ordinaire ne crée pas cette exception. Le contrôle est refait à chaque lecture de session.
 
-En mode préversion, les porteurs invités arrivent sur un accueil indiquant que leur compte est activé et que leur espace sera disponible prochainement. Cela ne débloque ni le parcours public de certification ni les fonctionnalités encore fermées. Les accès mentors et admin existants restent distincts. En mode complet, les porteurs invités retrouvent le parcours existant avec ses contrôles de certification ; une invitation ne certifie personne.
+Les porteurs invités arrivent désormais dans l’espace porteur pour publier la présentation de leur projet. La présentation devient visible aux mentors une fois complétée ; la certification et l’accompagnement gardent leurs contrôles distincts. Les accès mentors et admin existants restent distincts. En mode complet, les porteurs invités retrouvent le parcours existant avec ses contrôles de certification ; une invitation ne certifie personne.
 
 ## Stockage et déploiement
 

@@ -8,7 +8,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator();
-  return { title: t("Devenir mentor — Connex") };
+  return { title: t("Devenir mentor — CNX") };
 }
 export default async function MentorRegistration() {
   if (await getCurrentUser()) redirect(localizePath("/compte", await getLocale()));

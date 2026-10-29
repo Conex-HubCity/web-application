@@ -76,14 +76,14 @@ export function AuthEntry({
                   )
               : t(
                   mentorPreview
-                    ? "Connectez-vous à votre compte Connex."
+                    ? "Connectez-vous à votre compte CNX."
                     : "Connectez-vous à votre parcours de mentor ou de porteur de projet.",
                 )}
           </p>
           {register && mentor && (
             <p className="auth-field-hint">
               {t(
-                "Après confirmation de votre email, une contribution unique de 30 USD soutient le fonctionnement de Connex. Vous pourrez ensuite proposer votre candidature mentor si vous le souhaitez.",
+                "Après confirmation de votre email, une contribution unique de 30 USD soutient le fonctionnement de CNX. Vous pourrez ensuite proposer votre candidature mentor si vous le souhaitez.",
               )}
             </p>
           )}
@@ -172,7 +172,7 @@ export function AuthEntry({
               <label className="auth-checkbox">
                 <input name="adultConfirmed" type="checkbox" required />
                 <span>
-                  {t("Je confirme avoir 18 ans ou plus, condition d’accès au pilote Connex.")}
+                  {t("Je confirme avoir 18 ans ou plus, condition d’accès au pilote CNX.")}
                 </span>
               </label>
             )}
@@ -204,7 +204,7 @@ export function AuthEntry({
             </Link>
           )}
           <p className="auth-switch">
-            {register ? t("Déjà un compte ?") : t("Vous découvrez Connex ?")}{" "}
+            {register ? t("Déjà un compte ?") : t("Vous découvrez CNX ?")}{" "}
             <Link
               href={
                 register
@@ -247,7 +247,7 @@ export function AuthEntry({
                 <>
                   {" "}
                   {t("Vos rencontres.")} <br />
-                  <em>{t("Votre espace Connex.")}</em>
+                  <em>{t("Votre espace CNX.")}</em>
                 </>
               ) : mentor ? (
                 <>
@@ -273,7 +273,7 @@ export function AuthEntry({
                 : mentor
                   ? [
                       t("Présentez votre parcours et votre expertise."),
-                      t("L’équipe Connex vérifie votre candidature."),
+                      t("L’équipe CNX vérifie votre candidature."),
                       t(
                         mentorPreview
                           ? "Après validation, vous serez informé de l’ouverture de votre espace."
@@ -299,7 +299,7 @@ export function AuthEntry({
                   )
                 : mentor
                   ? t(
-                      "Chaque mise en relation passe par Connex et nécessite l’accord explicite des deux parties.",
+                      "Chaque mise en relation passe par CNX et nécessite l’accord explicite des deux parties.",
                     )
                   : t(
                       "Votre profil reste privé avant validation. Votre certificat et les pièces sensibles restent confidentiels.",

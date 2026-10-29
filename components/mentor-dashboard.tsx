@@ -1,6 +1,8 @@
 "use client";
 import { useTranslations, useLocale } from "@/components/i18n";
 
+import { useRouter } from "next/navigation";
+import { localizePath } from "@/lib/i18n/config";
 import { useState } from "react";
 import { MentorProfile } from "./mentor-profile";
 import { Brand } from "./brand";
@@ -18,7 +20,7 @@ const navigation = [
 ] as const;
 type View = (typeof navigation)[number]["id"];
 const requestLabels: Record<string, string> = {
-  PENDING_REVIEW: "Examen par Connex",
+  PENDING_REVIEW: "Examen par CNX",
   REJECTED: "Demande non retenue",
   INVITED: "Rencontre à organiser",
   INTRO_SCHEDULED: "Rencontre programmée",
@@ -53,6 +55,7 @@ function EmptyState({
 export function MentorDashboard({ data }: { data: MentorDashboardData }) {
   const t = useTranslations();
   const locale = useLocale();
+  const router = useRouter();
   const date = (value: string) =>
     new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "fr-FR", {
       dateStyle: "long",
@@ -63,6 +66,10 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
   const initials = (data.firstName.charAt(0) + (data.lastName?.charAt(0) ?? "")).toUpperCase();
   const activeLabel = navigation.find((item) => item.id === view)!.label;
   function go(next: View) {
+    if (next === "projects") {
+      router.push(localizePath("/mentor/projets", locale));
+      return;
+    }
     setView(next);
     window.scrollTo(0, 0);
   }
@@ -122,7 +129,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
               <strong>
                 {firstName} {data.lastName}
               </strong>
-              <small>{t("Mentor Connex")}</small>
+              <small>{t("Mentor CNX")}</small>
             </span>
             <Icon name="chevron" size={15} />
           </button>
@@ -181,7 +188,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                       : view === "mentorships"
                         ? t("Un lien se construit, un échange après l’autre.")
                         : view === "profile"
-                          ? t("Votre parcours, votre expertise, votre place dans Connex.")
+                          ? t("Votre parcours, votre expertise, votre place dans CNX.")
                           : t("Un engagement pour transmettre dans la durée.")}
               </p>
             </div>
@@ -294,7 +301,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                       </span>
                       <div>
                         <h3>{t("Candidature validée")}</h3>
-                        <p>{t("Bienvenue dans le cercle Connex.")}</p>
+                        <p>{t("Bienvenue dans le cercle CNX.")}</p>
                       </div>
                     </li>
                     <li className={data.membershipActive ? "done" : "current"}>
@@ -346,7 +353,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                     <h3>
                       {data.visibility === "PRIVATE"
                         ? t("Votre profil reste privé.")
-                        : t("Votre visibilité sur Connex.")}
+                        : t("Votre visibilité sur CNX.")}
                     </h3>
                     <p>{t("Vos justificatifs restent confidentiels.")}</p>
                     {action("profile", t("Voir mon profil"))}
@@ -441,7 +448,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                   <EmptyState icon="message" title={t("Tout commence par un intérêt partagé.")}>
                     {" "}
                     {t(
-                      "Vos demandes et leurs prochaines étapes apparaîtront ici, de l’examen par Connex à la rencontre.",
+                      "Vos demandes et leurs prochaines étapes apparaîtront ici, de l’examen par CNX à la rencontre.",
                     )}{" "}
                   </EmptyState>
                   <div className="md-centered-action">
@@ -532,7 +539,7 @@ export function MentorDashboard({ data }: { data: MentorDashboardData }) {
                   {
                     icon: "compass",
                     title: t("Des projets validés"),
-                    text: t("Des parcours examinés par Connex, avec des besoins identifiés."),
+                    text: t("Des parcours examinés par CNX, avec des besoins identifiés."),
                   },
                   {
                     icon: "people",

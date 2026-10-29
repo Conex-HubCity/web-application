@@ -1,5 +1,6 @@
 import { isMentorPreviewEnabled, isFounderRegistrationEnabled } from "@/lib/release";
-import { getTranslator } from "@/lib/i18n/server";
+import type { Metadata } from "next";
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 import Image from "next/image";
 import { Link } from "@/components/i18n";
 import { Brand } from "@/components/brand";
@@ -7,6 +8,14 @@ import { Icon } from "@/components/icon";
 import { ReplayIntroduction, SplashScreen } from "@/components/splash-screen";
 import { HomeSections } from "@/components/home-sections";
 import "@/app/home-sections.css";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return {
+    title:
+      locale === "en" ? "Connex — Connections that help us grow" : "Connex — Le lien nous élève",
+  };
+}
 
 export default async function Home() {
   const t = await getTranslator();
@@ -19,7 +28,7 @@ export default async function Home() {
         {t("Aller au contenu")}{" "}
       </a>
       <header className="welcome-header welcome-public-header welcome-container">
-        <Brand />
+        <Brand full />
         <nav className="welcome-nav" aria-label={t("Navigation principale")}>
           <a href="#les-parcours">{t("Les parcours")}</a>
           <a href="#comment-ca-marche">{t("Comment ça marche")}</a>
@@ -148,7 +157,7 @@ export default async function Home() {
       </main>
       <footer className="welcome-footer welcome-container">
         <div>
-          <Brand />
+          <Brand full />
           <p>
             {" "}
             {t("Un réseau de confiance.")} <br /> {t("Une ambition partagée.")}{" "}

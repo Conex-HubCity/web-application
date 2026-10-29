@@ -55,8 +55,27 @@ function projectData(input: ProjectDraft) {
       "INVALID_INPUT",
       "Les besoins doivent être une liste de textes.",
     );
+  const title = requiredText(input.title, "Le titre");
+  requireCondition(
+    title.length <= 200,
+    "INVALID_INPUT",
+    "Le titre ne doit pas dépasser 200 caractères.",
+  );
+  requireCondition(
+    (input.summary?.length ?? 0) <= 6000 &&
+      (input.sector?.length ?? 0) <= 150 &&
+      (input.stage?.length ?? 0) <= 100,
+    "INVALID_INPUT",
+    "La présentation du projet est trop longue.",
+  );
+  requireCondition(
+    (input.supportNeeds?.length ?? 0) <= 10 &&
+      (input.supportNeeds ?? []).every((value) => value.length <= 200),
+    "INVALID_INPUT",
+    "Choisissez jusqu’à dix besoins d’accompagnement.",
+  );
   return {
-    title: requiredText(input.title, "Le titre"),
+    title,
     summary: text(input.summary),
     sector: text(input.sector),
     stage: text(input.stage),
@@ -65,7 +84,7 @@ function projectData(input: ProjectDraft) {
 }
 
 // actorId must come from a verified server session, never a request-body identity.
-// No HTTP endpoint is exposed before authentication is implemented.
+// Public Server Actions authenticate before calling this service.
 export function createPlatformService(db: PrismaClient = getDb()) {
   async function transaction<T>(operation: (tx: Tx) => Promise<T>): Promise<T> {
     for (let attempt = 0; ; attempt++) {

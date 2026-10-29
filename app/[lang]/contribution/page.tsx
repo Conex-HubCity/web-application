@@ -13,7 +13,7 @@ import { refreshContribution } from "@/app/actions/contribution";
 import "@/app/panel.css";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator();
-  return { title: t("Soutenir Connex"), robots: { index: false, follow: false } };
+  return { title: t("Soutenir CNX"), robots: { index: false, follow: false } };
 }
 export default async function Contribution({
   searchParams,
@@ -39,7 +39,7 @@ export default async function Contribution({
       </header>
       <main className="welcome-container certification-main">
         <section className="certification-card contribution-card">
-          <h1>{t(status.paid ? "Merci de soutenir Connex." : "Soutenir Connex")}</h1>
+          <h1>{t(status.paid ? "Merci de soutenir CNX." : "Soutenir CNX")}</h1>
           {status.paid ? (
             <Link className="auth-submit" href="/mentor/candidature">
               {t("Devenir mentor")}

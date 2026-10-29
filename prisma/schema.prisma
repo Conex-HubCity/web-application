@@ -148,6 +148,7 @@ model User {
   authoredFollowUps    FollowUp[]            @relation("FollowUpAuthor")
   reviewedFollowUps    FollowUp[]            @relation("FollowUpReviewer")
 
+  projectImages      ProjectImage[]
   passwordToken      PasswordToken?
   receivedInvitation AccountInvitation?  @relation("InvitationRecipient")
   issuedInvitations  AccountInvitation[] @relation("InvitationSender")
@@ -345,6 +346,12 @@ model ProjectRevision {
   team                   String?             @db.Text
   risks                  String?             @db.Text
   supportNeeds           String[]            @default([]) @map("support_needs")
+  pitchUrl               String?             @map("pitch_url") @db.VarChar(2048)
+  socialLinks            Json                @default("[]") @map("social_links")
+  customLinks            Json                @default("[]") @map("custom_links")
+  presentedAt            DateTime?           @map("presented_at") @db.Timestamptz(3)
+  brandingImageId        String?             @map("branding_image_id") @db.Uuid
+  brandingImage          ProjectImage?       @relation(fields: [brandingImageId], references: [id], onDelete: Restrict, onUpdate: NoAction)
   reviewStatus           ProjectReviewStatus @default(DRAFT) @map("review_status")
   privatePitchStorageKey String?             @unique @map("private_pitch_storage_key") @db.Text
   pitchOriginalFilename  String?             @map("pitch_original_filename") @db.VarChar(255)
@@ -560,4 +567,25 @@ model AccountInvitation {
 
   @@index([invitedById])
   @@map("account_invitations")
+}
+
+model ProjectImage {
+  id                  String            @id @default(uuid()) @db.Uuid
+  ownerUserId         String            @map("owner_user_id") @db.Uuid
+  fullStorageKey      String            @unique @map("full_storage_key") @db.Text
+  thumbnailStorageKey String            @unique @map("thumbnail_storage_key") @db.Text
+  fullChecksum        String            @map("full_checksum") @db.Char(64)
+  thumbnailChecksum   String            @map("thumbnail_checksum") @db.Char(64)
+  fullWidth           Int               @map("full_width")
+  fullHeight          Int               @map("full_height")
+  fullSizeBytes       Int               @map("full_size_bytes")
+  thumbnailWidth      Int               @map("thumbnail_width")
+  thumbnailHeight     Int               @map("thumbnail_height")
+  thumbnailSizeBytes  Int               @map("thumbnail_size_bytes")
+  createdAt           DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  owner               User              @relation(fields: [ownerUserId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  revisions           ProjectRevision[]
+
+  @@index([ownerUserId, createdAt])
+  @@map("project_images")
 }

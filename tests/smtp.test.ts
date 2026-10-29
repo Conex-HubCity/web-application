@@ -56,15 +56,15 @@ test("SMTP delivers the OTP message to an isolated loopback capture server", asy
       );
     }
     assert.equal(messages.length, 2);
-    assert.match(messages[0], /From: Connex <sender@example.test>/);
+    assert.match(messages[0], /From: CNX <sender@example.test>/);
     assert.match(messages[1], /From: kiosk <noreply@example.test>/);
     assert.ok(messages[0].includes("123456"));
-    assert.ok(messages[0].includes("Your Connex verification code"));
+    assert.ok(messages[0].includes("Your CNX verification code"));
     assert.ok(messages[0].includes("recipient@example.test"));
     await sendAccountEmail(
       {
         to: "recipient@example.test",
-        subject: "Set your Connex password",
+        subject: "Set your CNX password",
         text: "https://example.test/reset#token=fixture",
       },
       {
@@ -76,7 +76,7 @@ test("SMTP delivers the OTP message to an isolated loopback capture server", asy
       },
     );
     assert.equal(messages.length, 3);
-    assert.ok(messages[2].includes("Set your Connex password"));
+    assert.ok(messages[2].includes("Set your CNX password"));
     assert.ok(messages[2].includes("#token=fixture"));
   } finally {
     for (const socket of sockets) socket.destroy();

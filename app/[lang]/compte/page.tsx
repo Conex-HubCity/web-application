@@ -1,3 +1,6 @@
+import { FounderDashboard } from "@/components/founder-dashboard";
+import { getFounderDashboard } from "@/lib/domain/founder-dashboard";
+import "@/app/founder-dashboard.css";
 import { isMentorPreviewEnabled } from "@/lib/release";
 import { InvitedFounderPreview } from "@/components/invited-founder-preview";
 import { MentorPreview } from "@/components/mentor-preview";
@@ -19,7 +22,7 @@ import { getMentorDashboard } from "@/lib/domain/mentor-dashboard";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator();
   return {
-    title: t("Mon compte — Connex"),
+    title: t("Mon compte — CNX"),
     robots: { index: false, follow: false },
   };
 }
@@ -29,6 +32,8 @@ export default async function Account() {
   const t = await getTranslator();
   const profile = await getAuthenticatedProfile();
   if (profile.roles.includes("ADMIN")) redirect(localizePath("/admin", await getLocale()));
+  if (profile.isFounder && !profile.isMentor)
+    return <FounderDashboard data={await getFounderDashboard(profile.id)} />;
   if (
     profile.isMentor &&
     profile.hasContribution &&
@@ -143,9 +148,7 @@ export default async function Account() {
                 <div>
                   <span className="panel-step-state">{t("À VENIR")}</span>
                   <h2>{t("Les bonnes rencontres")}</h2>
-                  <p>
-                    {t("Après validation du projet, Connex accompagne votre mise en relation.")}
-                  </p>
+                  <p>{t("Après validation du projet, CNX accompagne votre mise en relation.")}</p>
                 </div>
               </article>
             </section>
@@ -158,7 +161,7 @@ export default async function Account() {
               <p>
                 {" "}
                 {t(
-                  "Votre candidature a été validée. Retrouvez ici la suite de votre parcours mentor et vos prochaines étapes avec Connex.",
+                  "Votre candidature a été validée. Retrouvez ici la suite de votre parcours mentor et vos prochaines étapes avec CNX.",
                 )}{" "}
               </p>
             </div>

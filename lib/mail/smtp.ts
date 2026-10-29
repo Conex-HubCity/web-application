@@ -14,7 +14,7 @@ export async function sendAccountEmail(
   const mailbox =
     from && !/[\r\n]/.test(from) ? /^(?:([^<>]+?)\s*<([^<>\s]+)>|([^<>\s]+))$/.exec(from) : null;
   const fromAddress = mailbox?.[2] ?? mailbox?.[3];
-  const fromName = mailbox?.[1]?.trim().replace(/^"(.*)"$/, "$1") || "Connex";
+  const fromName = mailbox?.[1]?.trim().replace(/^"(.*)"$/, "$1") || "CNX";
   const secure = env.SMTP_SECURE === "true";
   const requireTLS = env.SMTP_REQUIRE_TLS !== "false";
   if (
@@ -65,10 +65,10 @@ export async function sendVerificationEmail(
   return sendAccountEmail(
     {
       to: message.to,
-      subject: en ? "Your Connex verification code" : "Votre code de vérification Connex",
+      subject: en ? "Your CNX verification code" : "Votre code de vérification CNX",
       text: en
-        ? `Your Connex verification code: ${message.code}\n\nThis code expires in 10 minutes. Do not share it. If you did not request this code, you can ignore this email.`
-        : `Votre code de vérification Connex : ${message.code}\n\nCe code expire dans 10 minutes. Ne le partagez pas. Si vous n’avez pas demandé ce code, vous pouvez ignorer cet email.`,
+        ? `Your CNX verification code: ${message.code}\n\nThis code expires in 10 minutes. Do not share it. If you did not request this code, you can ignore this email.`
+        : `Votre code de vérification CNX : ${message.code}\n\nCe code expire dans 10 minutes. Ne le partagez pas. Si vous n’avez pas demandé ce code, vous pouvez ignorer cet email.`,
     },
     env,
   );

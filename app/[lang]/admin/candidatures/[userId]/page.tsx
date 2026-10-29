@@ -27,7 +27,7 @@ export default async function Application({ params }: { params: Promise<{ userId
         <h1>
           {profile.user.firstName} {profile.user.lastName}
         </h1>
-        <p>{profile.professionalTitle || t("Mentor Connex")}</p>
+        <p>{profile.professionalTitle || t("Mentor CNX")}</p>
         <AdminBadge
           value={profile.verificationStatus}
           label={t(adminLabels[profile.verificationStatus])}

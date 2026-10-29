@@ -1524,3 +1524,7 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+.cnx-brand-short {
+  letter-spacing: -1px;
+}

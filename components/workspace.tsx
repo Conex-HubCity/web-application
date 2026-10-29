@@ -61,7 +61,7 @@ export function Workspace() {
         {t("Aller au contenu")}{" "}
       </a>
       <aside className="sidebar">
-        <Link href="/" className="brand" aria-label={t("Connex, accueil")}>
+        <Link href="/" className="brand" aria-label={t("CNX, accueil")}>
           <span className="brand-symbol" aria-hidden="true">
             <i />
             <i />
@@ -103,7 +103,7 @@ export function Workspace() {
           <button className="sidebar-profile" onClick={() => setupDialog.current?.showModal()}>
             <span className="avatar">{name ? name.charAt(0).toUpperCase() : "C"}</span>
             <span>
-              <strong>{name || t("Votre espace Connex")}</strong>
+              <strong>{name || t("Votre espace CNX")}</strong>
               <small>{name ? t("Profil de démonstration") : t("Compléter mon profil")}</small>
             </span>
             <Icon name="chevron" size={16} />
@@ -111,7 +111,7 @@ export function Workspace() {
           <div className="initiative">
             {" "}
             {t("Une initiative de")} <strong>HubCity</strong>
-            <span>© 2026 Connex</span>
+            <span>© 2026 CNX</span>
           </div>
         </div>
       </aside>
@@ -147,7 +147,7 @@ export function Workspace() {
             <div>
               <div className="eyebrow">{t("GRANDIR, ENSEMBLE")}</div>
               <h1>
-                {isHome ? `${t("Bienvenue")}${name ? `, ${name}` : t(" sur Connex")}` : t(active)}
+                {isHome ? `${t("Bienvenue")}${name ? `, ${name}` : t(" sur CNX")}` : t(active)}
                 <span className="gold-period">.</span>
               </h1>
               <p>

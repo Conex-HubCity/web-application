@@ -10,7 +10,7 @@ import { logout } from "@/app/actions/auth";
 import "@/app/panel.css";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator();
-  return { title: t("Confirmer mon email — Connex"), robots: { index: false, follow: false } };
+  return { title: t("Confirmer mon email — CNX"), robots: { index: false, follow: false } };
 }
 export default async function EmailVerification() {
   const user = await getCurrentUser({ allowUnverified: true });

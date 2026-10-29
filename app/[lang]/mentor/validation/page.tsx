@@ -14,7 +14,7 @@ import "@/app/panel.css";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator();
   return {
-    title: t("Candidature en cours de validation — Connex"),
+    title: t("Candidature en cours de validation — CNX"),
     robots: { index: false, follow: false },
   };
 }
@@ -50,7 +50,7 @@ export default async function MentorValidation() {
             {" "}
             {t("Merci,")} {profile.firstName}
             {t(
-              ". L’équipe Connex examine votre expérience et les justificatifs transmis. Vous pourrez accéder à votre tableau de bord une fois votre candidature validée.",
+              ". L’équipe CNX examine votre expérience et les justificatifs transmis. Vous pourrez accéder à votre tableau de bord une fois votre candidature validée.",
             )}{" "}
           </p>
           <ul className="mentor-proof-list" aria-label={t("Documents transmis")}>

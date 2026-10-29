@@ -1,6 +1,6 @@
 # Connex — MCD V1 et premières règles de données
 
-Statut : MCD synchronisé avec les 21 modèles du schéma Prisma le 29 octobre 2026.
+Statut : MCD synchronisé avec les 22 modèles du schéma Prisma le 29 octobre 2026.
 Les diagrammes reprennent les colonnes et clés du schéma actuel, y compris les sessions,
 les preuves de validation mentor et les certifications de test.
 Les migrations sont appliquées dans la base locale dédiée `conex`. Voir les
@@ -198,6 +198,24 @@ erDiagram
         datetime created_at
         datetime updated_at
     }
+    USERS ||--o{ PROJECT_IMAGES : possede_image
+    PROJECT_IMAGES ||--o{ PROJECT_REVISIONS : illustre
+
+    PROJECT_IMAGES {
+        uuid id PK
+        uuid owner_user_id FK
+        string full_storage_key UK
+        string thumbnail_storage_key UK
+        string full_checksum
+        string thumbnail_checksum
+        int full_width
+        int full_height
+        int full_size_bytes
+        int thumbnail_width
+        int thumbnail_height
+        int thumbnail_size_bytes
+        datetime created_at
+    }
     PROJECT_REVISIONS {
         uuid id PK
         uuid project_id FK
@@ -210,6 +228,11 @@ erDiagram
         string impact
         string team
         string risks
+        string pitch_url
+        json social_links
+        json custom_links
+        uuid branding_image_id FK
+        datetime presented_at
         string_array support_needs
         string review_status
         string private_pitch_storage_key UK
@@ -596,3 +619,9 @@ Cette contribution ne crée pas d’abonnement et reste distincte du modèle `Me
 `PasswordToken` gère un lien à usage unique pour récupérer un mot de passe (1 heure) ou activer une invitation (48 heures). `AccountInvitation` conserve le destinataire, l’administrateur à l’origine de l’invitation et son acceptation. L’activation confirme l’email, fixe le mot de passe et révoque les anciennes sessions ; elle ne certifie pas un porteur et n’approuve pas un mentor.
 
 `FOUNDER_REGISTRATION_ENABLED="false"` maintient l’inscription publique `FOUNDER` fermée indépendamment du mode de préversion. Une invitation acceptée autorise seulement la connexion du porteur à l’accueil d’attente. Voir [les parcours de récupération et d’invitation](password-links.md).
+
+## Présentation de projet et catalogue mentor
+
+Le formulaire publie une présentation consultable par les mentors validés : lien de pitch obligatoire, réseaux sociaux facultatifs, liens personnalisés et image de marque. `ProjectRevision.presented_at` porte cette visibilité ; `pitch_url`, `social_links`, `custom_links` et `branding_image_id` complètent la fiche. Le modèle `ProjectImage` conserve les variantes complète et miniature générées automatiquement.
+
+Cette présentation n’accorde pas une approbation formelle et n’active pas l’accompagnement. Les demandes restent désactivées avec « En cours de développement ». Les champs de revue, de certification et de publication du dossier confidentiel gardent leurs règles propres. Voir [l’espace porteur et les présentations](founder-dashboard-v1.md).

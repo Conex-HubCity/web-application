@@ -13,7 +13,7 @@ import "@/app/panel.css";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator();
   return {
-    title: t("Votre certification — Connex"),
+    title: t("Votre certification — CNX"),
     robots: { index: false, follow: false },
   };
 }

@@ -8,7 +8,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator();
-  return { title: t("Créer mon compte porteur de projet — Connex") };
+  return { title: t("Créer mon compte porteur de projet — CNX") };
 }
 export default async function CandidateRegistration() {
   if (isMentorPreviewEnabled() || !isFounderRegistrationEnabled())

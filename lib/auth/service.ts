@@ -108,7 +108,7 @@ export function createAuthService(
       if (mentorPreview && input.role !== "MENTOR")
         throw new AuthError("Les inscriptions sont actuellement réservées aux mentors.");
       if (input.role === "FOUNDER" && !founderRegistration)
-        throw new AuthError("Les porteurs de projet rejoignent Connex sur invitation.");
+        throw new AuthError("Les porteurs de projet rejoignent CNX sur invitation.");
       const { email, password } = credentials(input, true);
       if (typeof input.passwordConfirmation !== "string" || password !== input.passwordConfirmation)
         throw new AuthError("Les deux mots de passe doivent être identiques.");

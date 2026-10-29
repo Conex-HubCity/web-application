@@ -8,7 +8,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslator();
-  return { title: t("Se connecter — Connex") };
+  return { title: t("Se connecter — CNX") };
 }
 export default async function Login() {
   if (await getCurrentUser()) redirect(localizePath("/compte", await getLocale()));

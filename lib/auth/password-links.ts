@@ -97,18 +97,18 @@ export function createPasswordLinkService(
         to: issued.email,
         subject: invitation
           ? en
-            ? "Your Connex invitation"
-            : "Votre invitation Connex"
+            ? "Your CNX invitation"
+            : "Votre invitation CNX"
           : en
-            ? "Reset your Connex password"
-            : "Réinitialiser votre mot de passe Connex",
+            ? "Reset your CNX password"
+            : "Réinitialiser votre mot de passe CNX",
         text: invitation
           ? en
-            ? `You are invited to join Connex. Set your password using this link:\n\n${url}\n\nThis link expires in 48 hours. If you were not expecting this invitation, ignore this email.`
-            : `Vous êtes invité à rejoindre Connex. Définissez votre mot de passe avec ce lien :\n\n${url}\n\nCe lien expire dans 48 heures. Si vous n’attendiez pas cette invitation, ignorez cet email.`
+            ? `You are invited to join CNX. Set your password using this link:\n\n${url}\n\nThis link expires in 48 hours. If you were not expecting this invitation, ignore this email.`
+            : `Vous êtes invité à rejoindre CNX. Définissez votre mot de passe avec ce lien :\n\n${url}\n\nCe lien expire dans 48 heures. Si vous n’attendiez pas cette invitation, ignorez cet email.`
           : en
-            ? `Set a new Connex password using this link:\n\n${url}\n\nThis link expires in one hour. If you did not request it, ignore this email.`
-            : `Définissez un nouveau mot de passe Connex avec ce lien :\n\n${url}\n\nCe lien expire dans une heure. Si vous n’avez pas fait cette demande, ignorez cet email.`,
+            ? `Set a new CNX password using this link:\n\n${url}\n\nThis link expires in one hour. If you did not request it, ignore this email.`
+            : `Définissez un nouveau mot de passe CNX avec ce lien :\n\n${url}\n\nCe lien expire dans une heure. Si vous n’avez pas fait cette demande, ignorez cet email.`,
       });
       await db.passwordToken.updateMany({
         where: { userId, tokenHash },
@@ -293,12 +293,10 @@ export function createPasswordLinkService(
         try {
           await send({
             to: record.email,
-            subject: en
-              ? "Your Connex password was changed"
-              : "Votre mot de passe Connex a été modifié",
+            subject: en ? "Your CNX password was changed" : "Votre mot de passe CNX a été modifié",
             text: en
-              ? "Your Connex password was changed. If this was not you, contact the Connex team immediately."
-              : "Votre mot de passe Connex a été modifié. Si vous n’êtes pas à l’origine de cette modification, contactez immédiatement l’équipe Connex.",
+              ? "Your CNX password was changed. If this was not you, contact the CNX team immediately."
+              : "Votre mot de passe CNX a été modifié. Si vous n’êtes pas à l’origine de cette modification, contactez immédiatement l’équipe CNX.",
           });
         } catch {
           console.error("Password change notification could not be delivered");

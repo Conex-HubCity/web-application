@@ -1,3 +1,4 @@
+import { Link } from "@/components/i18n";
 import { Brand } from "./brand";
 import { Icon } from "./icon";
 import { logout } from "@/app/actions/auth";
@@ -33,11 +34,14 @@ export async function MentorPreview({ firstName }: { firstName: string }) {
               <h2>{t("La plateforme est en cours de développement.")}</h2>
               <p>
                 {t(
-                  "Votre espace mentor sera disponible prochainement. Nous vous informerons par email dès son ouverture.",
+                  "Vous pouvez déjà découvrir les projets. Les demandes d’accompagnement sont en cours de développement.",
                 )}
               </p>
             </div>
           </div>
+          <Link className="auth-submit" href="/mentor/projets">
+            {t("Découvrir les projets")} <Icon name="arrow" size={17} />
+          </Link>
           <p className="certification-privacy">
             {t(
               "Votre candidature et vos justificatifs sont bien conservés. Vous n’avez aucune autre démarche à effectuer pour le moment.",
