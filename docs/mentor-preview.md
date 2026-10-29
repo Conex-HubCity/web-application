@@ -37,3 +37,7 @@ La confirmation email par OTP est désormais obligatoire avant les dépôts et l
 ## Contribution avant dépôt
 
 Le parcours inclut désormais une contribution unique de 30 USD après vérification email. Le soutien peut s’arrêter au remerciement sans document ; la candidature mentor est une poursuite facultative. Le dépôt direct est contrôlé côté serveur et nécessite un paiement confirmé dans le bon environnement Stripe. Voir [l’intégration Stripe](stripe-contributions.md).
+
+## Porteurs invités
+
+L’inscription publique reste fermée. Un administrateur peut désormais inviter un porteur depuis la liste des utilisateurs ; après définition du mot de passe par le destinataire, son invitation acceptée autorise la connexion à un accueil d’attente. Les porteurs ordinaires sans invitation acceptée restent bloqués. Voir [les invitations privées](password-links.md).

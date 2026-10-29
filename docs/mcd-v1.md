@@ -1,6 +1,6 @@
 # Connex — MCD V1 et premières règles de données
 
-Statut : MCD synchronisé avec les 19 modèles du schéma Prisma le 28 octobre 2026.
+Statut : MCD synchronisé avec les 21 modèles du schéma Prisma le 29 octobre 2026.
 Les diagrammes reprennent les colonnes et clés du schéma actuel, y compris les sessions,
 les preuves de validation mentor et les certifications de test.
 Les migrations sont appliquées dans la base locale dédiée `conex`. Voir les
@@ -40,6 +40,9 @@ erDiagram
     USERS ||--o{ USER_ROLES : dispose_de
     USERS ||--o{ SESSIONS : ouvre
     USERS ||--o| EMAIL_VERIFICATIONS : confirme_email
+    USERS ||--o| PASSWORD_TOKENS : definit_mot_de_passe
+    USERS ||--o| ACCOUNT_INVITATIONS : recoit
+    USERS ||--o{ ACCOUNT_INVITATIONS : invite
     FOUNDER_PROFILES ||--o{ CERTIFICATION_EVIDENCES : depose
     FOUNDER_PROFILES ||--o| PROJECTS : porte
     PROJECTS ||--|{ PROJECT_REVISIONS : conserve
@@ -84,6 +87,22 @@ erDiagram
         string type
         uuid payment_id FK
         datetime processed_at
+    }
+    PASSWORD_TOKENS {
+        uuid user_id PK,FK
+        string token_hash UK
+        string email
+        string purpose
+        datetime expires_at
+        datetime consumed_at
+        string delivery_status
+        datetime created_at
+    }
+    ACCOUNT_INVITATIONS {
+        uuid user_id PK,FK
+        uuid invited_by_id FK
+        datetime accepted_at
+        datetime created_at
     }
     EMAIL_VERIFICATIONS {
         uuid user_id PK,FK
@@ -571,3 +590,9 @@ La charte complète est obligatoire à l’inscription mentor et consultable ava
 Après inscription et vérification email, une contribution unique de 30 USD précède le dépôt de documents. La personne peut soutenir Connex puis s’arrêter, sans justificatif. Le dépôt est facultatif pour soutenir la plateforme ; il reste indispensable pour demander une validation mentor. Le serveur vérifie un `ContributionPayment` réellement `PAID` dans le bon environnement avant tout dépôt.
 
 Cette contribution ne crée pas d’abonnement et reste distincte du modèle `Membership` conservé pour les droits métier futurs. Les confirmations et remboursements Stripe sont dédupliqués par `StripeWebhookEvent`. Aucun paiement n’est fabriqué pour les comptes existants. Voir [l’intégration Stripe](stripe-contributions.md).
+
+## Récupération et invitations privées
+
+`PasswordToken` gère un lien à usage unique pour récupérer un mot de passe (1 heure) ou activer une invitation (48 heures). `AccountInvitation` conserve le destinataire, l’administrateur à l’origine de l’invitation et son acceptation. L’activation confirme l’email, fixe le mot de passe et révoque les anciennes sessions ; elle ne certifie pas un porteur et n’approuve pas un mentor.
+
+`FOUNDER_REGISTRATION_ENABLED="false"` maintient l’inscription publique `FOUNDER` fermée indépendamment du mode de préversion. Une invitation acceptée autorise seulement la connexion du porteur à l’accueil d’attente. Voir [les parcours de récupération et d’invitation](password-links.md).

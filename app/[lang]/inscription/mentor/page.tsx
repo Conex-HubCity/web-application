@@ -1,4 +1,4 @@
-import { isMentorPreviewEnabled } from "@/lib/release";
+import { isMentorPreviewEnabled, isFounderRegistrationEnabled } from "@/lib/release";
 import { getTranslator } from "@/lib/i18n/server";
 import { getLocale } from "@/lib/i18n/server";
 import { localizePath } from "@/lib/i18n/config";
@@ -13,6 +13,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function MentorRegistration() {
   if (await getCurrentUser()) redirect(localizePath("/compte", await getLocale()));
   return (
-    <AuthEntry mode="register" initialRole="mentor" mentorPreview={isMentorPreviewEnabled()} />
+    <AuthEntry
+      mode="register"
+      initialRole="mentor"
+      mentorPreview={isMentorPreviewEnabled()}
+      founderRegistrationOpen={isFounderRegistrationEnabled()}
+    />
   );
 }

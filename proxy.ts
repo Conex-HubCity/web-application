@@ -19,7 +19,7 @@ export function proxy(request: NextRequest) {
   // Only redirect existing legacy entry points. Unknown locales remain 404s.
   if (
     pathname !== "/" &&
-    !/^\/(connexion|inscription|compte|certification|mentor|espace|admin|verification-email|charte-mentorat|contribution)(\/|$)/.test(
+    !/^\/(connexion|inscription|compte|certification|mentor|espace|admin|verification-email|charte-mentorat|contribution|mot-de-passe-oublie|definir-mot-de-passe)(\/|$)/.test(
       pathname,
     )
   )

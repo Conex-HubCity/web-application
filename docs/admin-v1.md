@@ -2,7 +2,7 @@
 
 L’espace `/fr/admin` ou `/en/admin` permet de consulter les candidatures mentors. `/admin/utilisateurs` liste les utilisateurs avec recherche par nom/email, filtres par rôle et état de compte et pagination de vingt lignes. Les candidatures ont leurs propres filtres et leur pagination. Chaque fiche utilisateur et chaque candidature possède une adresse dédiée. Le dossier mentor présente le profil, les pièces, leurs états de revue et de contrôle, et les dernières décisions enregistrées.
 
-Cette première interface est en lecture seule : elle ne change aucun compte, pièce ou statut de candidature. Les décisions administratives existantes sont consultables sans être réécrites. Les candidatures sans décision enregistrée sont présentées comme telles. Aucun traitement antivirus ni approbation automatique n’est simulé.
+La consultation et la revue de candidatures restent en lecture seule : elles ne changent aucune pièce ou statut de candidature. L’admin peut désormais créer et envoyer une invitation privée à un porteur depuis la liste des utilisateurs (voir [les invitations](password-links.md)). Les décisions administratives existantes sont consultables sans être réécrites. Les candidatures sans décision enregistrée sont présentées comme telles. Aucun traitement antivirus ni approbation automatique n’est simulé.
 
 ## Accès
 

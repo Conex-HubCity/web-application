@@ -83,3 +83,7 @@ L’email doit être confirmé par un code OTP avant l’accès aux fonctionnali
 ## Contribution Stripe
 
 Contribution unique de 30 USD après vérification email, avec candidature mentor facultative après paiement. Configurer les clés privées et le webhook selon [le guide Stripe](docs/stripe-contributions.md). Sans clés, le bouton de paiement reste désactivé.
+
+## Mots de passe et invitations
+
+Récupération de mot de passe par lien email et invitation privée des premiers porteurs depuis l’admin, avec inscription publique toujours fermée. Voir [le fonctionnement et la configuration](docs/password-links.md).

@@ -14,6 +14,9 @@ export default async function Users({ searchParams }: { searchParams: Promise<Ad
       <div className="ad-heading">
         <span>{t("ADMINISTRATION")}</span>
         <h1>{t("Utilisateurs")}</h1>
+        <Link className="ad-row-link" href="/admin/utilisateurs/inviter">
+          {t("Inviter un porteur de projet")}
+        </Link>
         <p>{t("Consultez les comptes inscrits, leurs rôles et leur statut.")}</p>
       </div>
       <section className="ad-card">

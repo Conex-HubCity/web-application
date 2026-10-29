@@ -26,6 +26,7 @@ export function createOnboardingService(
           lastName: true,
           accountStatus: true,
           roles: { select: { role: true } },
+          receivedInvitation: { select: { acceptedAt: true } },
           contributionPayments: {
             where: { status: "PAID", livemode: stripeLiveMode() },
             select: { id: true },
@@ -79,6 +80,7 @@ export function createOnboardingService(
         lastName: user.lastName,
         roles: user.roles.map(({ role }) => role),
         isFounder,
+        isInvitedFounder: isFounder && Boolean(user.receivedInvitation?.acceptedAt),
         isMentor: user.roles.some(({ role }) => role === "MENTOR"),
         hasContribution: user.contributionPayments.length > 0,
         mentorStatus: user.mentorProfile?.verificationStatus ?? "DRAFT",

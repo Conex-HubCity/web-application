@@ -1,3 +1,8 @@
+import {
+  createPasswordLinkService,
+  passwordLinkOrigin,
+  type PasswordMail,
+} from "../lib/auth/password-links";
 import type Stripe from "stripe";
 import { createContributionService, type PaymentGateway } from "../lib/payments/service";
 import { PaymentError, stripeConfig, stripeLiveMode } from "../lib/payments/config";
@@ -193,7 +198,7 @@ test("replacement boundary is exactly 30 elapsed days, and both conditions are m
 databaseTest(
   "registration persists private role profiles and hashed sessions, without approving accounts",
   async () => {
-    const auth = createAuthService(db, { mentorPreview: false });
+    const auth = createAuthService(db, { mentorPreview: false, founderRegistration: true });
     for (const role of ["FOUNDER", "MENTOR"] as const) {
       const email = `${randomUUID()}@example.test`;
       const session = await auth.register({
@@ -397,7 +402,7 @@ databaseTest(
 databaseTest(
   "auth rejects privileged signup, invalid input, bad passwords, disabled accounts and throttles persistently",
   async () => {
-    const auth = createAuthService(db, { mentorPreview: false });
+    const auth = createAuthService(db, { mentorPreview: false, founderRegistration: true });
     const input = {
       email: `${randomUUID()}@example.test`,
       password: "Pass123!",
@@ -442,7 +447,7 @@ databaseTest(
     const email = `${randomUUID()}@example.test`;
     const results = await Promise.allSettled(
       Array.from({ length: 7 }, () =>
-        createAuthService(db, { mentorPreview: false }).login({
+        createAuthService(db, { mentorPreview: false, founderRegistration: true }).login({
           email,
           password: "unknown account passphrase",
         }),
@@ -740,7 +745,7 @@ test("initial migration runs on an isolated PostgreSQL engine without applicatio
     const tables = await embedded.query<{ count: number }>(
       "SELECT count(*)::int AS count FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'",
     );
-    assert.equal(tables.rows[0].count, 19);
+    assert.equal(tables.rows[0].count, 21);
     await assert.rejects(
       embedded.query(
         "INSERT INTO users(id,password_hash,first_name,updated_at) VALUES ($1,'test','No contact',now())",
@@ -1275,7 +1280,7 @@ databaseTest(
   "mentor preview rejects founder registration, login and existing sessions; full mode remains available",
   async () => {
     const preview = createAuthService(db, { mentorPreview: true });
-    const full = createAuthService(db, { mentorPreview: false });
+    const full = createAuthService(db, { mentorPreview: false, founderRegistration: true });
     const email = `preview-${randomUUID()}@example.test`;
     const input = {
       email,
@@ -1486,7 +1491,7 @@ databaseTest(
     });
     await assert.rejects(verification.verify(another.id, code), AuthError);
     const session = await verification.verify(userAccount.id, code);
-    const auth = createAuthService(db, { mentorPreview: false });
+    const auth = createAuthService(db, { mentorPreview: false, founderRegistration: true });
     assert.equal(await auth.getSession(oldToken), null);
     assert.ok((await auth.getSession(session.token))?.emailVerifiedAt);
     const saved = await db.user.findUniqueOrThrow({
@@ -1926,5 +1931,308 @@ databaseTest(
     });
     await assert.rejects(f.payments.checkout(mentor.id, "fr"), PaymentError);
     assert.equal(f.sessions.size, 0);
+  },
+);
+
+function passwordFixture() {
+  const mails: PasswordMail[] = [];
+  let timestamp = new Date();
+  const links = createPasswordLinkService(db, {
+    send: async (message) => {
+      mails.push(message);
+    },
+    now: () => timestamp,
+    env: { APP_URL: "https://connex.example.test" },
+  });
+  const token = () => {
+    const match = mails.at(-1)?.text.match(/#token=([a-f0-9]{64})/);
+    assert.ok(match);
+    return match[1];
+  };
+  return {
+    links,
+    mails,
+    token,
+    setNow: (value: Date) => {
+      timestamp = value;
+    },
+  };
+}
+const newPasswordInput = (token: string) => ({
+  token,
+  password: "new password 123",
+  passwordConfirmation: "new password 123",
+});
+
+test("password link origin is canonical and requires HTTPS outside local development", () => {
+  assert.equal(
+    passwordLinkOrigin({ APP_URL: "http://localhost:3000", NODE_ENV: "development" }),
+    "http://localhost:3000",
+  );
+  for (const APP_URL of [
+    "",
+    "http://example.test",
+    "https://user:password@example.test",
+    "https://example.test/path",
+  ])
+    assert.throws(() => passwordLinkOrigin({ APP_URL, NODE_ENV: "production" }), AuthError);
+});
+
+databaseTest(
+  "password reset is single use, stores only a hash and revokes every existing session",
+  async () => {
+    const mentor = await user("MENTOR");
+    const f = passwordFixture();
+    await db.session.createMany({
+      data: [
+        { userId: mentor.id, tokenHash: "b".repeat(64), expiresAt: new Date(Date.now() + 100000) },
+        { userId: mentor.id, tokenHash: "c".repeat(64), expiresAt: new Date(Date.now() + 100000) },
+      ],
+    });
+    await f.links.requestReset(mentor.email, "en");
+    const token = f.token();
+    const stored = await db.passwordToken.findUniqueOrThrow({ where: { userId: mentor.id } });
+    assert.notEqual(stored.tokenHash, token);
+    assert.equal(stored.purpose, "RESET");
+    assert.equal(stored.deliveryStatus, "SENT");
+    assert.ok(
+      f.mails[0].text.includes("https://connex.example.test/en/definir-mot-de-passe#token="),
+    );
+    assert.equal((await f.links.inspect(token)).purpose, "RESET");
+    await assert.rejects(
+      f.links.setPassword({ ...newPasswordInput(token), passwordConfirmation: "different" }),
+      /identiques/,
+    );
+    await assert.rejects(
+      f.links.setPassword({
+        ...newPasswordInput(token),
+        password: "short",
+        passwordConfirmation: "short",
+      }),
+      /8 et 128/,
+    );
+    await f.links.setPassword(newPasswordInput(token));
+    assert.equal(await db.session.count({ where: { userId: mentor.id } }), 0);
+    assert.ok(
+      await createAuthService(db, { mentorPreview: true }).login({
+        email: mentor.email,
+        password: "new password 123",
+      }),
+    );
+    assert.equal(f.mails.length, 2);
+    assert.ok(!f.mails[1].text.includes("new password 123"));
+    await assert.rejects(f.links.setPassword(newPasswordInput(token)), /invalide/);
+  },
+);
+
+databaseTest(
+  "password links enforce expiry, replacement, account state, email binding and delivery",
+  async () => {
+    const mentor = await user("MENTOR");
+    const f = passwordFixture();
+    await f.links.requestReset(mentor.email, "fr");
+    const old = f.token();
+    await f.links.requestReset(mentor.email, "fr");
+    const current = f.token();
+    assert.notEqual(old, current);
+    await assert.rejects(f.links.inspect(old), /invalide/);
+    const record = await db.passwordToken.findUniqueOrThrow({ where: { userId: mentor.id } });
+    f.setNow(record.expiresAt);
+    await assert.rejects(f.links.inspect(current), /invalide/);
+    f.setNow(new Date());
+    await f.links.requestReset(mentor.email, "fr");
+    const changed = f.token();
+    await db.user.update({
+      where: { id: mentor.id },
+      data: { email: `changed-${randomUUID()}@example.test` },
+    });
+    await assert.rejects(f.links.setPassword(newPasswordInput(changed)), /invalide/);
+    await db.user.update({
+      where: { id: mentor.id },
+      data: { email: mentor.email, accountStatus: "SUSPENDED" },
+    });
+    await assert.rejects(f.links.inspect(changed), /invalide/);
+    await db.user.update({ where: { id: mentor.id }, data: { accountStatus: "ACTIVE" } });
+    const failed = createPasswordLinkService(db, {
+      env: { APP_URL: "https://connex.example.test" },
+      send: async () => {
+        throw Error("fixture");
+      },
+    });
+    await assert.rejects(failed.requestReset(mentor.email, "fr"), AuthError);
+    assert.equal(
+      (await db.passwordToken.findUniqueOrThrow({ where: { userId: mentor.id } })).deliveryStatus,
+      "FAILED",
+    );
+    await assert.rejects(f.links.inspect(changed), /invalide/);
+  },
+);
+
+databaseTest(
+  "password reset ignores unknown accounts and limits email floods persistently",
+  async () => {
+    const f = passwordFixture();
+    await f.links.requestReset(`unknown-${randomUUID()}@example.test`, "fr");
+    assert.equal(f.mails.length, 0);
+    const mentor = await user("MENTOR");
+    for (let n = 0; n < 8; n++) await f.links.requestReset(mentor.email, "fr");
+    assert.equal(f.mails.length, 5);
+    assert.equal(await db.passwordToken.count({ where: { userId: mentor.id } }), 1);
+  },
+);
+
+databaseTest(
+  "admin invitation creates a private founder and accepted link alone enables preview sign-in",
+  async () => {
+    const admin = await user("ADMIN");
+    const f = passwordFixture();
+    const email = `invite-${randomUUID()}@example.test`;
+    await f.links.invite(admin.id, { email, firstName: "Invited", lastName: "Founder" }, "en");
+    const token = f.token();
+    const invited = await db.user.findUniqueOrThrow({
+      where: { email },
+      include: { roles: true, founderProfile: true, receivedInvitation: true },
+    });
+    assert.deepEqual(
+      invited.roles.map((role) => role.role),
+      ["FOUNDER"],
+    );
+    assert.equal(invited.emailVerifiedAt, null);
+    assert.equal(invited.founderProfile?.adultConfirmedAt, null);
+    assert.equal(invited.receivedInvitation?.invitedById, admin.id);
+    assert.equal((await f.links.inspect(token)).purpose, "INVITATION");
+    await assert.rejects(f.links.setPassword(newPasswordInput(token)), /18 ans/);
+    await f.links.setPassword({ ...newPasswordInput(token), adultConfirmed: true });
+    const auth = createAuthService(db, { mentorPreview: true });
+    const session = await auth.login({ email, password: "new password 123" });
+    assert.ok(await auth.getSession(session.token));
+    const activated = await db.user.findUniqueOrThrow({
+      where: { email },
+      include: { founderProfile: true, receivedInvitation: true },
+    });
+    assert.ok(activated.emailVerifiedAt);
+    assert.equal(activated.accountStatus, "ACTIVE");
+    assert.ok(activated.receivedInvitation?.acceptedAt);
+    assert.ok(activated.founderProfile?.adultConfirmedAt);
+    const profile = await createOnboardingService(db).getProfile(invited.id);
+    assert.equal(profile?.isInvitedFounder, true);
+    assert.equal(profile?.isCertified, false);
+    assert.equal(profile?.hasContribution, false);
+    await assert.rejects(
+      auth.register({
+        email: `public-${randomUUID()}@example.test`,
+        firstName: "Public",
+        lastName: "Founder",
+        password: "password123",
+        passwordConfirmation: "password123",
+        role: "FOUNDER",
+        adultConfirmed: true,
+      }),
+      /réservées aux mentors/,
+    );
+    await db.accountInvitation.update({
+      where: { userId: invited.id },
+      data: { acceptedAt: null },
+    });
+    assert.equal(await auth.getSession(session.token), null);
+  },
+);
+
+databaseTest(
+  "invitations reject unauthorized actors and never replace or promote existing accounts",
+  async () => {
+    const admin = await user("ADMIN");
+    const mentor = await user("MENTOR");
+    const f = passwordFixture();
+    const input = {
+      email: `invite-${randomUUID()}@example.test`,
+      firstName: "Invited",
+      lastName: "Founder",
+      role: "ADMIN",
+    };
+    await assert.rejects(f.links.invite(mentor.id, input, "fr"), /administrateurs/);
+    assert.equal(await db.user.count({ where: { email: input.email } }), 0);
+    await assert.rejects(
+      f.links.invite(admin.id, { ...input, email: mentor.email }, "fr"),
+      /existe déjà/,
+    );
+    assert.deepEqual(
+      (await db.userRole.findMany({ where: { userId: mentor.id } })).map((role) => role.role),
+      ["MENTOR"],
+    );
+    await db.userRole.delete({ where: { userId_role: { userId: admin.id, role: "ADMIN" } } });
+    await assert.rejects(f.links.invite(admin.id, input, "fr"), /administrateurs/);
+    assert.equal(f.mails.length, 0);
+  },
+);
+
+databaseTest(
+  "resending an invitation reuses the account and concurrent token consumption has one winner",
+  async () => {
+    const admin = await user("ADMIN");
+    const f = passwordFixture();
+    const input = {
+      email: `invite-${randomUUID()}@example.test`,
+      firstName: "Invited",
+      lastName: "Founder",
+    };
+    await f.links.invite(admin.id, input, "fr");
+    const old = f.token();
+    await f.links.invite(admin.id, input, "fr");
+    const token = f.token();
+    assert.equal(await db.user.count({ where: { email: input.email } }), 1);
+    await assert.rejects(f.links.inspect(old), AuthError);
+    const results = await Promise.allSettled([
+      f.links.setPassword({ ...newPasswordInput(token), adultConfirmed: true }),
+      f.links.setPassword({ ...newPasswordInput(token), adultConfirmed: true }),
+    ]);
+    assert.equal(results.filter((result) => result.status === "fulfilled").length, 1);
+  },
+);
+
+databaseTest(
+  "forgot password can renew an expired invitation but cannot open an ordinary founder account in preview",
+  async () => {
+    const admin = await user("ADMIN");
+    const f = passwordFixture();
+    const input = {
+      email: `invite-${randomUUID()}@example.test`,
+      firstName: "Invited",
+      lastName: "Founder",
+    };
+    await f.links.invite(admin.id, input, "fr");
+    await f.links.requestReset(input.email, "fr");
+    assert.equal((await f.links.inspect(f.token())).purpose, "INVITATION");
+    const founder = await user("FOUNDER");
+    await f.links.requestReset(founder.email, "fr");
+    await f.links.setPassword(newPasswordInput(f.token()));
+    await assert.rejects(
+      createAuthService(db, { mentorPreview: true }).login({
+        email: founder.email,
+        password: "new password 123",
+      }),
+      /pas encore ouvert/,
+    );
+  },
+);
+
+databaseTest(
+  "public founder signup stays closed in full mode while private invitations remain available",
+  async () => {
+    const auth = createAuthService(db, { mentorPreview: false, founderRegistration: false });
+    const email = `closed-${randomUUID()}@example.test`;
+    await assert.rejects(
+      auth.register({
+        email,
+        role: "FOUNDER",
+        firstName: "Public",
+        lastName: "Founder",
+        password: "password123",
+        passwordConfirmation: "password123",
+        adultConfirmed: true,
+      }),
+      /invitation/,
+    );
+    assert.equal(await db.user.count({ where: { email } }), 0);
   },
 );

@@ -388,3 +388,23 @@
     padding-top: 26px;
   }
 }
+
+.ad-invite {
+  max-width: 600px;
+  padding: clamp(20px, 3vw, 32px);
+}
+.ad-invite .auth-form > label {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.ad-invite input,
+.ad-invite select {
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--ink);
+  max-width: 100%;
+}

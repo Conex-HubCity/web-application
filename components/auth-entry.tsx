@@ -14,12 +14,14 @@ export function AuthEntry({
   mode,
   initialRole = "porteur",
   mentorPreview = false,
+  founderRegistrationOpen = false,
 }: {
   mode: "register" | "login";
   initialRole?: Role;
   mentorPreview?: boolean;
+  founderRegistrationOpen?: boolean;
 }) {
-  const role = mentorPreview ? "mentor" : initialRole;
+  const role = mentorPreview || !founderRegistrationOpen ? "mentor" : initialRole;
   const t = useTranslations();
   const [state, action, pending] = useActionState(authenticate.bind(null, mode), null);
   const register = mode === "register";
@@ -74,7 +76,7 @@ export function AuthEntry({
                   )
               : t(
                   mentorPreview
-                    ? "Connectez-vous à votre compte mentor."
+                    ? "Connectez-vous à votre compte Connex."
                     : "Connectez-vous à votre parcours de mentor ou de porteur de projet.",
                 )}
           </p>
@@ -85,7 +87,7 @@ export function AuthEntry({
               )}
             </p>
           )}
-          {register && !mentorPreview && (
+          {register && !mentorPreview && founderRegistrationOpen && (
             <div className="auth-role-tabs" aria-label={t("Mon parcours")}>
               <Link
                 href="/inscription/porteur"
@@ -196,11 +198,20 @@ export function AuthEntry({
               <Icon name="arrow" size={18} />
             </button>
           </form>
+          {!register && (
+            <Link className="auth-forgot" href="/mot-de-passe-oublie">
+              {t("Mot de passe oublié ?")}
+            </Link>
+          )}
           <p className="auth-switch">
             {register ? t("Déjà un compte ?") : t("Vous découvrez Connex ?")}{" "}
             <Link
               href={
-                register ? "/connexion" : mentorPreview ? "/inscription/mentor" : "/#les-parcours"
+                register
+                  ? "/connexion"
+                  : mentorPreview || !founderRegistrationOpen
+                    ? "/inscription/mentor"
+                    : "/#les-parcours"
               }
             >
               {register ? t("Se connecter") : t("Créer mon compte")}

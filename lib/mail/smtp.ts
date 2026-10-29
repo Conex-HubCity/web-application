@@ -3,8 +3,8 @@ import nodemailer from "nodemailer";
 import { AuthError } from "@/lib/auth/service";
 import type { Locale } from "@/lib/i18n/config";
 export type VerificationMessage = { to: string; code: string; locale: Locale };
-export async function sendVerificationEmail(
-  message: VerificationMessage,
+export async function sendAccountEmail(
+  message: { to: string; subject: string; text: string },
   env: Partial<NodeJS.ProcessEnv> = process.env,
 ) {
   const host = env.SMTP_HOST?.trim();
@@ -43,14 +43,11 @@ export async function sendVerificationEmail(
     debug: false,
   });
   try {
-    const en = message.locale === "en";
     const info = await transport.sendMail({
       from: { name: fromName, address: fromAddress },
       to: message.to,
-      subject: en ? "Your Connex verification code" : "Votre code de vérification Connex",
-      text: en
-        ? `Your Connex verification code: ${message.code}\n\nThis code expires in 10 minutes. Do not share it. If you did not request this code, you can ignore this email.`
-        : `Votre code de vérification Connex : ${message.code}\n\nCe code expire dans 10 minutes. Ne le partagez pas. Si vous n’avez pas demandé ce code, vous pouvez ignorer cet email.`,
+      subject: message.subject,
+      text: message.text,
     });
     if (!info.accepted?.length) throw new Error("RecipientNotAccepted");
   } catch {
@@ -58,4 +55,21 @@ export async function sendVerificationEmail(
   } finally {
     transport.close();
   }
+}
+
+export async function sendVerificationEmail(
+  message: VerificationMessage,
+  env: Partial<NodeJS.ProcessEnv> = process.env,
+) {
+  const en = message.locale === "en";
+  return sendAccountEmail(
+    {
+      to: message.to,
+      subject: en ? "Your Connex verification code" : "Votre code de vérification Connex",
+      text: en
+        ? `Your Connex verification code: ${message.code}\n\nThis code expires in 10 minutes. Do not share it. If you did not request this code, you can ignore this email.`
+        : `Votre code de vérification Connex : ${message.code}\n\nCe code expire dans 10 minutes. Ne le partagez pas. Si vous n’avez pas demandé ce code, vous pouvez ignorer cet email.`,
+    },
+    env,
+  );
 }

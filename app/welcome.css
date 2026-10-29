@@ -1516,3 +1516,11 @@
   text-decoration: underline;
   text-underline-offset: 4px;
 }
+
+.auth-forgot {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createServer, type Socket } from "node:net";
 import { test } from "node:test";
-import { sendVerificationEmail } from "../lib/mail/smtp";
+import { sendVerificationEmail, sendAccountEmail } from "../lib/mail/smtp";
 import { AuthError } from "../lib/auth/service";
 
 test("SMTP delivers the OTP message to an isolated loopback capture server", async () => {
@@ -61,6 +61,23 @@ test("SMTP delivers the OTP message to an isolated loopback capture server", asy
     assert.ok(messages[0].includes("123456"));
     assert.ok(messages[0].includes("Your Connex verification code"));
     assert.ok(messages[0].includes("recipient@example.test"));
+    await sendAccountEmail(
+      {
+        to: "recipient@example.test",
+        subject: "Set your Connex password",
+        text: "https://example.test/reset#token=fixture",
+      },
+      {
+        NODE_ENV: "test",
+        SMTP_HOST: "127.0.0.1",
+        SMTP_PORT: String(address.port),
+        SMTP_FROM: "sender@example.test",
+        SMTP_REQUIRE_TLS: "false",
+      },
+    );
+    assert.equal(messages.length, 3);
+    assert.ok(messages[2].includes("Set your Connex password"));
+    assert.ok(messages[2].includes("#token=fixture"));
   } finally {
     for (const socket of sockets) socket.destroy();
     await new Promise<void>((resolve) => server.close(() => resolve()));

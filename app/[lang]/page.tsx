@@ -1,4 +1,4 @@
-import { isMentorPreviewEnabled } from "@/lib/release";
+import { isMentorPreviewEnabled, isFounderRegistrationEnabled } from "@/lib/release";
 import { getTranslator } from "@/lib/i18n/server";
 import Image from "next/image";
 import { Link } from "@/components/i18n";
@@ -10,7 +10,7 @@ import "@/app/home-sections.css";
 
 export default async function Home() {
   const t = await getTranslator();
-  const mentorPreview = isMentorPreviewEnabled();
+  const mentorPreview = isMentorPreviewEnabled() || !isFounderRegistrationEnabled();
   return (
     <div className="welcome-page">
       <SplashScreen />

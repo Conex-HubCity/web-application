@@ -1,6 +1,10 @@
 import "server-only";
 import { MENTOR_CHARTER_VERSION } from "@/lib/mentor-charter";
-import { isMentorPreviewEnabled, previewRoleAllowed } from "@/lib/release";
+import {
+  isMentorPreviewEnabled,
+  isFounderRegistrationEnabled,
+  previewRoleAllowed,
+} from "@/lib/release";
 import { createHash, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import type { PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
@@ -15,6 +19,7 @@ const publicUser = {
   emailVerifiedAt: true,
   accountStatus: true,
   roles: { select: { role: true } },
+  receivedInvitation: { select: { acceptedAt: true } },
 } as const;
 
 export class AuthError extends Error {}
@@ -68,9 +73,10 @@ export function sessionData() {
 
 export function createAuthService(
   db: PrismaClient = getDb(),
-  options: { mentorPreview?: boolean } = {},
+  options: { mentorPreview?: boolean; founderRegistration?: boolean } = {},
 ) {
   const mentorPreview = options.mentorPreview ?? isMentorPreviewEnabled();
+  const founderRegistration = options.founderRegistration ?? isFounderRegistrationEnabled();
   // Atomic, persistent per-email window, shared across server processes.
   // A production edge must also limit requests per trusted client IP.
   async function throttle(email: string, operation: "login" | "register") {
@@ -101,6 +107,8 @@ export function createAuthService(
     }) {
       if (mentorPreview && input.role !== "MENTOR")
         throw new AuthError("Les inscriptions sont actuellement réservées aux mentors.");
+      if (input.role === "FOUNDER" && !founderRegistration)
+        throw new AuthError("Les porteurs de projet rejoignent Connex sur invitation.");
       const { email, password } = credentials(input, true);
       if (typeof input.passwordConfirmation !== "string" || password !== input.passwordConfirmation)
         throw new AuthError("Les deux mots de passe doivent être identiques.");
@@ -156,7 +164,10 @@ export function createAuthService(
     async login(input: { email: unknown; password: unknown }) {
       const { email, password } = credentials(input, false);
       await throttle(email, "login");
-      const user = await db.user.findUnique({ where: { email }, include: { roles: true } });
+      const user = await db.user.findUnique({
+        where: { email },
+        include: { roles: true, receivedInvitation: { select: { acceptedAt: true } } },
+      });
       const valid = await verifyPassword(password, user?.passwordHash ?? DUMMY_HASH);
       if (
         !valid ||
@@ -166,7 +177,10 @@ export function createAuthService(
       ) {
         throw new AuthError("Email ou mot de passe incorrect.");
       }
-      if (mentorPreview && !previewRoleAllowed(user.roles))
+      if (
+        mentorPreview &&
+        !previewRoleAllowed(user.roles, Boolean(user.receivedInvitation?.acceptedAt))
+      )
         throw new AuthError("L’accès des porteurs de projet n’est pas encore ouvert.");
       const session = sessionData();
       await db.session.create({
@@ -185,7 +199,11 @@ export function createAuthService(
         !session ||
         session.expiresAt <= new Date() ||
         ["SUSPENDED", "CLOSED"].includes(session.user.accountStatus) ||
-        (mentorPreview && !previewRoleAllowed(session.user.roles))
+        (mentorPreview &&
+          !previewRoleAllowed(
+            session.user.roles,
+            Boolean(session.user.receivedInvitation?.acceptedAt),
+          ))
       )
         return null;
       return session.user;
