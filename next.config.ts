@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: { unoptimized: true },
   logging: { serverFunctions: false },
   experimental: {
     agentFeedback: true,

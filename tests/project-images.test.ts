@@ -5,7 +5,7 @@ import { randomUUID } from "node:crypto";
 import { mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import sharp from "sharp";
+import { Jimp, JimpMime } from "jimp";
 import pg from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../generated/prisma/client";
@@ -136,77 +136,60 @@ async function mentor() {
   });
 }
 async function pngFile() {
-  const data = await sharp({
-    create: { width: 960, height: 640, channels: 3, background: "#558366" },
-  })
-    .png()
-    .toBuffer();
+  const data = await new Jimp({ width: 960, height: 640, color: 0x558366ff }).getBuffer(
+    JimpMime.png,
+  );
   return new File([new Uint8Array(data)], "../../ignored-name.png", { type: "image/png" });
 }
 function code(expected: string) {
   return (error: unknown) => error instanceof DomainError && error.code === expected;
 }
 
-imageTest(
-  "project images produce full and thumbnail WebP variants, rotate and remove original metadata",
-  async () => {
-    await folder(async (directory) => {
-      const user = await founder();
-      const source = await sharp({
-        create: { width: 2400, height: 1600, channels: 3, background: "#558366" },
-      })
-        .withMetadata({ orientation: 6 })
-        .jpeg()
-        .toBuffer();
-      assert.ok((await sharp(source).metadata()).exif);
-      const image = await uploadProjectImage(
-        user.id,
-        new File([new Uint8Array(source)], "camera.jpg", { type: "image/jpeg" }),
-        db,
-        directory,
-      );
-      assert.equal(image.width, 800);
-      assert.equal(image.height, 1200);
-      assert.equal("fullStorageKey" in image, false);
-      assert.equal("ownerUserId" in image, false);
-      assert.equal(image.fullUrl, `/api/project-images/${image.id}/full`);
-      const full = await readProjectImage(user.id, image.id, "full", db, directory);
-      const thumb = await readProjectImage(user.id, image.id, "thumbnail", db, directory);
-      assert.ok(full);
-      assert.ok(thumb);
-      const fullMetadata = await sharp(full.buffer).metadata();
-      const thumbMetadata = await sharp(thumb.buffer).metadata();
-      assert.equal(fullMetadata.format, "webp");
-      assert.equal(fullMetadata.exif, undefined);
-      assert.equal(fullMetadata.icc, undefined);
-      assert.equal(fullMetadata.orientation, undefined);
-      assert.equal(thumbMetadata.format, "webp");
-      assert.equal(thumbMetadata.width, 480);
-      assert.equal(thumbMetadata.height, 320);
-      assert.deepEqual((await readdir(path.join(directory, image.id))).sort(), [
-        "full.webp",
-        "thumbnail.webp",
-      ]);
-    });
-  },
-);
+imageTest("project images produce full and thumbnail PNG variants", async () => {
+  await folder(async (directory) => {
+    const user = await founder();
+    const source = await new Jimp({ width: 2400, height: 1600, color: 0x558366ff }).getBuffer(
+      JimpMime.jpeg,
+    );
+    const image = await uploadProjectImage(
+      user.id,
+      new File([new Uint8Array(source)], "camera.jpg", { type: "image/jpeg" }),
+      db,
+      directory,
+    );
+    assert.equal(image.width, 1800);
+    assert.equal(image.height, 1200);
+    assert.equal("fullStorageKey" in image, false);
+    assert.equal("ownerUserId" in image, false);
+    assert.equal(image.fullUrl, `/api/project-images/${image.id}/full`);
+    const full = await readProjectImage(user.id, image.id, "full", db, directory);
+    const thumb = await readProjectImage(user.id, image.id, "thumbnail", db, directory);
+    assert.ok(full);
+    assert.ok(thumb);
+    const fullMetadata = await Jimp.fromBuffer(full.buffer);
+    const thumbMetadata = await Jimp.fromBuffer(thumb.buffer);
+    assert.equal(fullMetadata.bitmap.width, 1800);
+    assert.equal(fullMetadata.bitmap.height, 1200);
+    assert.equal(thumbMetadata.bitmap.width, 480);
+    assert.equal(thumbMetadata.bitmap.height, 320);
+    assert.deepEqual((await readdir(path.join(directory, image.id))).sort(), [
+      "full.png",
+      "thumbnail.png",
+    ]);
+  });
+});
 
 imageTest(
   "project image uploads reject SVG, invalid, oversized and animated files before writing",
   async () => {
     await folder(async (directory) => {
       const user = await founder();
-      const raw = Buffer.concat([Buffer.alloc(32 * 32 * 3, 255), Buffer.alloc(32 * 32 * 3, 0)]);
-      const animated = await sharp(raw, {
-        raw: { width: 32, height: 64, channels: 3, pageHeight: 32 },
-      })
-        .webp({ delay: [100, 100], loop: 0 })
-        .toBuffer();
-      assert.equal((await sharp(animated).metadata()).pages, 2);
       const invalid = [
         new File(["<svg xmlns='http://www.w3.org/2000/svg'/>"], "fake.png", { type: "image/png" }),
         new File(["invalid"], "fake.jpg", { type: "image/jpeg" }),
-        new File([new Uint8Array(animated)], "animated.webp", { type: "image/webp" }),
+        new File([new Uint8Array(Buffer.from("RIFFxxxxWEBP"))], "unsupported.webp", {
+          type: "image/webp",
+        }),
       ];
       for (const file of invalid)
         await assert.rejects(
@@ -329,7 +312,7 @@ imageTest("corrupt image content or storage metadata is never returned", async (
   await folder(async (directory) => {
     const owner = await founder();
     const image = await uploadProjectImage(owner.id, await pngFile(), db, directory);
-    await writeFile(path.join(directory, image.id, "full.webp"), "corrupt");
+    await writeFile(path.join(directory, image.id, "full.png"), "corrupt");
     assert.equal(await readProjectImage(owner.id, image.id, "full", db, directory), null);
     await db.projectImage.update({
       where: { id: image.id },

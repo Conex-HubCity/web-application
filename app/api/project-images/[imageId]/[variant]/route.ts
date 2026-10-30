@@ -19,9 +19,9 @@ export async function GET(
   return new Response(new Uint8Array(result.buffer), {
     headers: {
       ...headers,
-      "Content-Type": "image/webp",
+      "Content-Type": result.contentType,
       "Content-Length": String(result.buffer.length),
-      "Content-Disposition": 'inline; filename="project-image.webp"',
+      "Content-Disposition": `inline; filename="project-image.${result.contentType === "image/png" ? "png" : "webp"}"`,
     },
   });
 }
