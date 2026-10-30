@@ -27,7 +27,7 @@ type Props = {
 };
 const MAX_BYTES = 5 * 1024 * 1024;
 const subscribeToClient = () => () => {};
-const invalidMessage = "Choisissez une image JPG, PNG ou WebP valide.";
+const invalidMessage = "Choisissez une image JPG ou PNG valide.";
 const genericMessage = "L’image n’a pas pu être enregistrée. Réessayez.";
 function imageResponse(value: unknown): value is { image: UploadedProjectImage } {
   if (!value || typeof value !== "object" || !("image" in value)) return false;
@@ -106,7 +106,7 @@ export function ImageUploadModal({ open, onClose, onUploaded }: Props) {
   function selectFile(next: File | undefined) {
     if (pending || !next) return;
     setError(null);
-    if (!next.size || !["image/jpeg", "image/png", "image/webp"].includes(next.type)) {
+    if (!next.size || !["image/jpeg", "image/png"].includes(next.type)) {
       setError(invalidMessage);
       return;
     }
@@ -252,14 +252,14 @@ export function ImageUploadModal({ open, onClose, onUploaded }: Props) {
                 <path d="m7 35 11-10 8 7 7-9 9 12" />
               </svg>
               <strong>{t("Glissez votre image ici")}</strong>
-              <span>{t("JPG, PNG ou WebP · 5 Mo maximum")}</span>
+              <span>{t("JPG ou PNG · 5 Mo maximum")}</span>
             </div>
           )}
           <input
             ref={inputRef}
             type="file"
             name="image"
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/jpeg,image/png"
             hidden
             disabled={pending}
             onChange={(event) => selectFile(event.target.files?.[0])}

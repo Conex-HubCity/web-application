@@ -1,5 +1,5 @@
 import "server-only";
-import sharp from "sharp";
+import { Jimp, JimpMime } from "jimp";
 import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, rmdir, unlink, writeFile } from "node:fs/promises";
@@ -15,7 +15,7 @@ const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const defaultDirectory = path.join(process.cwd(), "uploads", "private", "projects");
 const checksum = (data: Buffer) => createHash("sha256").update(data).digest("hex");
 const invalidImage = () =>
-  new DomainError("INVALID_PROJECT_IMAGE", "Choisissez une image JPG, PNG ou WebP valide.");
+  new DomainError("INVALID_PROJECT_IMAGE", "Choisissez une image JPG ou PNG valide.");
 export type ProjectImageView = {
   id: string;
   fullUrl: string;
@@ -44,15 +44,6 @@ function isAnimated(buffer: Buffer, format: string) {
       offset += size + 12;
     }
   }
-  if (format === "webp") {
-    for (let offset = 12; offset + 8 <= buffer.length;) {
-      const size = buffer.readUInt32LE(offset + 4);
-      if (size > buffer.length - offset - 8) return true;
-      const type = buffer.subarray(offset, offset + 4).toString("ascii");
-      if (type === "ANIM" || type === "ANMF") return true;
-      offset += 8 + size + (size % 2);
-    }
-  }
   return false;
 }
 async function prepareImage(file: File) {
@@ -65,33 +56,36 @@ async function prepareImage(file: File) {
       ? "png"
       : buffer.subarray(0, 3).toString("hex") === "ffd8ff"
         ? "jpeg"
-        : buffer.subarray(0, 4).toString() === "RIFF" &&
-            buffer.subarray(8, 12).toString() === "WEBP"
-          ? "webp"
-          : null;
+        : null;
   if (!signature || isAnimated(buffer, signature)) throw invalidImage();
   try {
-    const options = { limitInputPixels: MAX_PROJECT_IMAGE_PIXELS, failOn: "warning" as const };
-    const metadata = await sharp(buffer, options).metadata();
+    const image = await Jimp.fromBuffer(buffer);
     if (
-      !metadata.width ||
-      !metadata.height ||
-      metadata.width * metadata.height > MAX_PROJECT_IMAGE_PIXELS ||
-      !["png", "jpeg", "webp"].includes(metadata.format ?? "") ||
-      (metadata.pages ?? 1) > 1 ||
-      (metadata.delay?.length ?? 0) > 1
+      !image.bitmap.width ||
+      !image.bitmap.height ||
+      image.bitmap.width * image.bitmap.height > MAX_PROJECT_IMAGE_PIXELS
     )
       throw invalidImage();
-    const full = await sharp(buffer, options)
-      .rotate()
-      .resize({ width: 1800, height: 1200, fit: "inside", withoutEnlargement: true })
-      .webp({ quality: 86 })
-      .toBuffer({ resolveWithObject: true });
-    const thumbnail = await sharp(full.data, options)
-      .resize({ width: 480, height: 320, fit: "contain", background: "#f5f3e9" })
-      .webp({ quality: 78 })
-      .toBuffer({ resolveWithObject: true });
-    return { full, thumbnail };
+    image.scaleToFit({ w: 1800, h: 1200 });
+    const fullData = await image.getBuffer(JimpMime.png);
+    const thumbnailImage = new Jimp({ width: 480, height: 320, color: 0xf5f3e9ff });
+    const thumbnailContent = image.clone().scaleToFit({ w: 480, h: 320 });
+    thumbnailImage.composite(
+      thumbnailContent,
+      Math.floor((480 - thumbnailContent.bitmap.width) / 2),
+      Math.floor((320 - thumbnailContent.bitmap.height) / 2),
+    );
+    const thumbnailData = await thumbnailImage.getBuffer(JimpMime.png);
+    return {
+      full: {
+        data: fullData,
+        info: { width: image.bitmap.width, height: image.bitmap.height },
+      },
+      thumbnail: {
+        data: thumbnailData,
+        info: { width: thumbnailImage.bitmap.width, height: thumbnailImage.bitmap.height },
+      },
+    };
   } catch (error) {
     if (error instanceof DomainError) throw error;
     throw invalidImage();
@@ -141,7 +135,7 @@ export async function uploadProjectImage(
         ] as const) {
           const destination = path.join(
             /* turbopackIgnore: true */ imageDirectory,
-            `${variant}.webp`,
+            `${variant}.png`,
           );
           await writeFile(destination, data, { flag: "wx", mode: 0o600 });
           written.push(destination);
@@ -150,8 +144,8 @@ export async function uploadProjectImage(
           data: {
             id,
             ownerUserId: userId,
-            fullStorageKey: `projects/${id}/full.webp`,
-            thumbnailStorageKey: `projects/${id}/thumbnail.webp`,
+            fullStorageKey: `projects/${id}/full.png`,
+            thumbnailStorageKey: `projects/${id}/thumbnail.png`,
             fullChecksum: checksum(prepared.full.data),
             thumbnailChecksum: checksum(prepared.thumbnail.data),
             fullWidth: prepared.full.info.width,
@@ -180,7 +174,7 @@ export async function readProjectImage(
   variant: string,
   db: PrismaClient = getDb(),
   directory = defaultDirectory,
-): Promise<{ buffer: Buffer; width: number; height: number } | null> {
+): Promise<{ buffer: Buffer; width: number; height: number; contentType: string } | null> {
   if (!uuid.test(imageId) || !["full", "thumbnail"].includes(variant)) return null;
   const image = await db.projectImage.findUnique({ where: { id: imageId } });
   if (!image) return null;
@@ -222,11 +216,14 @@ export async function readProjectImage(
     if (!project) return null;
   }
   const full = variant === "full";
-  const expectedKey = `projects/${image.id}/${variant}.webp`;
-  if ((full ? image.fullStorageKey : image.thumbnailStorageKey) !== expectedKey) return null;
+  const storageKey = full ? image.fullStorageKey : image.thumbnailStorageKey;
+  const expectedPrefix = `projects/${image.id}/${variant}.`;
+  if (!storageKey.startsWith(expectedPrefix)) return null;
+  const extension = storageKey.slice(expectedPrefix.length);
+  if (!["png", "webp"].includes(extension)) return null;
   try {
     const buffer = await readFile(
-      path.join(/* turbopackIgnore: true */ directory, image.id, `${variant}.webp`),
+      path.join(/* turbopackIgnore: true */ directory, image.id, `${variant}.${extension}`),
     );
     if (
       buffer.length !== (full ? image.fullSizeBytes : image.thumbnailSizeBytes) ||
@@ -237,6 +234,7 @@ export async function readProjectImage(
       buffer,
       width: full ? image.fullWidth : image.thumbnailWidth,
       height: full ? image.fullHeight : image.thumbnailHeight,
+      contentType: extension === "png" ? "image/png" : "image/webp",
     };
   } catch {
     return null;
