@@ -1,0 +1,48 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 761 >>
+stream
+BT /F1 13 Tf 48 790 Td 18 TL
+(CONNEX - JUSTIFICATIF FICTIF DE DEMONSTRATION) Tj
+T* (Simulation de reference professionnelle - non probante) Tj
+T* () Tj
+T* (Ce fichier permet de tester le telechargement prive admin,) Tj
+T* (les statuts de verification et la tracabilite des decisions.) Tj
+T* () Tj
+T* (Scenario fictif pour Aissatou Diallo Demo :) Tj
+T* (atelier de cadrage du modele economique, feuille de route) Tj
+T* (commerciale a 90 jours et preparation de partenariats.) Tj
+T* () Tj
+T* (Aucun employeur, signataire ou organisme ne l atteste.) Tj
+T* (Aucune signature ni certification reelle n est reproduite.) Tj
+T* (Approbation et scan CLEAN simules par le seed uniquement.) Tj
+T* () Tj
+T* (Fichier de test local. Ne pas utiliser comme attestation.) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000000311 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1122
+%%EOF

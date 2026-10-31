@@ -5,6 +5,7 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
+    seed: "node --conditions=react-server --import tsx prisma/seed.ts",
   },
   datasource: {
     // Generation/builds do not require a live database or a production secret.

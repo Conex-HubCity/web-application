@@ -1,0 +1,80 @@
+[
+  {
+    "file": "projects/coldhubs-official-demo.jpg",
+    "owner": "ColdHubs",
+    "sourcePage": "https://coldhubs.com/",
+    "sourceUrl": "https://coldhubs.com/wp-content/uploads/2025/05/State-of-the-Art-100-Cold-Rooms-and-IcePoints-Services-Home-Page-Picture-1400x788.jpg",
+    "downloadedAt": "2026-10-31",
+    "sha256": "a6c61a3529db1408cdfc99553f3316f0ccb994236202964266da744aec5b6ac5",
+    "bytes": 318432,
+    "alt": "Installation frigorifique ColdHubs",
+    "kind": "official-photo",
+    "usage": "Fixture de démonstration interne ; aucune affiliation ni licence de redistribution revendiquée.",
+    "rights": "Droits réservés au titulaire. Ne pas publier ces visuels sans autorisation ou licence adaptée."
+  },
+  {
+    "file": "projects/lifebank-official-demo.png",
+    "owner": "LifeBank",
+    "sourcePage": "https://lifebank.ng/",
+    "sourceUrl": "https://lifebank.ng/assets/images/png/hero.png",
+    "downloadedAt": "2026-10-31",
+    "sha256": "6de172f72b538cd808584217434e5d389d0e2a9b6345ddcbdddf1e2861b76ed2",
+    "bytes": 893084,
+    "alt": "Visuel de présentation LifeBank",
+    "kind": "official-photo",
+    "usage": "Fixture de démonstration interne ; aucune affiliation ni licence de redistribution revendiquée.",
+    "rights": "Droits réservés au titulaire. Ne pas publier ces visuels sans autorisation ou licence adaptée."
+  },
+  {
+    "file": "projects/sun-king-official-demo.jpg",
+    "owner": "Sun King",
+    "sourcePage": "https://sunking.com/",
+    "sourceUrl": "https://sunking.com/wp-content/uploads/2024/08/SHOT-15_02_Revert-scaled-e1747915036894.jpg",
+    "downloadedAt": "2026-10-31",
+    "sha256": "379179081224e542f93b60c921bcb0967e6c3f34410c1f7647f1913c0d9c5906",
+    "bytes": 501618,
+    "alt": "Installation solaire Sun King",
+    "kind": "official-photo",
+    "usage": "Fixture de démonstration interne ; aucune affiliation ni licence de redistribution revendiquée.",
+    "rights": "Droits réservés au titulaire. Ne pas publier ces visuels sans autorisation ou licence adaptée."
+  },
+  {
+    "file": "projects/gjenge-makers-official-demo.jpg",
+    "owner": "Gjenge Makers",
+    "sourcePage": "https://gjenge.co.ke/",
+    "sourceUrl": "https://gjenge.co.ke/assets/gjenge-team.jpg",
+    "downloadedAt": "2026-10-31",
+    "sha256": "1a4bda4f7eeb29a09a987ad0100061f3c7dc9b6a4fca9ed778bd7331f65a0fff",
+    "bytes": 136072,
+    "alt": "Équipe de Gjenge Makers",
+    "kind": "official-photo",
+    "usage": "Fixture de démonstration interne ; aucune affiliation ni licence de redistribution revendiquée.",
+    "rights": "Droits réservés au titulaire. Ne pas publier ces visuels sans autorisation ou licence adaptée."
+  },
+  {
+    "file": "projects/ubongo-official-demo.jpg",
+    "owner": "Ubongo",
+    "sourcePage": "https://www.ubongo.org/blog/photo-gallery/",
+    "sourceUrl": "https://www.ubongo.org/wp-content/uploads/Kids-watching-Akili-and-Me-scaled.jpg",
+    "downloadedAt": "2026-10-31",
+    "sha256": "34f61b9e1b43c36346a93933773995f9f3100a13c1044b7750cc454e5f3e5709",
+    "bytes": 531932,
+    "alt": "Enfants regardant Akili and Me",
+    "kind": "official-photo",
+    "usage": "Fixture de démonstration interne ; aucune affiliation ni licence de redistribution revendiquée.",
+    "rights": "Droits réservés au titulaire. Ne pas publier ces visuels sans autorisation ou licence adaptée."
+  },
+  {
+    "file": "projects/wave-official-demo.jpg",
+    "owner": "Wave",
+    "sourcePage": "https://www.wave.com/en/about/",
+    "sourceUrl": "https://www.wave.com/img/about/man-scanning-agent_hued0fdf3db7592fa860b8c5e72bf36b65_8334351_1000x666_resize_q75_box.b46d31a507d9c6be798c67b1a675191f0d3aa1db21f71393583ddab483a27b6e.jpg",
+    "downloadedAt": "2026-10-31",
+    "sha256": "b46d31a507d9c6be798c67b1a675191f0d3aa1db21f71393583ddab483a27b6e",
+    "bytes": 93267,
+    "alt": "Point de service Wave",
+    "kind": "official-photo",
+    "usage": "Fixture de démonstration interne ; aucune affiliation ni licence de redistribution revendiquée.",
+    "rights": "Droits réservés au titulaire. Ne pas publier ces visuels sans autorisation ou licence adaptée."
+  }
+]

@@ -22,6 +22,13 @@ l’authentification sera branchée ensuite.
 - `npm run db:deploy` : appliquer les migrations versionnées sur la base configurée.
 - `npm run build`
 
+Un [seed de démonstration complet](prisma/seed/README.md) est disponible dans
+`prisma/seed.ts` : six projets documentés avec photos locales, six porteurs invités,
+un mentor validé et un admin fictifs. Utiliser `npm run db:seed` avec une
+`SEED_DATABASE_URL` de développement explicite ; `npm run test:seed` vérifie le jeu
+dans un schéma temporaire isolé. Les sources et médias sont conservés dans
+`prisma/seed/`.
+
 ## Écrans et structure
 
 Un aperçu autonome HTML/CSS/JS de l’accueil est disponible dans `exports/conex-preview/`, sans inscription ni connexion, avec un modal « Version en développement — Ne pas publier ». Ouvrir son `index.html`. Pour le régénérer depuis l’application démarrée : `npm run export:preview -- http://localhost:3000/` (Node.js et Python requis pour l’export seulement).
