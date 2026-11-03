@@ -239,17 +239,6 @@
 .hero-join-mentor:hover {
   background: #ffffff13;
 }
-.welcome-existing {
-  color: #c5d1c1;
-  font-size: 11px;
-  margin-top: 19px;
-}
-.welcome-existing a {
-  color: #f1d2a7;
-  border-bottom: 1px solid #e6cba170;
-  padding-bottom: 3px;
-  margin-left: 4px;
-}
 .welcome-hero-ethos {
   display: flex;
   flex-wrap: wrap;
@@ -1235,9 +1224,6 @@
   }
   .hero-join-mentor {
     padding-inline: 19px;
-  }
-  .welcome-existing {
-    font-size: 10px;
   }
   .welcome-hero-ethos {
     margin-top: 29px;

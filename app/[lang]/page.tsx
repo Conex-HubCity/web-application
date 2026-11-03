@@ -82,14 +82,6 @@ async function HomeContent() {
                   "Les bonnes rencontres ouvrent de nouveaux possibles. Connex relie les Mentees africains aux professionnels de la diaspora pour avancer ensemble.",
                 )}{" "}
               </p>
-              <p className="welcome-existing">
-                {" "}
-                {t("Déjà membre ou mentor ?")}{" "}
-                <Link href="/connexion">
-                  {" "}
-                  {t("Connectez-vous")} <span aria-hidden="true">↗</span>
-                </Link>
-              </p>
             </div>
           </div>
         </section>
