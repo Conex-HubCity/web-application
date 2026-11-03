@@ -846,15 +846,6 @@
   text-underline-offset: 3px;
   margin-left: 4px;
 }
-.auth-demo-link {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  font-size: 10px;
-  color: #6b7762;
-  margin-top: 22px;
-  width: max-content;
-}
 .auth-feedback {
   background: #e4eadd;
   border: 1px solid #c1ccb8;

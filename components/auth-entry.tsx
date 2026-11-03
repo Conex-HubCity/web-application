@@ -221,10 +221,6 @@ export function AuthEntry({
               {register ? t("Se connecter") : t("Créer mon compte")}
             </Link>
           </p>
-          <Link href="/espace" className="auth-demo-link">
-            {" "}
-            {t("Explorer l’espace de démonstration")} <Icon name="diagonal" size={14} />
-          </Link>
         </div>
         <aside className="auth-aside">
           <div className="auth-aside-photo">

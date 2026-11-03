@@ -90,20 +90,6 @@ async function HomeContent() {
                   {t("Connectez-vous")} <span aria-hidden="true">↗</span>
                 </Link>
               </p>
-              <div className="welcome-hero-ethos">
-                <span>{t("TRANSMISSION")}</span>
-                <i aria-hidden="true" />
-                <span>{t("RENCONTRE")}</span>
-                <i aria-hidden="true" />
-                <span>{t("COMPAGNONNAGE")}</span>
-              </div>
-            </div>
-            <div className="welcome-hero-baseline">
-              <span>{t("LE TALENT EST PARTOUT. CRÉONS LES LIENS.")}</span>
-              <a href="#programme">
-                {" "}
-                {t("Comment ça marche")} <Icon name="arrow" size={16} />
-              </a>
             </div>
           </div>
         </section>
