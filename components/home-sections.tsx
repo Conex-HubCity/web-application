@@ -2,31 +2,13 @@ import { getTranslator } from "@/lib/i18n/server";
 import Image from "next/image";
 import { Link } from "@/components/i18n";
 import { Icon } from "./icon";
-import { Journey } from "./journey";
-
-const commitments = [
-  {
-    icon: "people",
-    title: "La confiance avant la rencontre",
-    text: "Certification des porteurs, validation des projets et vérification des mentors : chaque étape a son propre contrôle par Connex.",
-  },
-  {
-    icon: "lock",
-    title: "Un projet partagé, des pièces protégées",
-    text: "Certificats et coordonnées restent privés. Les dossiers confidentiels sont réservés aux mentors vérifiés, adhérents et autorisés.",
-  },
-  {
-    icon: "leaf",
-    title: "Une relation choisie, jamais imposée",
-    text: "Chacun donne son accord. Le compagnonnage n’impose ni emploi, ni exclusivité, ni investissement ou service personnel au mentor.",
-  },
-];
+import { HomeProgramme } from "./home-programme";
 
 const questions = [
   {
     question: "Puis-je créer mon compte avant d’être certifié ?",
     answer:
-      "Oui. Vous pouvez créer votre compte et préparer votre profil avant la certification. Votre profil reste privé et non visible dans le catalogue tant que l’équipe Connex n’a pas vérifié votre certificat WoeAcademy Niveau Rouge. Vous pourrez ensuite soumettre votre pitch, qui fera l’objet d’une validation distincte.",
+      "Oui. Vous pouvez créer votre compte Mentee et préparer votre projet avant la certification. La formation et la validation du projet sont deux étapes distinctes.",
   },
   {
     question: "L’inscription est-elle gratuite ?",
@@ -36,12 +18,12 @@ const questions = [
   {
     question: "Comment se forme le binôme avec un mentor ?",
     answer:
-      "Un mentor actif manifeste son intérêt pour un projet validé. Connex examine la compatibilité et organise une rencontre introductive. Le mentorat est activé uniquement après la validation de l’équipe et l’accord explicite du porteur de projet et du mentor.",
+      "La mise en relation est en cours de développement. À son ouverture, CNX examinera la compatibilité, préparera une rencontre et recueillera l’accord des deux personnes.",
   },
   {
     question: "Qui peut consulter les documents de mon projet ?",
     answer:
-      "Votre certificat, vos coordonnées et les pièces sensibles restent privés. Les documents confidentiels du projet sont accessibles uniquement aux mentors vérifiés, adhérents et autorisés selon la politique d’accès. Une présentation publique éventuelle nécessite votre consentement.",
+      "Votre certificat et les pièces sensibles restent privés. Les mentors autorisés peuvent consulter la présentation de votre projet, distincte de vos justificatifs confidentiels.",
   },
   {
     question: "Le mentorat garantit-il un financement ?",
@@ -68,11 +50,15 @@ export async function HomeSections({
   const t = await getTranslator();
   function PathwayCard({ role, children }: { role: string; children: React.ReactNode }) {
     return founderRegistrationClosed && role === "porteur" ? (
-      <div className="cnx-pathway-card" aria-disabled="true">
+      <div className="cnx-pathway-card" aria-disabled="true" data-founder-registration="closed">
         {children}
       </div>
     ) : (
-      <Link href={`/inscription/${role}`} className="cnx-pathway-card">
+      <Link
+        href={`/inscription/${role}`}
+        className="cnx-pathway-card"
+        data-founder-registration={role === "porteur" ? "open" : undefined}
+      >
         {children}
       </Link>
     );
@@ -82,7 +68,7 @@ export async function HomeSections({
       role: "porteur",
       number: "01",
       image: "entrepreneure.webp",
-      label: t("PORTEURS DE PROJETS"),
+      label: t("MENTEES"),
       title: (
         <>
           {" "}
@@ -93,7 +79,7 @@ export async function HomeSections({
       text: t(
         "Prenez du recul, structurez votre projet et avancez avec l’expérience d’un mentor. Vous restez aux commandes de votre parcours.",
       ),
-      action: t("Créer mon compte porteur"),
+      action: t("Rejoindre comme Mentee"),
     },
     {
       role: "mentor",
@@ -116,20 +102,95 @@ export async function HomeSections({
   return (
     <>
       <section
-        id="les-parcours"
-        className="cnx-pathways cnx-section"
-        aria-labelledby="pathways-title"
+        id="programme"
+        className="cnx-section cnx-training-section"
+        aria-labelledby="training-title"
       >
+        <div className="welcome-container">
+          <div className="cnx-section-heading">
+            <div className="welcome-eyebrow">
+              <span />
+              {t("APPRENDRE POUR AVANCER ENSEMBLE")}
+            </div>
+            <h2 id="training-title">
+              {t("Se former.")}
+              <br />
+              <em>{t("Puis grandir ensemble.")}</em>
+            </h2>
+            <p>
+              {t(
+                "Mentee ou mentor, la formation prépare une relation utile. Un socle commun avant la rencontre, puis un chemin à construire à deux.",
+              )}
+            </p>
+          </div>
+          <HomeProgramme />
+        </div>
+      </section>
+
+      <section
+        id="questions-frequentes"
+        className="cnx-faq cnx-section"
+        aria-labelledby="faq-title"
+      >
+        <div className="welcome-container cnx-faq-grid">
+          <div className="cnx-section-heading cnx-faq-heading">
+            <div className="welcome-eyebrow">
+              <span /> {t("AVANT DE FAIRE LE PREMIER PAS")}{" "}
+            </div>
+            <h2 id="faq-title">
+              {" "}
+              {t("Vos questions.")} <br />
+              <em>{t("En toute clarté.")}</em>
+            </h2>
+            <p>
+              {" "}
+              {t(
+                "Quelques repères pour comprendre votre parcours et rejoindre Connex en connaissance de cause.",
+              )}{" "}
+            </p>
+            <a className="cnx-inline-link" href="#choix">
+              {t("Choisir mon parcours")}
+              <Icon name="arrow" size={18} />
+            </a>
+          </div>
+          <div className="cnx-faq-items">
+            {questions.map((item, index) => (
+              <details key={t(item.question)}>
+                <summary>
+                  <span className="cnx-faq-number">0{index + 1}</span>
+                  <span>{t(item.question)}</span>
+                  <span className="cnx-faq-plus" aria-hidden="true">
+                    +
+                  </span>
+                </summary>
+                <div className="cnx-faq-answer">
+                  <p>
+                    {t(
+                      founderRegistrationClosed && index === 0
+                        ? "Les inscriptions Mentee sont actuellement fermées. Les comptes existants et les personnes invitées conservent leur accès."
+                        : founderRegistrationClosed && index === 1
+                          ? "La création du compte est gratuite. Après confirmation de l’email, une contribution unique de 30 USD permet de soutenir le fonctionnement de Connex. Vous pouvez ensuite vous arrêter là ou déposer vos justificatifs pour proposer votre candidature mentor."
+                          : item.answer,
+                    )}
+                  </p>
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="choix" className="cnx-pathways cnx-section" aria-labelledby="pathways-title">
         <div className="welcome-container">
           <div className="cnx-split-heading">
             <div className="cnx-section-heading">
               <div className="welcome-eyebrow">
-                <span /> {t("DEUX PARCOURS, UN MÊME ÉLAN")}{" "}
+                <span /> {t("CHOISIR SA PLACE")}{" "}
               </div>
               <h2 id="pathways-title">
                 {" "}
-                {t("Chacun son chemin.")} <br />
-                <em>{t("Un horizon partagé.")}</em>
+                {t("Mentee ou mentor.")} <br />
+                <em>{t("Un même horizon.")}</em>
               </h2>
             </div>
             <p>
@@ -161,6 +222,12 @@ export async function HomeSections({
                   <span className="cnx-pathway-label">{pathway.label}</span>
                   <h3>{pathway.title}</h3>
                   <p>{pathway.text}</p>
+                  {pathway.role === "mentor" && (
+                    <span className="cnx-pathway-contribution">
+                      <strong>30 USD</strong>
+                      {t("de soutien, en un seul paiement")}
+                    </span>
+                  )}
                   <span className="cnx-pathway-link">
                     {founderRegistrationClosed && pathway.role === "porteur"
                       ? t("Bientôt disponible")
@@ -170,195 +237,6 @@ export async function HomeSections({
                 </div>
               </PathwayCard>
             ))}
-          </div>
-          <p className="cnx-pathway-footnote">
-            <Icon name="compass" size={18} />{" "}
-            {t(
-              founderRegistrationClosed
-                ? "Le parcours porteur de projet ouvrira dans une prochaine version."
-                : "Vous pouvez créer votre compte avant la certification. La validation du profil et celle du projet restent deux étapes distinctes.",
-            )}{" "}
-          </p>
-        </div>
-      </section>
-
-      <Journey founderRegistrationClosed={founderRegistrationClosed} />
-
-      <section id="la-confiance" className="cnx-trust cnx-section" aria-labelledby="trust-title">
-        <div className="welcome-container cnx-trust-grid">
-          <div>
-            <div className="cnx-section-heading">
-              <div className="welcome-eyebrow">
-                <span /> {t("UN CADRE QUI PREND SOIN DU LIEN")}{" "}
-              </div>
-              <h2 id="trust-title">
-                {" "}
-                {t("La confiance")} <br /> {t("ne se décrète pas.")} <br />
-                <em>{t("Elle se construit.")}</em>
-              </h2>
-              <p>
-                {" "}
-                {t(
-                  "Un accompagnement a besoin de clarté, de respect et de liberté. C’est le cadre dans lequel Connex fait naître les rencontres.",
-                )}{" "}
-              </p>
-            </div>
-            <div className="cnx-commitments">
-              {commitments.map((item) => (
-                <article key={t(item.title)}>
-                  <span className="cnx-commitment-icon">
-                    <Icon name={item.icon} size={20} />
-                  </span>
-                  <div>
-                    <h3>{t(item.title)}</h3>
-                    <p>{t(item.text)}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-            <a className="cnx-inline-link" href="#questions-frequentes">
-              {" "}
-              {t("Comprendre le fonctionnement")} <Icon name="arrow" size={18} />
-            </a>
-          </div>
-          <div className="cnx-trust-visual">
-            <div className="cnx-trust-photo">
-              <Image
-                src="/assets/conex/portrait-femme.webp"
-                alt={t("Portrait illustratif d’une professionnelle")}
-                fill
-                sizes="(max-width: 760px) 100vw, 42vw"
-              />
-            </div>
-            <div className="cnx-trust-note">
-              <Icon name="people" size={30} />
-              <p>
-                <strong>{t("Un lien libre.")}</strong>
-                <span>{t("Un cadre partagé pour avancer.")}</span>
-              </p>
-            </div>
-            <span className="cnx-image-note">{t("Visuel d’illustration")}</span>
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="questions-frequentes"
-        className="cnx-faq cnx-section"
-        aria-labelledby="faq-title"
-      >
-        <div className="welcome-container cnx-faq-grid">
-          <div className="cnx-section-heading cnx-faq-heading">
-            <div className="welcome-eyebrow">
-              <span /> {t("AVANT DE FAIRE LE PREMIER PAS")}{" "}
-            </div>
-            <h2 id="faq-title">
-              {" "}
-              {t("Vos questions.")} <br />
-              <em>{t("En toute clarté.")}</em>
-            </h2>
-            <p>
-              {" "}
-              {t(
-                "Quelques repères pour comprendre votre parcours et rejoindre Connex en connaissance de cause.",
-              )}{" "}
-            </p>
-            <Link
-              className="cnx-inline-link"
-              href={founderRegistrationClosed ? "/inscription/mentor" : "/inscription/porteur"}
-            >
-              {" "}
-              {t(founderRegistrationClosed ? "Devenir mentor" : "Commencer mon parcours")}{" "}
-              <Icon name="arrow" size={18} />
-            </Link>
-          </div>
-          <div className="cnx-faq-items">
-            {questions.map((item, index) => (
-              <details key={t(item.question)}>
-                <summary>
-                  <span className="cnx-faq-number">0{index + 1}</span>
-                  <span>{t(item.question)}</span>
-                  <span className="cnx-faq-plus" aria-hidden="true">
-                    +
-                  </span>
-                </summary>
-                <div className="cnx-faq-answer">
-                  <p>
-                    {t(
-                      founderRegistrationClosed && index === 0
-                        ? "Les inscriptions des porteurs de projet ne sont pas encore ouvertes. Cette première version est réservée aux candidatures mentors."
-                        : founderRegistrationClosed && index === 1
-                          ? "La création du compte est gratuite. Après confirmation de l’email, une contribution unique de 30 USD permet de soutenir le fonctionnement de Connex. Vous pouvez ensuite vous arrêter là ou déposer vos justificatifs pour proposer votre candidature mentor."
-                          : item.answer,
-                    )}
-                  </p>
-                </div>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="cnx-final" aria-labelledby="final-title">
-        <div className="welcome-container cnx-final-grid">
-          <div className="cnx-section-heading">
-            <div className="welcome-eyebrow">
-              <span /> {t("LA SUITE COMMENCE AVEC VOUS")}{" "}
-            </div>
-            <h2 id="final-title">
-              {" "}
-              {t("Les possibles")} <br /> {t("se construisent")} <br />
-              <em>{t("à plusieurs.")}</em>
-            </h2>
-            <p>
-              {" "}
-              {t(
-                "Votre projet mérite un regard nouveau. Votre expérience peut ouvrir une voie. Faisons le premier pas.",
-              )}{" "}
-            </p>
-            <div className="welcome-hero-actions">
-              {!founderRegistrationClosed && (
-                <Link className="hero-join hero-join-founder" href="/inscription/porteur">
-                  {" "}
-                  {t("Je porte un projet")}{" "}
-                  <span>
-                    <Icon name="diagonal" size={18} />
-                  </span>
-                </Link>
-              )}
-              <Link
-                className={
-                  founderRegistrationClosed
-                    ? "hero-join hero-join-founder"
-                    : "hero-join hero-join-mentor"
-                }
-                href="/inscription/mentor"
-              >
-                {" "}
-                {t("Devenir mentor")} <Icon name="arrow" size={18} />
-              </Link>
-            </div>
-            <p className="cnx-final-login">
-              {" "}
-              {t("Déjà membre ?")}{" "}
-              <Link href="/connexion">
-                {" "}
-                {t("Se connecter")} <Icon name="diagonal" size={14} />
-              </Link>
-            </p>
-          </div>
-          <div className="cnx-final-art">
-            <div className="cnx-final-photo">
-              <Image
-                src="/assets/conex/collectif.webp"
-                alt={t("Illustration d’un collectif réuni autour d’un projet")}
-                fill
-                sizes="(max-width: 760px) 85vw, 40vw"
-              />
-            </div>
-            <span className="cnx-final-monogram" aria-hidden="true">
-              CNX<span>.</span>
-            </span>
           </div>
         </div>
       </section>

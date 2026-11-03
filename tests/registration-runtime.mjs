@@ -69,7 +69,7 @@ for (const enabled of [false, true]) {
       const home = await html(`/${locale}`);
       const ownerLink = new RegExp(`<a[^>]+href="/${locale}/inscription/porteur"`);
       assert.equal(
-        home.includes('class="welcome-preview-notice'),
+        home.includes('data-founder-registration="closed"'),
         !enabled,
         `${locale}: notice follows runtime flag`,
       );
@@ -94,7 +94,7 @@ for (const enabled of [false, true]) {
       assert.equal(ownerLink.test(mentor), enabled, `${locale}: role tabs follow runtime flag`);
       const login = await html(`/${locale}/connexion`);
       assert.equal(
-        new RegExp(`href="/${locale}/?#les-parcours"`).test(login),
+        new RegExp(`href="/${locale}/?#choix"`).test(login),
         enabled,
         `${locale}: login signup destination follows runtime flag`,
       );

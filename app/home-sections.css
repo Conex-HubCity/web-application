@@ -171,16 +171,6 @@
   margin-top: 18px;
   border-bottom: 1px solid #f3efdb98;
 }
-.cnx-pathway-footnote {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 11px;
-  color: #5b7160;
-  font-size: 10px;
-  line-height: 1.8;
-  margin-top: 26px;
-}
 .cnx-journey {
   background: radial-gradient(ellipse at 0 0, #355b3c50, transparent 55%), #122e25;
   color: #fffdf7;
@@ -636,14 +626,6 @@
   .cnx-pathway-bottom > p {
     font-size: 12px;
   }
-  .cnx-pathway-footnote {
-    justify-content: start;
-    align-items: start;
-    font-size: 10px;
-  }
-  .cnx-pathway-footnote > svg {
-    margin-top: 3px;
-  }
   .cnx-journey-switch {
     margin-block: 28px 33px;
     width: 100%;
@@ -771,5 +753,144 @@
   }
   .cnx-pathway-card:hover > img {
     transform: none;
+  }
+}
+
+/* Targeted additions using the original forest, cream and gold charter. */
+.cnx-training-section > .welcome-container > .cnx-section-heading {
+  margin-bottom: 43px;
+}
+.cnx-pathway-contribution {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 11px;
+  line-height: 1.6;
+  margin-top: 23px;
+  color: #eee5d4;
+}
+.cnx-pathway-contribution strong {
+  font-family: Georgia, serif;
+  font-size: 25px;
+  font-weight: 400;
+  white-space: nowrap;
+  color: var(--gold);
+}
+#choix,
+#formation {
+  scroll-margin-top: 28px;
+}
+@media (max-width: 720px) {
+  .cnx-training-section > .welcome-container > .cnx-section-heading {
+    margin-bottom: 30px;
+  }
+}
+
+/* Discreet reassurance and a footer in the existing visual charter. */
+.welcome-footer.cnx-public-footer {
+  display: grid;
+  grid-template-columns: 1.15fr 0.8fr 1.2fr 1fr;
+  align-items: start;
+  gap: 38px;
+  padding-block: 48px;
+}
+.cnx-footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.cnx-footer-column h2 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.cnx-footer-column > span {
+  color: #657568;
+  font-size: 11px;
+  max-width: 240px;
+}
+.cnx-footer-column a {
+  width: fit-content;
+}
+.cnx-footer-column a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.cnx-footer-column .intro-replay {
+  font-size: 12px;
+  text-align: start;
+}
+.cnx-footer-email {
+  overflow-wrap: anywhere;
+}
+.cnx-footer-copyright {
+  display: block;
+  margin-top: 23px;
+  color: #697669;
+  font-size: 10px;
+  line-height: 1.7;
+}
+.cnx-privacy-main {
+  padding-block: 60px 100px;
+}
+.cnx-privacy-main > .cnx-section-heading,
+.cnx-privacy-main article {
+  max-width: 800px;
+  margin-inline: auto;
+}
+.cnx-privacy-main h1 {
+  font:
+    500 clamp(38px, 5vw, 65px)/1.12 Georgia,
+    serif;
+  letter-spacing: -0.04em;
+  margin-top: 20px;
+}
+.cnx-privacy-main article section {
+  margin-top: 38px;
+}
+.cnx-privacy-main article h2 {
+  font:
+    400 25px/1.3 Georgia,
+    serif;
+  margin-bottom: 15px;
+}
+.cnx-privacy-main article p {
+  color: #526557;
+  font-size: 14px;
+  line-height: 1.9;
+  margin-block: 12px;
+}
+.cnx-privacy-main article a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+.cnx-privacy-main .cnx-privacy-date {
+  font-size: 12px;
+}
+@media (max-width: 1050px) {
+  .welcome-footer.cnx-public-footer {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 35px;
+  }
+}
+@media (max-width: 600px) {
+  .welcome-footer.cnx-public-footer {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding-block: 35px;
+  }
+  .cnx-footer-column {
+    gap: 11px;
+  }
+  .cnx-footer-column > span {
+    max-width: none;
+  }
+  .cnx-privacy-main {
+    padding-block: 35px 65px;
   }
 }

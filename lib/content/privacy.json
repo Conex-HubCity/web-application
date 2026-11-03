@@ -1,0 +1,49 @@
+[
+  {
+    "title": "1. Les données que vous nous confiez",
+    "paragraphs": [
+      "Nous traitons vos nom, prénom, email et informations de profil, ainsi que les éléments nécessaires à la connexion et à la vérification de votre compte. Votre mot de passe est conservé sous forme de dérivé cryptographique, jamais en clair.",
+      "Selon votre parcours, vous pouvez transmettre un CV, des justificatifs d’expertise ou de certification, une présentation de projet, une image et des liens. Les champs obligatoires sont signalés dans les formulaires."
+    ]
+  },
+  {
+    "title": "2. Pourquoi nous les utilisons",
+    "paragraphs": [
+      "Ces données servent à créer et sécuriser votre compte, vérifier votre email, examiner votre candidature, présenter votre projet aux mentors autorisés et gérer vos contributions de soutien. Nous utilisons aussi votre email pour les messages liés à votre compte et à votre candidature.",
+      "La gestion de votre compte et de vos demandes permet de fournir le service sollicité. La prévention des abus et la protection des accès répondent au besoin de sécuriser la plateforme. Certaines informations de paiement peuvent être conservées pour respecter les obligations comptables applicables."
+    ]
+  },
+  {
+    "title": "3. Qui peut accéder à vos informations",
+    "paragraphs": [
+      "Les personnes habilitées de l’équipe CNX accèdent aux informations nécessaires à leurs missions. Les justificatifs ne sont pas affichés publiquement. La présentation de votre projet est distincte de ces pièces et peut être consultée par les mentors autorisés.",
+      "L’hébergement et l’envoi des emails nécessitent des prestataires techniques. Les contributions sont traitées par Stripe sur sa page de paiement : CNX conserve les références et le statut du paiement, sans enregistrer votre numéro de carte bancaire. Les traitements de Stripe sont décrits dans sa propre politique de confidentialité."
+    ]
+  },
+  {
+    "title": "4. Conservation et sécurité",
+    "paragraphs": [
+      "Les informations du compte, du projet et de la candidature sont conservées pour gérer votre parcours tant que votre compte est actif. En cas de demande de suppression, les informations à supprimer et les éventuelles obligations de conservation sont examinées par l’équipe. Les preuves de paiement et de consentement peuvent devoir être conservées pour les obligations applicables ou la gestion d’un litige.",
+      "Les codes de vérification et les liens de définition du mot de passe ont une durée de validité limitée. L’accès aux justificatifs est contrôlé selon les autorisations du compte."
+    ]
+  },
+  {
+    "title": "5. Cookies et stockage du navigateur",
+    "paragraphs": [
+      "Un cookie de session permet de maintenir votre connexion pendant sept jours au maximum. Un indicateur de session dans le navigateur évite de rejouer l’introduction à chaque visite pendant la même session. Ces mécanismes servent au fonctionnement de la plateforme."
+    ]
+  },
+  {
+    "title": "6. Vos demandes concernant vos données",
+    "paragraphs": [
+      "Vous pouvez nous demander l’accès à vos données, leur correction ou leur suppression. Selon les règles applicables, vous pouvez également demander la limitation du traitement, vous y opposer ou demander la portabilité de vos données. Certaines demandes peuvent être limitées par une obligation de conservation ou les droits d’autres personnes.",
+      "Pour exercer vos droits ou poser une question sur vos données, écrivez à notre équipe. Nous pourrons vous demander les éléments nécessaires pour vérifier votre identité. Vous pouvez aussi saisir l’autorité de protection des données compétente."
+    ]
+  },
+  {
+    "title": "7. Évolutions de cette politique",
+    "paragraphs": [
+      "Cette page peut être mise à jour lors d’une évolution de la plateforme. La date en haut de page indique la dernière révision."
+    ]
+  }
+]

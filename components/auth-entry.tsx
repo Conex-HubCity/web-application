@@ -182,6 +182,16 @@ export function AuthEntry({
                 </span>
               </label>
             )}
+            {register && (
+              <Link
+                className="auth-forgot"
+                href="/confidentialite"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t("Politique de confidentialité")}
+              </Link>
+            )}
             {state?.error && (
               <p className="auth-error" role="alert">
                 {t(state.error)}
@@ -205,7 +215,7 @@ export function AuthEntry({
                   ? "/connexion"
                   : !founderRegistrationOpen
                     ? "/inscription/mentor"
-                    : "/#les-parcours"
+                    : "/#choix"
               }
             >
               {register ? t("Se connecter") : t("Créer mon compte")}
