@@ -114,10 +114,9 @@ export function HomeProgramme({ menteeLabel = "Mentee" }: { menteeLabel?: string
               sizes="(max-width: 760px) 90vw, 40vw"
               loading="lazy"
             />
-            <figcaption>
-              <span aria-hidden="true" />
-              <p>{t("Apprendre avec les autres. Grandir ensemble.")}</p>
-            </figcaption>
+            <div className="cx-training-image-accent" aria-hidden="true">
+              <span />
+            </div>
           </figure>
         </article>
       </li>

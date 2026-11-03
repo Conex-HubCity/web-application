@@ -178,7 +178,7 @@
   object-fit: cover;
   object-position: 49% center;
 }
-.welcome-page .cx-chapter-training-visual figcaption {
+.welcome-page .cx-training-image-accent {
   position: absolute;
   z-index: 1;
   bottom: 32px;
@@ -187,20 +187,12 @@
   padding-top: 22px;
   border-top: 1px solid #ffffff50;
 }
-.welcome-page .cx-chapter-training-visual figcaption > span {
+.welcome-page .cx-training-image-accent > span {
   display: block;
   width: 32px;
   height: 3px;
   margin-bottom: 13px;
   background: var(--gold);
-}
-.welcome-page .cx-chapter-training-visual figcaption p {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 24px;
-  max-width: 250px;
-  line-height: 1.3;
-  font-style: italic;
-  font-weight: 400;
 }
 .welcome-page .cx-chapter-meeting {
   display: grid;
@@ -317,7 +309,7 @@
   .welcome-page .cx-chapter-training-visual > img {
     object-position: center 40%;
   }
-  .welcome-page .cx-chapter-training-visual figcaption {
+  .welcome-page .cx-training-image-accent {
     bottom: 22px;
     left: 26px;
     right: 26px;
