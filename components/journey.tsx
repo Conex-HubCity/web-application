@@ -42,56 +42,35 @@ const journeys = {
     action: "Présenter ma candidature mentor",
     steps: [
       [
-        "Présenter votre expérience",
-        "Partagez votre parcours professionnel, vos domaines d’expertise, vos motivations et vos disponibilités.",
+        "Créer votre compte et soutenir Connex",
+        "Confirmez votre email, puis contribuez à hauteur de 30 USD en un paiement unique pour soutenir le fonctionnement de Connex.",
       ],
       [
-        "Rejoindre un cercle de confiance",
-        "L’équipe Connex vérifie votre identité et votre expertise. Après validation, la confirmation de votre adhésion active vos accès.",
+        "Choisir la suite",
+        "Vous pouvez simplement soutenir Connex, sans déposer de documents, ou poursuivre une candidature mentor.",
       ],
       [
-        "Découvrir les projets validés",
-        "Explorez les projets selon vos secteurs, vos langues et vos disponibilités. Les dossiers confidentiels sont réservés aux mentors autorisés.",
+        "Faire examiner votre candidature",
+        "Si vous souhaitez devenir mentor, présentez votre expérience et vos justificatifs. L’équipe Connex examine votre dossier avant de valider votre candidature.",
       ],
       [
-        "Faire une demande de rencontre",
-        "Vous proposez une mise en relation. Connex en examine la compatibilité et organise un échange, puis recueille le consentement de chacun.",
-      ],
-      [
-        "Accompagner avec régularité",
-        "Définissez des objectifs communs, partagez votre regard et rédigez les bilans mensuels. L’équipe Connex reste présente en cas de besoin.",
+        "Accéder à votre espace mentor",
+        "Après validation de votre candidature, retrouvez votre tableau de bord, votre profil et les projets. Les demandes d’accompagnement sont en cours de développement.",
       ],
     ],
   },
 };
 
-export function Journey({ mentorPreview = false }: { mentorPreview?: boolean }) {
+export function Journey({
+  founderRegistrationClosed = false,
+}: {
+  founderRegistrationClosed?: boolean;
+}) {
   const t = useTranslations();
-  const [role, setRole] = useState<"porteur" | "mentor">(mentorPreview ? "mentor" : "porteur");
-  const journey =
-    mentorPreview && role === "mentor"
-      ? {
-          ...journeys.mentor,
-          steps: [
-            [
-              "Créer votre compte et soutenir Connex",
-              "Confirmez votre email, puis contribuez à hauteur de 30 USD en un paiement unique pour soutenir le fonctionnement de Connex.",
-            ],
-            [
-              "Choisir la suite",
-              "Vous pouvez simplement soutenir Connex, sans déposer de documents, ou poursuivre une candidature mentor.",
-            ],
-            [
-              "Faire examiner votre candidature",
-              "Si vous souhaitez devenir mentor, présentez votre expérience et vos justificatifs. L’équipe Connex examine votre dossier avant de valider votre candidature.",
-            ],
-            [
-              "Être informé de l’ouverture",
-              "Une fois votre candidature acceptée, nous vous informerons par email lorsque votre espace mentor sera disponible.",
-            ],
-          ],
-        }
-      : journeys[role];
+  const [role, setRole] = useState<"porteur" | "mentor">(
+    founderRegistrationClosed ? "mentor" : "porteur",
+  );
+  const journey = journeys[role];
 
   return (
     <section
@@ -172,7 +151,7 @@ export function Journey({ mentorPreview = false }: { mentorPreview?: boolean }) 
                 </li>
               ))}
             </ol>
-            {mentorPreview && role === "porteur" ? (
+            {founderRegistrationClosed && role === "porteur" ? (
               <span className="cnx-inline-link">{t("Bientôt disponible")}</span>
             ) : (
               <Link className="cnx-inline-link" href={`/inscription/${role}`}>

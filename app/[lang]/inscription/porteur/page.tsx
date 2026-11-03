@@ -1,4 +1,4 @@
-import { isMentorPreviewEnabled, isFounderRegistrationEnabled } from "@/lib/release";
+import { getFounderRegistrationEnabled } from "@/lib/registration";
 import { getTranslator } from "@/lib/i18n/server";
 import { getLocale } from "@/lib/i18n/server";
 import { localizePath } from "@/lib/i18n/config";
@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("Créer mon compte porteur de projet — CNX") };
 }
 export default async function CandidateRegistration() {
-  if (isMentorPreviewEnabled() || !isFounderRegistrationEnabled())
+  if (!(await getFounderRegistrationEnabled()))
     redirect(localizePath("/inscription/mentor", await getLocale()));
   if (await getCurrentUser()) redirect(localizePath("/compte", await getLocale()));
   return <AuthEntry mode="register" initialRole="porteur" founderRegistrationOpen />;

@@ -12,7 +12,7 @@ import "dotenv/config";
 import { createEmailVerificationService } from "../lib/auth/email-verification";
 import { createAdminService } from "../lib/admin/service";
 import { readAdminDocument } from "../lib/admin/documents";
-import { isMentorPreviewEnabled } from "../lib/release";
+import { isFounderRegistrationEnabled } from "../lib/release";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { readFile, writeFile, readdir, mkdtemp, rm } from "node:fs/promises";
@@ -199,7 +199,7 @@ test("replacement boundary is exactly 30 elapsed days, and both conditions are m
 databaseTest(
   "registration persists private role profiles and hashed sessions, without approving accounts",
   async () => {
-    const auth = createAuthService(db, { mentorPreview: false, founderRegistration: true });
+    const auth = createAuthService(db, { founderRegistration: true });
     for (const role of ["FOUNDER", "MENTOR"] as const) {
       const email = `${randomUUID()}@example.test`;
       const session = await auth.register({
@@ -403,7 +403,7 @@ databaseTest(
 databaseTest(
   "auth rejects privileged signup, invalid input, bad passwords, disabled accounts and throttles persistently",
   async () => {
-    const auth = createAuthService(db, { mentorPreview: false, founderRegistration: true });
+    const auth = createAuthService(db, { founderRegistration: true });
     const input = {
       email: `${randomUUID()}@example.test`,
       password: "Pass123!",
@@ -448,7 +448,7 @@ databaseTest(
     const email = `${randomUUID()}@example.test`;
     const results = await Promise.allSettled(
       Array.from({ length: 7 }, () =>
-        createAuthService(db, { mentorPreview: false, founderRegistration: true }).login({
+        createAuthService(db, { founderRegistration: true }).login({
           email,
           password: "unknown account passphrase",
         }),
@@ -1265,45 +1265,39 @@ databaseTest(
   },
 );
 
-test("mentor preview is enabled only by the explicit server flag", () => {
-  assert.equal(isMentorPreviewEnabled("true"), true);
+test("public founder registration requires its own explicit flag", () => {
+  assert.equal(isFounderRegistrationEnabled("true"), true);
   for (const value of ["false", "", "TRUE", "1"])
-    assert.equal(isMentorPreviewEnabled(value), false);
+    assert.equal(isFounderRegistrationEnabled(value), false);
 });
-
 databaseTest(
-  "mentor preview rejects founder registration, login and existing sessions; full mode remains available",
+  "closed public registration preserves existing founder login and sessions",
   async () => {
-    const preview = createAuthService(db, { mentorPreview: true });
-    const full = createAuthService(db, { mentorPreview: false, founderRegistration: true });
-    const email = `preview-${randomUUID()}@example.test`;
+    const open = createAuthService(db, { founderRegistration: true }),
+      closed = createAuthService(db, { founderRegistration: false });
+    const email = `founder-${randomUUID()}@example.test`,
+      password = "existing founder password";
     const input = {
       email,
-      password: "preview account password",
-      passwordConfirmation: "preview account password",
-      firstName: "Preview",
-      lastName: "Test",
+      password,
+      passwordConfirmation: password,
+      firstName: "Existing",
+      lastName: "Founder",
       role: "FOUNDER",
       adultConfirmed: true,
-      charterAccepted: true,
     };
-    await assert.rejects(preview.register(input), AuthError);
-    assert.equal(await db.user.count({ where: { email } }), 0);
-    const session = await full.register(input);
-    const account = await db.user.findUniqueOrThrow({ where: { email } });
-    assert.ok(await full.getSession(session.token));
-    assert.equal(await preview.getSession(session.token), null);
-    const sessionsBefore = await db.session.count({ where: { userId: account.id } });
-    await assert.rejects(preview.login({ email, password: input.password }), AuthError);
-    assert.equal(await db.session.count({ where: { userId: account.id } }), sessionsBefore);
-    assert.ok(await full.login({ email, password: input.password }));
+    await assert.rejects(closed.register(input), AuthError);
+    const registered = await open.register(input);
+    assert.ok(await closed.getSession(registered.token));
+    const logged = await closed.login({ email, password });
+    assert.equal((await closed.getSession(logged.token))?.email, email);
   },
 );
 
 databaseTest(
-  "mentor preview preserves mentor registration, sign-in and document submission",
+  "mentor registration, sign-in and document submission retain their verification gates",
   async () => {
-    const auth = createAuthService(db, { mentorPreview: true });
+    const auth = createAuthService(db);
     const input = {
       email: `preview-${randomUUID()}@example.test`,
       password: "preview mentor password",
@@ -1486,7 +1480,7 @@ databaseTest(
     });
     await assert.rejects(verification.verify(another.id, code), AuthError);
     const session = await verification.verify(userAccount.id, code);
-    const auth = createAuthService(db, { mentorPreview: false, founderRegistration: true });
+    const auth = createAuthService(db, { founderRegistration: true });
     assert.equal(await auth.getSession(oldToken), null);
     assert.ok((await auth.getSession(session.token))?.emailVerifiedAt);
     const saved = await db.user.findUniqueOrThrow({
@@ -2009,7 +2003,7 @@ databaseTest(
     await f.links.setPassword(newPasswordInput(token));
     assert.equal(await db.session.count({ where: { userId: mentor.id } }), 0);
     assert.ok(
-      await createAuthService(db, { mentorPreview: true }).login({
+      await createAuthService(db).login({
         email: mentor.email,
         password: "new password 123",
       }),
@@ -2077,7 +2071,7 @@ databaseTest(
 );
 
 databaseTest(
-  "admin invitation creates a private founder and accepted link alone enables preview sign-in",
+  "admin invitation creates a private founder and accepted link enables sign-in without public registration",
   async () => {
     const admin = await user("ADMIN");
     const f = passwordFixture();
@@ -2098,7 +2092,7 @@ databaseTest(
     assert.equal((await f.links.inspect(token)).purpose, "INVITATION");
     await assert.rejects(f.links.setPassword(newPasswordInput(token)), /18 ans/);
     await f.links.setPassword({ ...newPasswordInput(token), adultConfirmed: true });
-    const auth = createAuthService(db, { mentorPreview: true });
+    const auth = createAuthService(db, { founderRegistration: false });
     const session = await auth.login({ email, password: "new password 123" });
     assert.ok(await auth.getSession(session.token));
     const activated = await db.user.findUniqueOrThrow({
@@ -2123,12 +2117,17 @@ databaseTest(
         role: "FOUNDER",
         adultConfirmed: true,
       }),
-      /réservées aux mentors/,
+      /sur invitation/,
     );
     await db.accountInvitation.update({
       where: { userId: invited.id },
       data: { acceptedAt: null },
     });
+    assert.ok(
+      await auth.getSession(session.token),
+      "Existing account sessions no longer depend on a preview invitation gate",
+    );
+    await db.user.update({ where: { id: invited.id }, data: { accountStatus: "SUSPENDED" } });
     assert.equal(await auth.getSession(session.token), null);
   },
 );
@@ -2186,7 +2185,7 @@ databaseTest(
 );
 
 databaseTest(
-  "forgot password can renew an expired invitation but cannot open an ordinary founder account in preview",
+  "forgot password renews invitations and restores existing founder login while registration stays closed",
   async () => {
     const admin = await user("ADMIN");
     const f = passwordFixture();
@@ -2201,20 +2200,18 @@ databaseTest(
     const founder = await user("FOUNDER");
     await f.links.requestReset(founder.email, "fr");
     await f.links.setPassword(newPasswordInput(f.token()));
-    await assert.rejects(
-      createAuthService(db, { mentorPreview: true }).login({
-        email: founder.email,
-        password: "new password 123",
-      }),
-      /pas encore ouvert/,
-    );
+    const restored = await createAuthService(db, { founderRegistration: false }).login({
+      email: founder.email,
+      password: "new password 123",
+    });
+    assert.equal((await createAuthService(db).getSession(restored.token))?.id, founder.id);
   },
 );
 
 databaseTest(
   "public founder signup stays closed in full mode while private invitations remain available",
   async () => {
-    const auth = createAuthService(db, { mentorPreview: false, founderRegistration: false });
+    const auth = createAuthService(db, { founderRegistration: false });
     const email = `closed-${randomUUID()}@example.test`;
     await assert.rejects(
       auth.register({

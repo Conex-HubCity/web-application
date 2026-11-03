@@ -13,15 +13,13 @@ type Role = "porteur" | "mentor";
 export function AuthEntry({
   mode,
   initialRole = "porteur",
-  mentorPreview = false,
   founderRegistrationOpen = false,
 }: {
   mode: "register" | "login";
   initialRole?: Role;
-  mentorPreview?: boolean;
   founderRegistrationOpen?: boolean;
 }) {
-  const role = mentorPreview || !founderRegistrationOpen ? "mentor" : initialRole;
+  const role = !founderRegistrationOpen ? "mentor" : initialRole;
   const t = useTranslations();
   const [state, action, pending] = useActionState(authenticate.bind(null, mode), null);
   const register = mode === "register";
@@ -74,11 +72,7 @@ export function AuthEntry({
                 : t(
                     "Créez votre compte pour préparer votre profil et votre parcours d’accompagnement.",
                   )
-              : t(
-                  mentorPreview
-                    ? "Connectez-vous à votre compte CNX."
-                    : "Connectez-vous à votre parcours de mentor ou de porteur de projet.",
-                )}
+              : t("Connectez-vous à votre parcours de mentor ou de porteur de projet.")}
           </p>
           {register && mentor && (
             <p className="auth-field-hint">
@@ -87,7 +81,7 @@ export function AuthEntry({
               )}
             </p>
           )}
-          {register && !mentorPreview && founderRegistrationOpen && (
+          {register && founderRegistrationOpen && (
             <div className="auth-role-tabs" aria-label={t("Mon parcours")}>
               <Link
                 href="/inscription/porteur"
@@ -209,7 +203,7 @@ export function AuthEntry({
               href={
                 register
                   ? "/connexion"
-                  : mentorPreview || !founderRegistrationOpen
+                  : !founderRegistrationOpen
                     ? "/inscription/mentor"
                     : "/#les-parcours"
               }
@@ -217,12 +211,10 @@ export function AuthEntry({
               {register ? t("Se connecter") : t("Créer mon compte")}
             </Link>
           </p>
-          {!mentorPreview && (
-            <Link href="/espace" className="auth-demo-link">
-              {" "}
-              {t("Explorer l’espace de démonstration")} <Icon name="diagonal" size={14} />
-            </Link>
-          )}
+          <Link href="/espace" className="auth-demo-link">
+            {" "}
+            {t("Explorer l’espace de démonstration")} <Icon name="diagonal" size={14} />
+          </Link>
         </div>
         <aside className="auth-aside">
           <div className="auth-aside-photo">
@@ -275,9 +267,7 @@ export function AuthEntry({
                       t("Présentez votre parcours et votre expertise."),
                       t("L’équipe CNX vérifie votre candidature."),
                       t(
-                        mentorPreview
-                          ? "Après validation, vous serez informé de l’ouverture de votre espace."
-                          : "Après validation, votre adhésion active vos accès.",
+                        "Après validation, accédez à votre tableau de bord et découvrez les projets.",
                       ),
                     ]
                   : [

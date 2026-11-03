@@ -1,10 +1,6 @@
 import "server-only";
 import { MENTOR_CHARTER_VERSION } from "@/lib/mentor-charter";
-import {
-  isMentorPreviewEnabled,
-  isFounderRegistrationEnabled,
-  previewRoleAllowed,
-} from "@/lib/release";
+import { isFounderRegistrationEnabled } from "@/lib/release";
 import { createHash, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import type { PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
@@ -73,9 +69,8 @@ export function sessionData() {
 
 export function createAuthService(
   db: PrismaClient = getDb(),
-  options: { mentorPreview?: boolean; founderRegistration?: boolean } = {},
+  options: { founderRegistration?: boolean } = {},
 ) {
-  const mentorPreview = options.mentorPreview ?? isMentorPreviewEnabled();
   const founderRegistration = options.founderRegistration ?? isFounderRegistrationEnabled();
   // Atomic, persistent per-email window, shared across server processes.
   // A production edge must also limit requests per trusted client IP.
@@ -105,8 +100,6 @@ export function createAuthService(
       adultConfirmed: unknown;
       charterAccepted?: unknown;
     }) {
-      if (mentorPreview && input.role !== "MENTOR")
-        throw new AuthError("Les inscriptions sont actuellement réservées aux mentors.");
       if (input.role === "FOUNDER" && !founderRegistration)
         throw new AuthError("Les porteurs de projet rejoignent CNX sur invitation.");
       const { email, password } = credentials(input, true);
@@ -177,11 +170,6 @@ export function createAuthService(
       ) {
         throw new AuthError("Email ou mot de passe incorrect.");
       }
-      if (
-        mentorPreview &&
-        !previewRoleAllowed(user.roles, Boolean(user.receivedInvitation?.acceptedAt))
-      )
-        throw new AuthError("L’accès des porteurs de projet n’est pas encore ouvert.");
       const session = sessionData();
       await db.session.create({
         data: { userId: user.id, tokenHash: session.tokenHash, expiresAt: session.expiresAt },
@@ -198,12 +186,7 @@ export function createAuthService(
       if (
         !session ||
         session.expiresAt <= new Date() ||
-        ["SUSPENDED", "CLOSED"].includes(session.user.accountStatus) ||
-        (mentorPreview &&
-          !previewRoleAllowed(
-            session.user.roles,
-            Boolean(session.user.receivedInvitation?.acceptedAt),
-          ))
+        ["SUSPENDED", "CLOSED"].includes(session.user.accountStatus)
       )
         return null;
       return session.user;

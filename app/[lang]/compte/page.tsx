@@ -1,9 +1,6 @@
 import { FounderDashboard } from "@/components/founder-dashboard";
 import { getFounderDashboard } from "@/lib/domain/founder-dashboard";
 import "@/app/founder-dashboard.css";
-import { isMentorPreviewEnabled } from "@/lib/release";
-import { InvitedFounderPreview } from "@/components/invited-founder-preview";
-import { MentorPreview } from "@/components/mentor-preview";
 import { getTranslator } from "@/lib/i18n/server";
 import { getLocale } from "@/lib/i18n/server";
 import { localizePath } from "@/lib/i18n/config";
@@ -48,12 +45,6 @@ export default async function Account({
     redirect(localizePath("/contribution", await getLocale()));
   const mentorRedirect = mentorDestination(profile);
   if (mentorRedirect) redirect(localizePath(mentorRedirect, await getLocale()));
-  if (isMentorPreviewEnabled()) {
-    if (profile.isInvitedFounder) return <InvitedFounderPreview firstName={profile.firstName} />;
-    if (profile.isMentor && profile.isMentorApproved)
-      return <MentorPreview firstName={profile.firstName} />;
-    redirect(localizePath("/", await getLocale()));
-  }
   if (profile.isFounder && !profile.isCertified)
     redirect(localizePath("/certification", await getLocale()));
   if (profile.isMentor) {

@@ -1,5 +1,4 @@
 "use server";
-import { isMentorPreviewEnabled } from "@/lib/release";
 import { actionPath } from "@/lib/i18n/action-locale";
 
 import { redirect } from "next/navigation";
@@ -17,8 +16,6 @@ export async function uploadCertification(
   const user = await getCurrentUser();
   if (!user) redirect(await actionPath("/connexion"));
   let certified = false;
-  if (isMentorPreviewEnabled())
-    return { error: "L’accès des porteurs de projet n’est pas encore ouvert." };
   try {
     const file = form.get("document");
     if (!(file instanceof File)) return { error: "Choisissez un document à déposer." };

@@ -60,10 +60,14 @@ const questions = [
   },
 ];
 
-export async function HomeSections({ mentorPreview = false }: { mentorPreview?: boolean }) {
+export async function HomeSections({
+  founderRegistrationClosed = false,
+}: {
+  founderRegistrationClosed?: boolean;
+}) {
   const t = await getTranslator();
   function PathwayCard({ role, children }: { role: string; children: React.ReactNode }) {
-    return mentorPreview && role === "porteur" ? (
+    return founderRegistrationClosed && role === "porteur" ? (
       <div className="cnx-pathway-card" aria-disabled="true">
         {children}
       </div>
@@ -158,7 +162,7 @@ export async function HomeSections({ mentorPreview = false }: { mentorPreview?: 
                   <h3>{pathway.title}</h3>
                   <p>{pathway.text}</p>
                   <span className="cnx-pathway-link">
-                    {mentorPreview && pathway.role === "porteur"
+                    {founderRegistrationClosed && pathway.role === "porteur"
                       ? t("Bientôt disponible")
                       : pathway.action}
                     <Icon name="arrow" size={18} />
@@ -170,7 +174,7 @@ export async function HomeSections({ mentorPreview = false }: { mentorPreview?: 
           <p className="cnx-pathway-footnote">
             <Icon name="compass" size={18} />{" "}
             {t(
-              mentorPreview
+              founderRegistrationClosed
                 ? "Le parcours porteur de projet ouvrira dans une prochaine version."
                 : "Vous pouvez créer votre compte avant la certification. La validation du profil et celle du projet restent deux étapes distinctes.",
             )}{" "}
@@ -178,7 +182,7 @@ export async function HomeSections({ mentorPreview = false }: { mentorPreview?: 
         </div>
       </section>
 
-      <Journey mentorPreview={mentorPreview} />
+      <Journey founderRegistrationClosed={founderRegistrationClosed} />
 
       <section id="la-confiance" className="cnx-trust cnx-section" aria-labelledby="trust-title">
         <div className="welcome-container cnx-trust-grid">
@@ -261,10 +265,10 @@ export async function HomeSections({ mentorPreview = false }: { mentorPreview?: 
             </p>
             <Link
               className="cnx-inline-link"
-              href={mentorPreview ? "/inscription/mentor" : "/inscription/porteur"}
+              href={founderRegistrationClosed ? "/inscription/mentor" : "/inscription/porteur"}
             >
               {" "}
-              {t(mentorPreview ? "Devenir mentor" : "Commencer mon parcours")}{" "}
+              {t(founderRegistrationClosed ? "Devenir mentor" : "Commencer mon parcours")}{" "}
               <Icon name="arrow" size={18} />
             </Link>
           </div>
@@ -281,9 +285,9 @@ export async function HomeSections({ mentorPreview = false }: { mentorPreview?: 
                 <div className="cnx-faq-answer">
                   <p>
                     {t(
-                      mentorPreview && index === 0
+                      founderRegistrationClosed && index === 0
                         ? "Les inscriptions des porteurs de projet ne sont pas encore ouvertes. Cette première version est réservée aux candidatures mentors."
-                        : mentorPreview && index === 1
+                        : founderRegistrationClosed && index === 1
                           ? "La création du compte est gratuite. Après confirmation de l’email, une contribution unique de 30 USD permet de soutenir le fonctionnement de Connex. Vous pouvez ensuite vous arrêter là ou déposer vos justificatifs pour proposer votre candidature mentor."
                           : item.answer,
                     )}
@@ -313,7 +317,7 @@ export async function HomeSections({ mentorPreview = false }: { mentorPreview?: 
               )}{" "}
             </p>
             <div className="welcome-hero-actions">
-              {!mentorPreview && (
+              {!founderRegistrationClosed && (
                 <Link className="hero-join hero-join-founder" href="/inscription/porteur">
                   {" "}
                   {t("Je porte un projet")}{" "}
@@ -324,7 +328,9 @@ export async function HomeSections({ mentorPreview = false }: { mentorPreview?: 
               )}
               <Link
                 className={
-                  mentorPreview ? "hero-join hero-join-founder" : "hero-join hero-join-mentor"
+                  founderRegistrationClosed
+                    ? "hero-join hero-join-founder"
+                    : "hero-join hero-join-mentor"
                 }
                 href="/inscription/mentor"
               >

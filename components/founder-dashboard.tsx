@@ -73,7 +73,7 @@ export function FounderDashboard({ data }: { data: FounderDashboardData }) {
               {t("Voir la présentation")}
             </Link>
           )}
-          {data.certificationAvailable && !data.certified && (
+          {!data.certified && (
             <Link href="/certification">
               <Icon name="check" />
               {t("Ma certification")}

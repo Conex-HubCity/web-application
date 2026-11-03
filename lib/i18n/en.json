@@ -938,5 +938,8 @@
   "Progression de l’envoi": "Upload progress",
   "Utiliser cette image": "Use this image",
   "Découvrez les projets de la communauté. Les demandes d’accompagnement sont en cours de développement.": "Discover community projects. Mentoring requests are under development.",
-  "Contribution confirmée": "Contribution confirmed"
+  "Contribution confirmée": "Contribution confirmed",
+  "Accéder à votre espace mentor": "Access your mentor workspace",
+  "Après validation de votre candidature, retrouvez votre tableau de bord, votre profil et les projets. Les demandes d’accompagnement sont en cours de développement.": "Once your application is approved, access your dashboard, profile and projects. Mentoring requests are under development.",
+  "Après validation, accédez à votre tableau de bord et découvrez les projets.": "After approval, access your dashboard and discover projects."
 }

@@ -6,7 +6,7 @@ La consultation et la revue de candidatures restent en lecture seule : elles ne 
 
 ## Accès
 
-Un compte avec email vérifié connecté, non suspendu et non fermé doit avoir le rôle `ADMIN`. Ce rôle est contrôlé côté serveur sur les pages et à nouveau par le service de données à chaque opération. Une modification ou un retrait du rôle prend effet dès la requête suivante. Les comptes mentors ou porteurs ne peuvent pas accéder aux données admin. Le mode `MENTOR_PREVIEW_MODE` conserve l’accès administrateur : `/compte` dirige les administrateurs vers `/admin`, avant le parcours mentor.
+Un compte avec email vérifié connecté, non suspendu et non fermé doit avoir le rôle `ADMIN`. Ce rôle est contrôlé côté serveur sur les pages et à nouveau par le service de données à chaque opération. Une modification ou un retrait du rôle prend effet dès la requête suivante. Les comptes mentors ou porteurs ne peuvent pas accéder aux données admin. L’accès administrateur est indépendant du parcours mentor : `/compte` dirige les administrateurs vers `/admin`, avant le parcours mentor.
 
 L’attribution du rôle se fait uniquement par un opérateur ayant accès à la base, sur un compte déjà inscrit :
 

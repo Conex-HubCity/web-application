@@ -18,7 +18,7 @@ Un compte existant ordinaire ou une invitation déjà acceptée n’est jamais c
 
 ## Préversion fermée
 
-`FOUNDER_REGISTRATION_ENABLED="false"` ferme l’inscription publique des porteurs, même si `MENTOR_PREVIEW_MODE` est désactivé pour travailler sur le mode complet. La page d’inscription porteur redirige vers celle des mentors ; le service refuse également les soumissions directes. L’ouverture publique ultérieure exige explicitement `FOUNDER_REGISTRATION_ENABLED="true"` et un mode mentor non limité. Seuls les porteurs disposant d’une invitation enregistrée **et acceptée** peuvent se connecter en préversion. Une récupération de mot de passe d’un porteur ordinaire ne crée pas cette exception. Le contrôle est refait à chaque lecture de session.
+`FOUNDER_REGISTRATION_ENABLED="false"` ferme uniquement l’inscription publique des porteurs. La page redirige vers l’inscription mentor et le service refuse les soumissions publiques directes. Les comptes porteurs existants peuvent se connecter et récupérer leur mot de passe ; les invitations privées restent disponibles. L’ouverture publique exige explicitement `FOUNDER_REGISTRATION_ENABLED="true"`. Le mode de préversion mentor est supprimé et n’intervient plus dans la connexion ni les sessions.
 
 Les porteurs invités arrivent désormais dans l’espace porteur pour publier la présentation de leur projet. La présentation devient visible aux mentors une fois complétée ; la certification et l’accompagnement gardent leurs contrôles distincts. Les accès mentors et admin existants restent distincts. En mode complet, les porteurs invités retrouvent le parcours existant avec ses contrôles de certification ; une invitation ne certifie personne.
 
@@ -33,3 +33,11 @@ Les émissions sont limitées de façon persistante à cinq par adresse sur quin
 Les emails utilisent le SMTP déjà configuré et l’origine canonique `APP_URL`, partagée avec Stripe. HTTPS est obligatoire hors développement local. Ne jamais construire ce lien depuis un en-tête Host fourni par la requête.
 
 Appliquer `npm run db:deploy`, puis générer Prisma et reconstruire/redémarrer. Aucun email réel n’est envoyé par les tests automatisés : ils utilisent une capture SMTP locale ou une fonction d’envoi isolée.
+
+## Changer l’ouverture des inscriptions
+
+`FOUNDER_REGISTRATION_ENABLED` est lue au moment de la requête pour l’accueil, la connexion et les inscriptions, puis contrôlée à nouveau par le serveur lors de la création du compte. La valeur n’est plus figée dans le prérendu du build. Seule la chaîne `true` ouvre l’inscription ; `false`, une valeur absente ou invalide la ferment.
+
+Après modification du fichier `.env` ou de l’environnement du service, redémarrer le processus Node (avec rechargement de son environnement si le gestionnaire de processus le requiert), puis recharger la page. Un nouveau build n’est plus nécessaire pour ce seul réglage. Les variables injectées par le service ou les fichiers d’environnement prioritaires peuvent remplacer la valeur de `.env`. Ce réglage ne désactive pas la connexion des comptes existants ni les invitations.
+
+Vérification de régression : après un build, `npm run test:registration` lance des serveurs temporaires avec les deux valeurs et vérifie les bandeaux, liens et formulaires FR/EN sur le même artefact compilé. Aucun compte ni email n’est créé.

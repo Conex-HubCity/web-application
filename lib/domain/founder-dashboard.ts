@@ -1,7 +1,6 @@
 import "server-only";
 import type { PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
-import { isMentorPreviewEnabled } from "@/lib/release";
 import { approvedCertificationFilter } from "@/lib/onboarding/policy";
 import { DomainError } from "./policies";
 import { requireFounderAccount } from "./founder-access";
@@ -42,7 +41,6 @@ export async function getFounderDashboard(userId: string, db: PrismaClient = get
     firstName: user.firstName,
     lastName: user.lastName,
     certified: Boolean(certificate),
-    certificationAvailable: !isMentorPreviewEnabled(),
     project:
       project && revision
         ? {

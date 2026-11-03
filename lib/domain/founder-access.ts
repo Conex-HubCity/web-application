@@ -1,6 +1,5 @@
 import "server-only";
 import type { PrismaClient } from "@/generated/prisma/client";
-import { isMentorPreviewEnabled } from "@/lib/release";
 import { DomainError } from "./policies";
 export async function requireFounderAccount(userId: string, db: Pick<PrismaClient, "user">) {
   const user = await db.user.findUnique({
@@ -12,7 +11,6 @@ export async function requireFounderAccount(userId: string, db: Pick<PrismaClien
       accountStatus: true,
       emailVerifiedAt: true,
       roles: { select: { role: true } },
-      receivedInvitation: { select: { acceptedAt: true } },
       founderProfile: { select: { adultConfirmedAt: true } },
     },
   });
@@ -21,8 +19,7 @@ export async function requireFounderAccount(userId: string, db: Pick<PrismaClien
     user.accountStatus !== "ACTIVE" ||
     !user.emailVerifiedAt ||
     !user.roles.some(({ role }) => role === "FOUNDER") ||
-    !user.founderProfile?.adultConfirmedAt ||
-    (isMentorPreviewEnabled() && !user.receivedInvitation?.acceptedAt)
+    !user.founderProfile?.adultConfirmedAt
   )
     throw new DomainError(
       "FOUNDER_UNAVAILABLE",

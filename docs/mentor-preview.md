@@ -1,47 +1,9 @@
-# Préversion déployable réservée aux mentors
+# Fin du mode de préversion mentor
 
-Activer `MENTOR_PREVIEW_MODE="true"` dans l’environnement du serveur **au build et à l’exécution**. La valeur est privée, sans préfixe `NEXT_PUBLIC_`. Après un changement de mode, reconstruire et redémarrer l’application afin de mettre à jour les pages publiques prérendues. `.env.example` et l’environnement local activent cette préversion.
+Le mode de préversion et sa variable d’environnement ont été supprimés : le tableau de bord mentor est implémenté. Les anciens écrans d’attente d’ouverture et les restrictions associées sur la connexion, la certification, l’édition de profil et l’ajout de justificatifs sont retirés.
 
-## Parcours public
+Le parcours mentor conserve ses contrôles serveur : email confirmé, contribution unique réellement payée dans le bon environnement, charte acceptée, dossier approuvé et justificatif accepté, contrôlé et non retiré. Sans dossier validé, le parcours reste orienté vers le dépôt ou l’attente de validation. Aucune adhésion supplémentaire n’est demandée. Les demandes d’accompagnement restent désactivées.
 
-- Inscription et connexion des mentors uniquement ; aucune sélection de rôle sur la connexion.
-- Dépôt des justificatifs et acceptation des engagements.
-- Attente d’examen ; refus et nouvelle soumission restent disponibles.
-- Après validation de candidature, de charte et d’au moins une preuve acceptée et contrôlée : page confirmant l’acceptation du compte, le développement en cours et une notification à l’ouverture.
-- Aucun tableau de bord, paiement d’adhésion, catalogue ou édition de profil dans cette préversion. Le compte n’a pas à souscrire une adhésion pour voir la confirmation.
+`FOUNDER_REGISTRATION_ENABLED="false"` ferme uniquement l’inscription publique des porteurs, indépendamment de l’accès des comptes existants et invités. Passer cette variable à `true` ouvre l’inscription publique après redémarrage du serveur et rechargement de la page ; cette valeur est lue à la requête, sans reconstruction nécessaire. Le catalogue et les fiches mentor restent réservés aux mentors autorisés ; l’aperçu propriétaire conserve sa route séparée.
 
-Les liens d’inscription porteur sont supprimés ou désactivés. `/inscription/porteur` et `/certification` redirigent vers l’inscription mentor ; `/espace` redirige vers l’accueil. Ces routes conservent leur préfixe de langue. Les contenus présentant le futur parcours porteur peuvent rester consultables.
-
-Les protections sont serveur : une inscription porteur falsifiée est refusée, une connexion porteur ne crée pas de session et les anciennes sessions porteur ne permettent plus d’accéder aux pages authentifiées tant que ce mode est actif. Les comptes existants restent en base. Les comptes administrateurs conservent la possibilité de s’authentifier pour les futurs outils internes ; aucune inscription administrateur publique n’est permise. La page compte publique ne leur ouvre pas de tableau de bord en préversion.
-
-Les actions publiques d’édition de profil, d’ajout de pièces après approbation et de certification sont bloquées. Les services métier et le schéma complet restent disponibles pour développer le backend. Le premier dépôt mentor reste autorisé. Une nouvelle pièce n’est jamais approuvée automatiquement.
-
-## Notification et validation
-
-La page annonce une notification future par email. Elle n’affirme pas qu’un email a déjà été envoyé. Aucun système d’envoi automatique n’est ajouté : la notification d’ouverture devra être réalisée via un futur outil d’envoi ou une campagne manuelle. Les adresses des mentors sont déjà conservées avec leurs comptes.
-
-Le processus de revue administrative et les contrôles de fichiers restent nécessaires avant toute approbation. La préversion ne valide ni les justificatifs ni les candidatures automatiquement.
-
-## Revenir au mode complet
-
-Passer `MENTOR_PREVIEW_MODE="false"`, reconstruire puis redémarrer. Les inscriptions et connexions porteur, la certification, la démonstration et les tableaux de bord retrouvent leur fonctionnement antérieur. Les contrôles métier du mode complet (validation, vérification du contact, adhésion) restent applicables. Aucune migration ou suppression de données n’est nécessaire. La fonctionnalité pourra ensuite être retirée sans modifier le modèle de données.
-
-## Vérification de cette version
-
-33 tests réussis, lint et compilation de production réussis. Vérification en navigateur avec des comptes temporaires : inscription mentor réelle, refus d’une inscription falsifiée en porteur, dépôt d’un justificatif, attente, refus, puis page d’acceptation sans tableau de bord. Le français et l’anglais et les largeurs 1440, 390 et 320 pixels ont été contrôlés sans erreur d’hydratation. Le mode complet a été vérifié séparément : inscription porteur, anciennes sessions porteur, démonstration et tableau de bord mentor retrouvent leur fonctionnement. Les comptes et fichiers de contrôle ont été supprimés.
-
-## Email confirmé avant accès
-
-La confirmation email par OTP est désormais obligatoire avant les dépôts et les fonctionnalités protégées. Elle reste distincte de l’acceptation du compte mentor et de la certification WoeAcademy. Les modes de simulation des justificatifs ne confirment jamais un email. Voir [la configuration OTP et SMTP](email-verification.md).
-
-## Contribution avant dépôt
-
-Le parcours inclut désormais une contribution unique de 30 USD après vérification email. Le soutien peut s’arrêter au remerciement sans document ; la candidature mentor est une poursuite facultative. Le dépôt direct est contrôlé côté serveur et nécessite un paiement confirmé dans le bon environnement Stripe. Voir [l’intégration Stripe](stripe-contributions.md).
-
-## Porteurs invités
-
-L’inscription publique reste fermée. Un administrateur peut désormais inviter un porteur depuis la liste des utilisateurs ; après définition du mot de passe par le destinataire, son invitation acceptée autorise la connexion à un accueil d’attente. Les porteurs ordinaires sans invitation acceptée restent bloqués. Voir [les invitations privées](password-links.md).
-
-## Catalogue des présentations
-
-Les mentors validés et contributeurs peuvent désormais consulter les présentations de projets depuis la page d’acceptation ou leur tableau de bord. La consultation du catalogue ne requiert pas l’ancienne adhésion métier. Les demandes d’accompagnement restent en cours de développement et désactivées. Les porteurs invités peuvent publier leur présentation avec un lien de pitch obligatoire, des liens facultatifs et un visuel généré en version complète et miniature. Voir [les présentations de projet](founder-dashboard-v1.md).
+Aucune migration n’est nécessaire. Retirer l’ancienne variable des environnements de déploiement ; si elle reste définie sur un serveur, elle n’est plus lue. Reconstruire puis redémarrer l’application.

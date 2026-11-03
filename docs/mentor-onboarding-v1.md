@@ -47,7 +47,7 @@ Le rendu et la navigation ont été vérifiés à 1440, 1280, 960, 768, 390 et 3
 
 ## Préversion mentor
 
-`MENTOR_PREVIEW_MODE="true"` limite le parcours public à l’inscription mentor, au dépôt et à la validation. Un mentor approuvé voit une page d’attente d’ouverture, sans tableau de bord ni étape d’adhésion. Les inscriptions, connexions et anciennes sessions porteur sont bloquées dans ce mode. Le backend complet est conservé ; aucune modification du schéma n’est nécessaire. Voir [les modalités de préversion](mentor-preview.md).
+Le mode de préversion mentor est supprimé. Après paiement confirmé et validation du dossier, le mentor accède directement à son tableau de bord. L’inscription publique des porteurs reste contrôlée uniquement par `FOUNDER_REGISTRATION_ENABLED`. Les invitations, la connexion et la récupération de mot de passe des comptes existants restent disponibles. Voir [le parcours actuel](mentor-preview.md).
 
 ## Contribution avant dépôt
 

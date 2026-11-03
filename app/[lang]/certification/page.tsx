@@ -1,4 +1,3 @@
-import { isMentorPreviewEnabled } from "@/lib/release";
 import { getTranslator } from "@/lib/i18n/server";
 import { getLocale } from "@/lib/i18n/server";
 import { localizePath } from "@/lib/i18n/config";
@@ -19,7 +18,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Certification() {
-  if (isMentorPreviewEnabled()) redirect(localizePath("/inscription/mentor", await getLocale()));
   const t = await getTranslator();
   const profile = await getAuthenticatedProfile();
   if (!profile.isFounder || profile.isCertified)

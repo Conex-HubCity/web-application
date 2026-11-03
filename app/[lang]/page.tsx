@@ -1,4 +1,5 @@
-import { isMentorPreviewEnabled, isFounderRegistrationEnabled } from "@/lib/release";
+import { Suspense } from "react";
+import { getFounderRegistrationEnabled } from "@/lib/registration";
 import type { Metadata } from "next";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
 import Image from "next/image";
@@ -17,9 +18,16 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function Home() {
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="welcome-page" aria-busy="true" />}>
+      <HomeContent />
+    </Suspense>
+  );
+}
+async function HomeContent() {
   const t = await getTranslator();
-  const mentorPreview = isMentorPreviewEnabled() || !isFounderRegistrationEnabled();
+  const founderRegistrationClosed = !(await getFounderRegistrationEnabled());
   return (
     <div className="welcome-page">
       <SplashScreen />
@@ -40,7 +48,7 @@ export default async function Home() {
         </nav>
       </header>
       <main id="welcome-main">
-        {mentorPreview && (
+        {founderRegistrationClosed && (
           <p className="welcome-preview-notice welcome-container">
             {t(
               "Les candidatures mentors sont ouvertes. Le parcours porteur de projet sera disponible prochainement.",
@@ -76,7 +84,7 @@ export default async function Home() {
                   "Les bonnes rencontres ouvrent de nouveaux possibles. Connex relie les entrepreneurs africains aux professionnels de la diaspora pour avancer ensemble.",
                 )}{" "}
               </p>
-              {mentorPreview ? (
+              {founderRegistrationClosed ? (
                 <div className="welcome-hero-actions">
                   <Link className="hero-join hero-join-founder" href="/inscription/mentor">
                     {t("Devenir mentor")}{" "}
@@ -102,7 +110,11 @@ export default async function Home() {
               )}
               <p className="welcome-existing">
                 {" "}
-                {t(mentorPreview ? "Déjà inscrit comme mentor ?" : "Déjà membre ou mentor ?")}{" "}
+                {t(
+                  founderRegistrationClosed
+                    ? "Déjà inscrit comme mentor ?"
+                    : "Déjà membre ou mentor ?",
+                )}{" "}
                 <Link href="/connexion">
                   {" "}
                   {t("Connectez-vous")} <span aria-hidden="true">↗</span>
@@ -134,7 +146,7 @@ export default async function Home() {
             </div>
           </div>
         </section>
-        {!mentorPreview && (
+        {!founderRegistrationClosed && (
           <section
             className="welcome-prerequisite welcome-container"
             aria-label={t("Prérequis du parcours entrepreneur")}
@@ -153,7 +165,7 @@ export default async function Home() {
             </a>
           </section>
         )}
-        <HomeSections mentorPreview={mentorPreview} />
+        <HomeSections founderRegistrationClosed={founderRegistrationClosed} />
       </main>
       <footer className="welcome-footer welcome-container">
         <div>
