@@ -732,29 +732,6 @@
   font-size: 12px;
   line-height: 1.85;
 }
-.auth-role-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5px;
-  padding: 5px;
-  background: #e8e8dd;
-  border: 1px solid #132d261a;
-  border-radius: 6px;
-  margin: 24px 0 16px;
-}
-.auth-role-tabs > * {
-  text-align: center;
-  font-size: 11px;
-  padding: 11px 6px;
-  border-radius: 3px;
-  background: transparent;
-  color: #677561;
-}
-.auth-role-tabs .selected {
-  background: #fffdf7;
-  color: var(--forest);
-  box-shadow: 0 2px 4px #132d2608;
-}
 .auth-preview-note {
   color: #6c6e57;
   font-size: 10px;

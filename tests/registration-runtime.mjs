@@ -91,7 +91,8 @@ for (const enabled of [false, true]) {
           "Closed signup redirects to mentor registration",
         );
       const mentor = await html(`/${locale}/inscription/mentor`);
-      assert.equal(ownerLink.test(mentor), enabled, `${locale}: role tabs follow runtime flag`);
+      assert(mentor.includes('value="MENTOR"'), `${locale}: mentor route fixes the mentor role`);
+      assert.equal(ownerLink.test(mentor), false, `${locale}: registration role cannot be toggled`);
       const login = await html(`/${locale}/connexion`);
       assert.equal(
         new RegExp(`href="/${locale}/?#choix"`).test(login),
@@ -100,7 +101,7 @@ for (const enabled of [false, true]) {
       );
     }
     console.log(
-      `Runtime founder registration ${enabled}: FR/EN notice, links, role tabs and registration route verified.`,
+      `Runtime founder registration ${enabled}: FR/EN notice, links and fixed registration roles verified.`,
     );
   } finally {
     await stop(child);

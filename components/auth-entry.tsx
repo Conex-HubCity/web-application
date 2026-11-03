@@ -81,26 +81,6 @@ export function AuthEntry({
               )}
             </p>
           )}
-          {register && founderRegistrationOpen && (
-            <div className="auth-role-tabs" aria-label={t("Mon parcours")}>
-              <Link
-                href="/inscription/porteur"
-                aria-current={!mentor ? "page" : undefined}
-                className={!mentor ? "selected" : ""}
-              >
-                {" "}
-                {t("Je porte un projet")}{" "}
-              </Link>
-              <Link
-                href="/inscription/mentor"
-                aria-current={mentor ? "page" : undefined}
-                className={mentor ? "selected" : ""}
-              >
-                {" "}
-                {t("Je suis mentor")}{" "}
-              </Link>
-            </div>
-          )}
           <form className="auth-form" action={action}>
             {register && <input type="hidden" name="role" value={mentor ? "MENTOR" : "FOUNDER"} />}
             {register && (

@@ -9,6 +9,7 @@ import { Icon } from "@/components/icon";
 import { SplashScreen } from "@/components/splash-screen";
 import { PublicFooter } from "@/components/public-footer";
 import { HomeSections } from "@/components/home-sections";
+import { FragmentScroll } from "@/components/fragment-scroll";
 import "@/app/home-sections.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,9 +22,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function Home() {
   return (
-    <Suspense fallback={<div className="welcome-page" aria-busy="true" />}>
-      <HomeContent />
-    </Suspense>
+    <>
+      <FragmentScroll />
+      <Suspense fallback={<div className="welcome-page" aria-busy="true" />}>
+        <HomeContent />
+      </Suspense>
+    </>
   );
 }
 async function HomeContent() {
