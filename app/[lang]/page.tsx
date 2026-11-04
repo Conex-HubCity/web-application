@@ -15,8 +15,7 @@ import "@/app/home-sections.css";
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   return {
-    title:
-      locale === "en" ? "Connex — Connections that help us grow" : "Connex — Le lien nous élève",
+    title: locale === "en" ? "CNX — Connections that help us grow" : "CNX — Le lien nous élève",
   };
 }
 
@@ -83,7 +82,7 @@ async function HomeContent() {
               <p className="welcome-lead">
                 {" "}
                 {t(
-                  "Les bonnes rencontres ouvrent de nouveaux possibles. Connex relie les Mentees africains aux professionnels de la diaspora pour avancer ensemble.",
+                  "Les bonnes rencontres ouvrent de nouveaux possibles. CNX relie les Mentees africains aux professionnels de la diaspora pour avancer ensemble.",
                 )}{" "}
               </p>
             </div>

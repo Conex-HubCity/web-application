@@ -1,5 +1,5 @@
 /**
- * Public project references for the local Connex demonstration seed.
+ * Public project references for the local CNX demonstration seed.
  * Sources were checked on 2026-10-31; see SOURCES.md for provenance and credits.
  * People, mentoring scenarios, stages, teams and requested support are fictional.
  * The referenced organisations do not participate in or endorse this seed.
@@ -34,7 +34,7 @@ export type SeedProject = {
 
 const paragraphs = (...parts: string[]) => parts.join("\n\n");
 const demoNotice =
-  "Fiche de démonstration Connex inspirée d’une organisation réelle. Le compte porteur, le stade affiché et le scénario d’accompagnement sont fictifs, sans affiliation avec l’organisation citée.";
+  "Fiche de démonstration CNX inspirée d’une organisation réelle. Le compte porteur, le stade affiché et le scénario d’accompagnement sont fictifs, sans affiliation avec l’organisation citée.";
 
 export const seedProjects: SeedProject[] = [
   {
@@ -46,7 +46,7 @@ export const seedProjects: SeedProject[] = [
       firstName: "Amara",
       lastName: "Demo",
       biography:
-        "Personnage fictif créé pour les tests Connex, sans lien avec ColdHubs. Dans ce scénario, Amara coordonne une coopérative de commerçantes et travaille sur la logistique des produits frais. Elle souhaite apprendre à négocier des partenariats de distribution et à piloter les coûts d’un service mutualisé.",
+        "Personnage fictif créé pour les tests CNX, sans lien avec ColdHubs. Dans ce scénario, Amara coordonne une coopérative de commerçantes et travaille sur la logistique des produits frais. Elle souhaite apprendre à négocier des partenariats de distribution et à piloter les coûts d’un service mutualisé.",
       skills: ["Logistique agricole", "Gestion de coopérative", "Opérations terrain"],
     },
     sector: "Agriculture et chaîne du froid",
@@ -151,7 +151,7 @@ export const seedProjects: SeedProject[] = [
       firstName: "Nia",
       lastName: "Demo",
       biography:
-        "Personnage fictif créé pour tester Connex, sans affiliation avec Sun King. Nia anime dans le scénario un réseau local de techniciennes solaires. Elle travaille sur la formation, les tournées de maintenance et la compréhension des coûts d’installation et de service après-vente.",
+        "Personnage fictif créé pour tester CNX, sans affiliation avec Sun King. Nia anime dans le scénario un réseau local de techniciennes solaires. Elle travaille sur la formation, les tournées de maintenance et la compréhension des coûts d’installation et de service après-vente.",
       skills: ["Énergie solaire", "Formation terrain", "Gestion de réseau"],
     },
     sector: "Énergie solaire et inclusion énergétique",
@@ -319,7 +319,7 @@ export const seedProjects: SeedProject[] = [
       firstName: "Mariam",
       lastName: "Demo",
       biography:
-        "Personnage fictif créé pour les tests Connex, sans affiliation avec Wave. Mariam est une responsable de partenariats imaginaire basée à Dakar. Dans ce scénario, elle souhaite mieux comprendre les besoins des petits commerçants et concevoir un accompagnement à l’adoption de services numériques.",
+        "Personnage fictif créé pour les tests CNX, sans affiliation avec Wave. Mariam est une responsable de partenariats imaginaire basée à Dakar. Dans ce scénario, elle souhaite mieux comprendre les besoins des petits commerçants et concevoir un accompagnement à l’adoption de services numériques.",
       skills: ["Partenariats", "Recherche terrain", "Accompagnement des commerçants"],
     },
     sector: "Fintech et inclusion financière",

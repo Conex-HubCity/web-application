@@ -13,7 +13,7 @@ const questions = [
   {
     question: "L’inscription est-elle gratuite ?",
     answer:
-      "La création du compte est gratuite. Après confirmation de l’email, une contribution unique de 30 USD permet de soutenir le fonctionnement de Connex. Vous pouvez ensuite vous arrêter là ou déposer vos justificatifs pour proposer votre candidature mentor.",
+      "La création du compte est gratuite. Après confirmation de l’email, une contribution unique de 30 USD permet de soutenir le fonctionnement de CNX. Vous pouvez ensuite vous arrêter là ou déposer vos justificatifs pour proposer votre candidature mentor.",
   },
   {
     question: "Comment se forme le binôme avec un mentor ?",
@@ -31,12 +31,12 @@ const questions = [
       "Non. Le compagnonnage aide d’abord à faire mûrir le projet. Les dotations et contributions relèvent d’une phase ultérieure, d’un processus de sélection distinct et des fonds réellement disponibles. Aucun financement ni montant n’est garanti.",
   },
   {
-    question: "Connex et WoeAcademy sont-ils la même plateforme ?",
+    question: "CNX et WoeAcademy sont-ils la même plateforme ?",
     answer:
-      "Non. WoeAcademy assure la formation et la certification. Connex est une plateforme autonome de transmission et de mentorat. Le certificat WoeAcademy Niveau Rouge est le prérequis de validation des profils entrepreneurs ; Connex ne remplace pas le parcours pédagogique.",
+      "Non. WoeAcademy assure la formation et la certification. CNX est une plateforme autonome de transmission et de mentorat. Le certificat WoeAcademy Niveau Rouge est le prérequis de validation des profils entrepreneurs ; CNX ne remplace pas le parcours pédagogique.",
   },
   {
-    question: "À qui s’adresse le pilote Connex ?",
+    question: "À qui s’adresse le pilote CNX ?",
     answer:
       "Le pilote est réservé aux personnes majeures : porteurs de projets en Afrique et professionnels expérimentés de la diaspora africaine. Les pays de lancement et les modalités d’ouverture seront précisés avant le démarrage du pilote.",
   },
@@ -145,7 +145,7 @@ export async function HomeSections({
             <p>
               {" "}
               {t(
-                "Quelques repères pour comprendre votre parcours et rejoindre Connex en connaissance de cause.",
+                "Quelques repères pour comprendre votre parcours et rejoindre CNX en connaissance de cause.",
               )}{" "}
             </p>
             <a className="cnx-inline-link" href="#choix">
@@ -169,7 +169,7 @@ export async function HomeSections({
                       founderRegistrationClosed && index === 0
                         ? "Les inscriptions Mentee sont actuellement fermées. Les comptes existants et les personnes invitées conservent leur accès."
                         : founderRegistrationClosed && index === 1
-                          ? "La création du compte est gratuite. Après confirmation de l’email, une contribution unique de 30 USD permet de soutenir le fonctionnement de Connex. Vous pouvez ensuite vous arrêter là ou déposer vos justificatifs pour proposer votre candidature mentor."
+                          ? "La création du compte est gratuite. Après confirmation de l’email, une contribution unique de 30 USD permet de soutenir le fonctionnement de CNX. Vous pouvez ensuite vous arrêter là ou déposer vos justificatifs pour proposer votre candidature mentor."
                           : item.answer,
                     )}
                   </p>

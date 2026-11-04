@@ -19,7 +19,7 @@ const journeys = {
       ],
       [
         "Faire valider votre certification",
-        "Déposez votre certificat WoeAcademy Niveau Rouge. L’équipe Connex le vérifie ; votre profil reste privé avant validation.",
+        "Déposez votre certificat WoeAcademy Niveau Rouge. L’équipe CNX le vérifie ; votre profil reste privé avant validation.",
       ],
       [
         "Donner forme à votre projet",
@@ -27,7 +27,7 @@ const journeys = {
       ],
       [
         "Prendre le temps de la rencontre",
-        "Un mentor manifeste son intérêt. Connex examine la demande et organise un échange. Le compagnonnage commence avec votre accord à tous les deux.",
+        "Un mentor manifeste son intérêt. CNX examine la demande et organise un échange. Le compagnonnage commence avec votre accord à tous les deux.",
       ],
       [
         "Avancer dans la durée",
@@ -42,16 +42,16 @@ const journeys = {
     action: "Présenter ma candidature mentor",
     steps: [
       [
-        "Créer votre compte et soutenir Connex",
-        "Confirmez votre email, puis contribuez à hauteur de 30 USD en un paiement unique pour soutenir le fonctionnement de Connex.",
+        "Créer votre compte et soutenir CNX",
+        "Confirmez votre email, puis contribuez à hauteur de 30 USD en un paiement unique pour soutenir le fonctionnement de CNX.",
       ],
       [
         "Choisir la suite",
-        "Vous pouvez simplement soutenir Connex, sans déposer de documents, ou poursuivre une candidature mentor.",
+        "Vous pouvez simplement soutenir CNX, sans déposer de documents, ou poursuivre une candidature mentor.",
       ],
       [
         "Faire examiner votre candidature",
-        "Si vous souhaitez devenir mentor, présentez votre expérience et vos justificatifs. L’équipe Connex examine votre dossier avant de valider votre candidature.",
+        "Si vous souhaitez devenir mentor, présentez votre expérience et vos justificatifs. L’équipe CNX examine votre dossier avant de valider votre candidature.",
       ],
       [
         "Accéder à votre espace mentor",

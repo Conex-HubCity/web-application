@@ -336,7 +336,7 @@ export function MentorDashboard({
       )}
       {view === "profile" && <MentorProfile data={data} />}
       <footer className="md-footer">
-        <span>{t("CONNEX · LE LIEN NOUS ÉLÈVE")}</span>
+        <span>{t("CNX · LE LIEN NOUS ÉLÈVE")}</span>
         <button type="button" onClick={() => go("requests")}>
           {" "}
           {t("Mes demandes de rencontre")} <Icon name="arrow" size={14} />

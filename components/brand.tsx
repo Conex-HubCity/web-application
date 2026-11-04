@@ -8,13 +8,13 @@ export function Brand({ full = false }: { full?: boolean }) {
       <Link
         href="/"
         className={full ? "cnx-brand" : "cnx-brand cnx-brand-short"}
-        aria-label={t(full ? "Connex, accueil" : "CNX, accueil")}
+        aria-label={t("CNX, accueil")}
       >
         <span className="cnx-brand-symbol" aria-hidden="true">
           <i />
           <i />
         </span>
-        {full ? "connex" : "CNX"}
+        CNX
         <span className="cnx-brand-dot">.</span>
       </Link>
       <LanguageSwitcher />

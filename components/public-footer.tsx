@@ -15,7 +15,7 @@ export async function PublicFooter() {
           <br />
           {t("Une ambition partagée.")}
         </p>
-        <span className="cnx-footer-copyright">© 2026 Connex · A solution by HubCity</span>
+        <span className="cnx-footer-copyright">© 2026 CNX · A solution by HubCity</span>
       </div>
       <nav className="cnx-footer-column" aria-label={t("Explorer CNX")}>
         <h2>{t("Explorer")}</h2>

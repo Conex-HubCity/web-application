@@ -84,7 +84,7 @@ export function SplashScreen() {
     <dialog
       ref={dialogRef}
       className="cnx-splash"
-      aria-label={t("Présentation de Connex")}
+      aria-label={t("Présentation de CNX")}
       onCancel={(event) => {
         event.preventDefault();
         dismissRef.current();
