@@ -41,3 +41,9 @@ Appliquer `npm run db:deploy`, puis générer Prisma et reconstruire/redémarrer
 Après modification du fichier `.env` ou de l’environnement du service, redémarrer le processus Node (avec rechargement de son environnement si le gestionnaire de processus le requiert), puis recharger la page. Un nouveau build n’est plus nécessaire pour ce seul réglage. Les variables injectées par le service ou les fichiers d’environnement prioritaires peuvent remplacer la valeur de `.env`. Ce réglage ne désactive pas la connexion des comptes existants ni les invitations.
 
 Vérification de régression : après un build, `npm run test:registration` lance des serveurs temporaires avec les deux valeurs et vérifie les bandeaux, liens et formulaires FR/EN sur le même artefact compilé. Aucun compte ni email n’est créé.
+
+## Présentation des liens par email
+
+Les liens de réinitialisation et d’invitation disposent d’une version HTML CNX et de la version texte existante. L’email utilise un bouton doré, une URL de secours copiable, l’expiration et les consignes d’ignorance d’une demande non sollicitée. Le jeton reste dans le fragment du lien, avec les mêmes durées : une heure pour une réinitialisation et 48 heures pour une invitation.
+
+Le logo utilise l’origine canonique du lien, issue de `APP_URL`. Le transport SMTP garde ses contrôles TLS, ses limites et la désactivation des accès fichiers/URL de Nodemailer. Aucun paramètre SMTP ni secret n’est ajouté aux templates. Les aperçus locaux sans envoi sont générés par `node --import tsx scripts/preview-emails.ts` dans `exports/mail-previews`.

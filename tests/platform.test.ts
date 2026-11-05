@@ -2021,6 +2021,11 @@ databaseTest(
     assert.ok(
       f.mails[0].text.includes("https://connex.example.test/en/definir-mot-de-passe#token="),
     );
+    assert.ok(
+      f.mails[0].html?.includes(
+        `href="https://connex.example.test/en/definir-mot-de-passe#token=${token}"`,
+      ),
+    );
     assert.equal((await f.links.inspect(token)).purpose, "RESET");
     await assert.rejects(
       f.links.setPassword({ ...newPasswordInput(token), passwordConfirmation: "different" }),

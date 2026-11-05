@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createServer, type Socket } from "node:net";
 import { test } from "node:test";
 import { sendVerificationEmail, sendAccountEmail } from "../lib/mail/smtp";
+import { passwordLinkEmail, verificationEmail } from "../lib/mail/templates";
 import { AuthError } from "../lib/auth/service";
 
 test("SMTP delivers the OTP message to an isolated loopback capture server", async () => {
@@ -61,6 +62,10 @@ test("SMTP delivers the OTP message to an isolated loopback capture server", asy
     assert.ok(messages[0].includes("123456"));
     assert.ok(messages[0].includes("Your CNX verification code"));
     assert.ok(messages[0].includes("recipient@example.test"));
+    assert.match(messages[0], /Content-Type: multipart\/alternative/);
+    assert.match(messages[0], /Content-Type: text\/plain/);
+    assert.match(messages[0], /Content-Type: text\/html/);
+    assert.ok(messages[0].includes("#132d26"));
     await sendAccountEmail(
       {
         to: "recipient@example.test",
@@ -78,6 +83,27 @@ test("SMTP delivers the OTP message to an isolated loopback capture server", asy
     assert.equal(messages.length, 3);
     assert.ok(messages[2].includes("Set your CNX password"));
     assert.ok(messages[2].includes("#token=fixture"));
+    await sendAccountEmail(
+      {
+        to: "recipient@example.test",
+        ...passwordLinkEmail({
+          locale: "fr",
+          purpose: "RESET",
+          url: "https://example.test/fr/definir-mot-de-passe#token=fixture",
+        }),
+      },
+      {
+        NODE_ENV: "test",
+        SMTP_HOST: "127.0.0.1",
+        SMTP_PORT: String(address.port),
+        SMTP_FROM: "sender@example.test",
+        SMTP_REQUIRE_TLS: "false",
+      },
+    );
+    assert.equal(messages.length, 4);
+    assert.match(messages[3], /Content-Type: multipart\/alternative/);
+    assert.match(messages[3], /Content-Type: text\/html/);
+    assert.ok(messages[3].includes("#f0bf7d"));
   } finally {
     for (const socket of sockets) socket.destroy();
     await new Promise<void>((resolve) => server.close(() => resolve()));
@@ -114,4 +140,47 @@ test("SMTP rejects multiple sender mailboxes and header line breaks", async () =
       AuthError,
     );
   }
+});
+
+test("account email HTML preserves OTPs, link fragments and localized expiry", () => {
+  for (const locale of ["fr", "en"] as const) {
+    const otp = verificationEmail({ code: "001234", locale }, "https://cnx.example.test");
+    assert.ok(otp.text.includes("001234"));
+    assert.ok(otp.html.includes("001234"));
+    assert.ok(otp.html.includes('lang="' + locale + '"'));
+    assert.ok(otp.html.includes("https://cnx.example.test/assets/conex/cnx-logo-transparent.png"));
+    assert.ok(otp.html.includes("10 minutes"));
+    assert.ok(!otp.subject.includes("001234"));
+    const url =
+      "https://cnx.example.test/" + locale + "/definir-mot-de-passe#token=" + "a".repeat(64);
+    const reset = passwordLinkEmail({ url, locale, purpose: "RESET" });
+    assert.ok(reset.text.includes(url));
+    assert.ok(reset.html.includes('href="' + url + '"'));
+    assert.ok(reset.html.includes(locale === "fr" ? "une heure" : "one hour"));
+    assert.ok(!reset.html.includes("48 hours"));
+    const invitation = passwordLinkEmail({ url, locale, purpose: "INVITATION" });
+    assert.ok(invitation.html.includes(locale === "fr" ? "48 heures" : "48 hours"));
+  }
+});
+
+test("account templates escape dynamic HTML and reject unsafe action URLs", () => {
+  const otp = verificationEmail({ locale: "fr", code: '<img src=x onerror="alert(1)">' });
+  assert.ok(!otp.html.includes("<img src=x"));
+  assert.ok(otp.html.includes("&lt;img"));
+  const url = 'https://cnx.example.test/fr/definir-mot-de-passe?test="&other=1#token=fixture';
+  const reset = passwordLinkEmail({ locale: "fr", purpose: "RESET", url });
+  assert.ok(!reset.html.includes('test="&other'));
+  assert.ok(reset.html.includes("&quot;&amp;other"));
+  for (const url of [
+    "javascript:alert(1)",
+    "file:///tmp/test",
+    "https://user:password@example.test/reset",
+  ]) {
+    assert.throws(() => passwordLinkEmail({ locale: "en", purpose: "RESET", url }));
+  }
+  assert.ok(
+    !verificationEmail({ code: "123456", locale: "en" }, "javascript:alert(1)").html.includes(
+      'src="javascript:',
+    ),
+  );
 });

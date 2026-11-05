@@ -36,3 +36,11 @@ Appliquer `npm run db:deploy` pour ajouter la cinquième migration, générer Pr
 ## Contrôles réalisés
 
 41 tests réussis, incluant un transport SMTP vers une capture loopback, le refus d’un transport non chiffré en production, l’expiration, les renvois, les limites d’essais, le changement d’adresse et les confirmations concurrentes. Le parcours complet a été vérifié en navigateur avec SMTP de capture : inscription, réception du message, erreur de code, renvoi trop rapide, confirmation et nouvelle session. Les accès mentor/admin étaient bloqués avant confirmation. Le compte temporaire et les messages capturés ont été supprimés. Aucun email réel n’a été envoyé par ces contrôles.
+
+## Présentation des emails
+
+Les emails de vérification sont envoyés en multipart : une version texte et une version HTML construite par `lib/mail/templates.ts`. La présentation reprend le vert forêt `#132d26`, le crème `#f6f3eb`, le doré `#f0bf7d`, des titres Georgia et du texte Arial. Le code reste un bloc de six chiffres copiable, y compris les zéros initiaux, valable dix minutes.
+
+Si `APP_URL` contient une origine web valide, le logo PNG transparent est chargé depuis ses assets publics ; sinon une signature texte CNX est affichée. Le mail OTP n’exige pas cette variable pour être envoyé. Les données dynamiques sont échappées dans le HTML. Les styles sont intégrés et les tableaux de mise en page limités à 600 px, sans JavaScript ni feuille de style externe.
+
+Pour générer les aperçus locaux FR/EN : `node --import tsx scripts/preview-emails.ts`. Les fichiers HTML et texte sont écrits dans `exports/mail-previews`, avec un code fictif et des liens de démonstration. Cette commande ne charge pas `.env` et n’envoie aucun email.

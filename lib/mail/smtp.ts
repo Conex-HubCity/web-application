@@ -1,10 +1,11 @@
 import "server-only";
 import nodemailer from "nodemailer";
 import { AuthError } from "@/lib/auth/service";
+import { verificationEmail } from "./templates";
 import type { Locale } from "@/lib/i18n/config";
 export type VerificationMessage = { to: string; code: string; locale: Locale };
 export async function sendAccountEmail(
-  message: { to: string; subject: string; text: string },
+  message: { to: string; subject: string; text: string; html?: string },
   env: Partial<NodeJS.ProcessEnv> = process.env,
 ) {
   const host = env.SMTP_HOST?.trim();
@@ -48,6 +49,7 @@ export async function sendAccountEmail(
       to: message.to,
       subject: message.subject,
       text: message.text,
+      html: message.html,
     });
     if (!info.accepted?.length) throw new Error("RecipientNotAccepted");
   } catch {
@@ -61,15 +63,5 @@ export async function sendVerificationEmail(
   message: VerificationMessage,
   env: Partial<NodeJS.ProcessEnv> = process.env,
 ) {
-  const en = message.locale === "en";
-  return sendAccountEmail(
-    {
-      to: message.to,
-      subject: en ? "Your CNX verification code" : "Votre code de vérification CNX",
-      text: en
-        ? `Your CNX verification code: ${message.code}\n\nThis code expires in 10 minutes. Do not share it. If you did not request this code, you can ignore this email.`
-        : `Votre code de vérification CNX : ${message.code}\n\nCe code expire dans 10 minutes. Ne le partagez pas. Si vous n’avez pas demandé ce code, vous pouvez ignorer cet email.`,
-    },
-    env,
-  );
+  return sendAccountEmail({ to: message.to, ...verificationEmail(message, env.APP_URL) }, env);
 }

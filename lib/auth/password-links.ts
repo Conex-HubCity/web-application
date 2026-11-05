@@ -5,13 +5,14 @@ import type { PrismaClient, Prisma, PasswordTokenPurpose } from "@/generated/pri
 import { getDb } from "@/lib/db";
 import { AuthError, hashPassword } from "./service";
 import { sendAccountEmail } from "@/lib/mail/smtp";
+import { passwordLinkEmail } from "@/lib/mail/templates";
 import { localizePath, type Locale } from "@/lib/i18n/config";
 
 const invalid = () => new AuthError("Ce lien est invalide ou a expiré. Demandez un nouveau lien.");
 const hash = (value: string) => createHash("sha256").update(value).digest("hex");
 const available = (user: { accountStatus: string }) =>
   !["SUSPENDED", "CLOSED"].includes(user.accountStatus);
-export type PasswordMail = { to: string; subject: string; text: string };
+export type PasswordMail = { to: string; subject: string; text: string; html?: string };
 export function passwordLinkOrigin(env: Partial<NodeJS.ProcessEnv> = process.env) {
   let url: URL;
   try {
@@ -89,27 +90,12 @@ export function createPasswordLinkService(
       return { email: user.email, purpose };
     });
     if (!issued) return;
-    const en = locale === "en";
-    const invitation = issued.purpose === "INVITATION";
     // Fragment stays out of HTTP request URLs, access logs and referrers.
     const url = origin + localizePath("/definir-mot-de-passe", locale) + "#token=" + token;
     try {
       await send({
         to: issued.email,
-        subject: invitation
-          ? en
-            ? "Your CNX invitation"
-            : "Votre invitation CNX"
-          : en
-            ? "Reset your CNX password"
-            : "Réinitialiser votre mot de passe CNX",
-        text: invitation
-          ? en
-            ? `You are invited to join CNX. Set your password using this link:\n\n${url}\n\nThis link expires in 48 hours. If you were not expecting this invitation, ignore this email.`
-            : `Vous êtes invité à rejoindre CNX. Définissez votre mot de passe avec ce lien :\n\n${url}\n\nCe lien expire dans 48 heures. Si vous n’attendiez pas cette invitation, ignorez cet email.`
-          : en
-            ? `Set a new CNX password using this link:\n\n${url}\n\nThis link expires in one hour. If you did not request it, ignore this email.`
-            : `Définissez un nouveau mot de passe CNX avec ce lien :\n\n${url}\n\nCe lien expire dans une heure. Si vous n’avez pas fait cette demande, ignorez cet email.`,
+        ...passwordLinkEmail({ url, locale, purpose: issued.purpose }),
       });
       await db.passwordToken.updateMany({
         where: { userId, tokenHash },
