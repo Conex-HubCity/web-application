@@ -1,0 +1,88 @@
+html:has(.cnx-section-navigation) {
+  scroll-behavior: smooth;
+}
+
+.cnx-section-navigation {
+  position: fixed;
+  z-index: 30;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%) scale(0.45);
+  transform-origin: center bottom;
+  display: flex;
+  padding: 2px 8px;
+  border: 1px solid #f6f3eb33;
+  border-radius: 999px;
+  background: var(--forest);
+  box-shadow: 0 4px 20px #06150f26;
+  transition: transform 180ms ease;
+}
+.cnx-section-navigation:hover,
+.cnx-section-navigation:focus-within {
+  transform: translateX(-50%) scale(1);
+}
+.cnx-section-navigation > a {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+.cnx-section-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f6f3eb99;
+  transition: transform 180ms ease;
+}
+.cnx-section-navigation > a[aria-current="location"] .cnx-section-dot {
+  background: var(--gold);
+  box-shadow: 0 0 0 3px #f0bf7d33;
+}
+.cnx-section-navigation > a:hover .cnx-section-dot,
+.cnx-section-navigation > a:focus-visible .cnx-section-dot {
+  transform: scale(1.4);
+}
+.cnx-section-navigation > a:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -3px;
+}
+.cnx-section-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 180px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--forest);
+  color: var(--cream);
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.5;
+  pointer-events: none;
+  visibility: hidden;
+}
+.cnx-section-navigation > a:hover .cnx-section-tooltip,
+.cnx-section-navigation > a:focus-visible .cnx-section-tooltip {
+  visibility: visible;
+}
+@media (hover: none) {
+  .cnx-section-navigation {
+    transform: translateX(-50%) scale(0.6);
+  }
+  .cnx-section-navigation:focus-within {
+    transform: translateX(-50%) scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:has(.cnx-section-navigation) {
+    scroll-behavior: auto;
+  }
+  .cnx-section-navigation,
+  .cnx-section-dot {
+    transition: none;
+  }
+}

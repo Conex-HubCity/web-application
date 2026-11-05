@@ -139,3 +139,7 @@ Le visuel `public/assets/conex/africa-mirror-v2.webp` conserve les personnages, 
 ## Titres de section harmonisés
 
 Les titres CNX, Préalable et suivi, Les parcours, Le projet du mois et FAQ partagent une seule règle dans `app/home-sections.css` : Georgia, taille responsive de 33 à 48 px, graisse 500, interligne 1,14 et marge nulle. Ils commencent au même retrait supérieur dans chaque section. Le titre est vert forêt sur fond clair et crème sur fond vert. Les blocs suivants utilisent un espacement commun responsive de 32 à 48 px ; les paragraphes sous un titre commencent à 24 px. Le hero et les titres de navigation du footer restent distincts.
+
+## Navigation par points
+
+Une barre compacte vert forêt, qui s’agrandit au survol ou au focus clavier, est fixée en bas de l’accueil et propose sept liens : Accueil, CNX, Préalable et suivi, Les parcours, Le projet du mois, FAQ et Contact. Chaque lien rejoint sa section avec un défilement fluide, instantané si la réduction des animations est activée. Les ancres natives restent disponibles sans JavaScript ; le point actif suit le défilement et les changements de hauteur du contenu. Les noms sont disponibles au survol, au clavier et aux lecteurs d’écran. La navigation est traduite en anglais et n’impose aucun défilement automatique.

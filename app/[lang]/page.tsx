@@ -9,6 +9,7 @@ import { SplashScreen } from "@/components/splash-screen";
 import { PublicFooter } from "@/components/public-footer";
 import { HomeSections } from "@/components/home-sections";
 import { FragmentScroll } from "@/components/fragment-scroll";
+import { SectionNavigation } from "@/components/section-navigation";
 import "@/app/home-sections.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -49,7 +50,7 @@ async function HomeContent() {
         </nav>
       </header>
       <main id="welcome-main">
-        <section className="welcome-masthead" aria-labelledby="welcome-title">
+        <section id="accueil" className="welcome-masthead" aria-labelledby="welcome-title">
           <div className="welcome-hero-image">
             <Image
               className="welcome-hero-background"
@@ -79,6 +80,7 @@ async function HomeContent() {
         <HomeSections founderRegistrationClosed={founderRegistrationClosed} />
       </main>
       <PublicFooter />
+      <SectionNavigation />
     </div>
   );
 }

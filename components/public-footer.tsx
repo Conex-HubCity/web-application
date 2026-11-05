@@ -9,7 +9,7 @@ import { CONTACT_EMAIL } from "@/lib/contact";
 export async function PublicFooter() {
   const t = await getTranslator();
   return (
-    <footer className="welcome-footer cnx-public-footer cnx-section">
+    <footer id="pied-de-page" className="welcome-footer cnx-public-footer cnx-section">
       <div className="welcome-container cnx-footer-content">
         <div className="cnx-footer-brand">
           <Brand full />
