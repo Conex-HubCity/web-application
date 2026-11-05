@@ -36,7 +36,7 @@ export function FounderDashboard({ data }: { data: FounderDashboardData }) {
   ) : (
     data.firstName.charAt(0)
   );
-  const externalLinks = (project?.socialLinks.length ?? 0) + (project?.customLinks.length ?? 0);
+  const externalLinks = [...(project?.socialLinks ?? []), ...(project?.customLinks ?? [])];
   const updated = project
     ? new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "fr-FR", {
         day: "numeric",
@@ -193,62 +193,67 @@ export function FounderDashboard({ data }: { data: FounderDashboardData }) {
                   </div>
                 </section>
                 <div className="fd-side-cards">
-                  <section className="fd-card fd-visibility">
+                  <section
+                    className="fd-card fd-mentorship"
+                    aria-labelledby="founder-mentorship-title"
+                  >
                     <div className="fd-icon-circle">
                       <Icon name="people" size={23} />
                     </div>
-                    <h2>{t("Présentation")}</h2>
-                    <div className="fd-checklist">
-                      {[
-                        ["Présentation du projet", Boolean(project?.summary)],
-                        ["Lien du pitch", Boolean(project?.pitchUrl)],
-                        ["Image du projet", Boolean(project?.image)],
-                      ].map(([label, done]) => (
-                        <div key={label as string} className={done ? "is-complete" : ""}>
-                          <span>
-                            {done ? (
-                              <Icon name="check" size={13} />
-                            ) : (
-                              <span className="fd-empty-dot" />
-                            )}
-                          </span>
-                          {t(label as string)}
-                          {!done && label === "Image du projet" && <small>{t("Facultatif")}</small>}
-                        </div>
-                      ))}
-                    </div>
+                    <h2 id="founder-mentorship-title">{t("Mentorat")}</h2>
+                    <p className="fd-mentorship-status">{t("En cours de développement")}</p>
                   </section>
                 </div>
               </div>
-              <section className="fd-media-strip">
-                <div>
-                  <Icon name="document" size={22} />
-                  <span>
-                    <strong>{t("Votre pitch")}</strong>
-                  </span>
-                  {project?.pitchUrl ? (
-                    <a href={project.pitchUrl} target="_blank" rel="noopener noreferrer">
-                      {t("Ouvrir le pitch")}
-                      <Icon name="diagonal" size={14} />
+              <div className="fd-media-strip">
+                <section className="fd-resource-card" aria-labelledby="founder-pitch-title">
+                  <div className="fd-resource-heading">
+                    <Icon name="document" size={22} />
+                    <h2 id="founder-pitch-title">{t("Votre pitch")}</h2>
+                  </div>
+                  {project.pitchUrl ? (
+                    <a
+                      className="fd-resource-link fd-pitch-link"
+                      href={project.pitchUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span className="fd-resource-url">{project.pitchUrl}</span>
+                      <Icon name="diagonal" size={16} />
                     </a>
                   ) : (
-                    <button onClick={() => go("project")}>{t("Ajouter")}</button>
+                    <button className="fd-text-action" onClick={() => go("project")}>
+                      {t("Ajouter")}
+                    </button>
                   )}
-                </div>
-                <div>
-                  <Icon name="globe" size={22} />
-                  <span>
-                    <strong>{t("Vos liens")}</strong>
-                    <small>
-                      {externalLinks} {t("lien(s) partagé(s)")}
-                    </small>
-                  </span>
-                  <button onClick={() => go("project")}>
-                    {t("Gérer les liens")}
-                    <Icon name="arrow" size={14} />
-                  </button>
-                </div>
-              </section>
+                </section>
+                <section className="fd-resource-card" aria-labelledby="founder-links-title">
+                  <div className="fd-resource-heading">
+                    <Icon name="globe" size={22} />
+                    <h2 id="founder-links-title">{t("Vos liens")}</h2>
+                  </div>
+                  {externalLinks.length ? (
+                    <ul className="fd-resource-links">
+                      {externalLinks.map((link, index) => (
+                        <li key={`${link.label}-${link.url}-${index}`}>
+                          <a
+                            className="fd-resource-link"
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <span className="fd-resource-label">{link.label}</span>
+                            <span className="fd-resource-url">{link.url}</span>
+                            <Icon name="diagonal" size={16} />
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="fd-resource-empty">{t("Aucun lien ajouté.")}</p>
+                  )}
+                </section>
+              </div>
             </>
           ) : (
             <section className="fd-empty-project" aria-labelledby="empty-project-title">
