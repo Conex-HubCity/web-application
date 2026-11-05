@@ -1482,3 +1482,51 @@
 .cnx-brand-short {
   letter-spacing: -1px;
 }
+
+/* Hero copy in the editorial order: context, purpose, signature. */
+.welcome-hero .welcome-hero-purpose {
+  max-width: 650px;
+}
+.welcome-hero-context {
+  max-width: 560px;
+  color: #e6e9dd;
+  font:
+    italic 400 clamp(17px, 1.3vw, 20px)/1.6 Georgia,
+    "Times New Roman",
+    serif;
+  text-wrap: pretty;
+}
+.welcome-hero .welcome-hero-purpose h1 {
+  font-size: clamp(39px, 3.9vw, 62px);
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+  margin-block: 25px 28px;
+  text-wrap: balance;
+}
+.welcome-hero-purpose h1 em {
+  display: block;
+}
+.welcome-hero-signature {
+  max-width: 490px;
+  color: #d6e1d1;
+  font:
+    italic 400 17px/1.65 Georgia,
+    "Times New Roman",
+    serif;
+  text-wrap: pretty;
+}
+@media (max-width: 720px) {
+  .welcome-hero .welcome-hero-purpose {
+    max-width: 100%;
+  }
+  .welcome-hero .welcome-hero-purpose h1 {
+    font-size: clamp(31px, 8vw, 45px);
+    margin-block: 23px;
+  }
+  .welcome-hero-context {
+    font-size: 16px;
+  }
+  .welcome-hero-signature {
+    font-size: 15px;
+  }
+}

@@ -66,17 +66,24 @@ async function HomeContent() {
           <div className="welcome-hero-shade" aria-hidden="true" />
           <div className="welcome-hero-grain" aria-hidden="true" />
           <div className="welcome-hero welcome-container">
-            <div className="welcome-hero-copy">
-              <h1 id="welcome-title">
-                {" "}
-                {t("Un projet.")} <br /> {t("Une expérience.")} <br />
-                <em>{t("Un lien pour grandir.")}</em>
-              </h1>
-              <p className="welcome-lead">
-                {" "}
+            <div className="welcome-hero-copy welcome-hero-purpose">
+              <p className="welcome-hero-context">
                 {t(
-                  "Les bonnes rencontres ouvrent de nouveaux possibles. CNX relie les Mentees africains aux professionnels de la diaspora pour avancer ensemble.",
-                )}{" "}
+                  "Pour adresser les enjeux de transformation du continent africain, agir sur et par son capital humain.",
+                )}
+              </p>
+              <h1 id="welcome-title">
+                {t("Réaliser une Afrique mondiale")}{" "}
+                <em>{t("au service du dividende démographique.")}</em>
+              </h1>
+              <p className="welcome-hero-signature">
+                <span>
+                  {t(
+                    "Lutter contre l’isolement. Unifier l’Afrique. Organiser le levier diasporique.",
+                  )}
+                </span>
+                {" "}
+                <span>{t("Relier pour construire.")}</span>
               </p>
             </div>
           </div>
