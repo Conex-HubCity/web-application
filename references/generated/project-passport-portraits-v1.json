@@ -1,0 +1,15 @@
+{
+  "tool": "Built-in image_gen",
+  "founder": {
+    "prompt": "Use case: identity-preserve. Asset: website circular avatar, passport-style studio headshot, NOT a passport document. Edit the attached reference photograph: preserve this exact man's identity, facial proportions, age, skin tone, hairstyle and expression. Keep his blue and white patterned shirt. Remove event backdrop and all writing. Replace with clean warm light-gray studio background. Front-facing head and shoulders, centered symmetrical framing, entire hair visible with 12 percent headroom, shoulders visible, natural soft even lighting, realistic skin detail, square image. No text, watermark, badges, logos, border or other people. Retain likeness faithfully.",
+    "source": "public/assets/conex/oria-yao-grace-akogo.jpg",
+    "output": "public/assets/conex/oria-yawo-passport-v1.webp"
+  },
+  "mentor": {
+    "prompt": "Use case: identity-preserve. Asset: website circular avatar, passport-style studio headshot, NOT a passport document. Reference is Sénamé Koffi Agbodjinou. Edit the attached photograph preserving this exact man's facial identity, proportions, natural skin tone, age, hairstyle and salt-and-pepper beard faithfully. Keep his olive-green and tan jacket with dark shirt. Replace outdoor background with clean warm light-gray studio background. Front-facing head and shoulders, centered symmetrical framing, entire hair visible with 12 percent headroom, shoulders visible, natural soft even studio lighting, realistic skin detail, square image. No text, watermark, badges, logos, border, additional people. It is a neutral illustrative portrait, do not add an endorsement.",
+    "source": "https://www.ut-inscription.com/en/speakers/sename-koffi",
+    "reference": "https://cdn.ut-inscription.com/uploads/contact/photos/sename-koffi-agbodjinou-6740ac30263eb872537991.jpg",
+    "output": "public/assets/conex/sename-passport-v1.webp"
+  },
+  "note": "Illustrative showcase; generated portraits do not establish an actual mentoring relationship."
+}

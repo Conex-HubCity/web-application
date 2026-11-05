@@ -114,7 +114,9 @@ ORIA accompagne les jeunes dans leurs choix d’études en les aidant à découv
 
 Le résumé s’appuie sur le parcours utilisateur fourni : https://docs.google.com/document/d/1H5s0BjOk6inkZM8URiRFF4C-TAapgyyVAleT281Btr8/edit
 
-Le logo ORIA fourni est conservé dans `public/assets/conex/oria-logo.jpg` et apparaît en fond discret et près du nom du projet. La photo fournie de Yawo Grace Akogo est conservée dans `public/assets/conex/oria-yao-grace-akogo.jpg`. Elle occupe la grande bulle ; le portrait `mentor.webp`, déjà utilisé par la carte Mentor, occupe la plus petite bulle, superposée au premier plan. La petite bulle du mentor est au premier plan à gauche de celle de Grace ; sa légende est retirée. Le nom de Yawo Grace Akogo reste affiché.
+Le chapitre utilise le vert forêt de la charte en pleine largeur, sans carte intérieure, avec le logo ORIA en fond discret sous un dégradé vert et une lumière dorée. À gauche, deux portraits générés au format photo d’identité sur fond neutre : Yawo Grace Akogo dans la grande bulle, puis Sénamé Koffi Agbodjinou dans la petite bulle au premier plan à sa droite. Le projet ORIA, son logo et son résumé sont à droite. Sur mobile, les portraits précèdent le projet. Les noms de Yawo Grace Akogo et de Sénamé Koffi Agbodjinou sont affichés sous leurs portraits ; cette vitrine reste illustrative et ne présente pas une relation de mentorat confirmée.
+
+Les originaux sont conservés. Nouveaux fichiers : `public/assets/conex/oria-yawo-passport-v1.webp` et `public/assets/conex/sename-passport-v1.webp`. Les prompts imagegen et la référence photographique du mentor sont consignés dans `references/generated/project-passport-portraits-v1.json`.
 
 ## Vérification éditoriale — 5 novembre 2026
 

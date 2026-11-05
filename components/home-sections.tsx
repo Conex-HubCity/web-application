@@ -178,18 +178,48 @@ export async function HomeSections({
         className="cnx-section cnx-featured-project"
         aria-labelledby="featured-project-title"
       >
+        <Image
+          className="cnx-project-backdrop"
+          src="/assets/conex/oria-logo.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+        />
         <div className="welcome-container">
           <div className="cnx-section-heading">
             <h2 id="featured-project-title">{t("Le projet du mois")}</h2>
           </div>
           <article className="cnx-project-banner" aria-labelledby="oria-title">
-            <Image
-              className="cnx-project-backdrop"
-              src="/assets/conex/oria-logo.jpg"
-              alt=""
-              fill
-              sizes="(max-width: 760px) 100vw, 80vw"
-            />
+            <div className="cnx-project-people">
+              <figure className="cnx-project-founder">
+                <div className="cnx-project-founder-portrait">
+                  <Image
+                    src="/assets/conex/oria-yawo-passport-v1.webp"
+                    alt={t("Portrait illustratif de Yawo Grace Akogo")}
+                    fill
+                    sizes="(max-width: 600px) 210px, 248px"
+                  />
+                </div>
+                <figcaption>
+                  <span>{t("Porteur du projet")}</span>
+                  <strong>Yawo Grace Akogo</strong>
+                </figcaption>
+              </figure>
+              <figure className="cnx-project-mentor">
+                <div className="cnx-project-mentor-portrait">
+                  <Image
+                    src="/assets/conex/sename-passport-v1.webp"
+                    alt={t("Portrait illustratif de Sénamé Koffi Agbodjinou")}
+                    fill
+                    sizes="(max-width: 600px) 136px, 164px"
+                  />
+                </div>
+                <figcaption>
+                  <span>{t("Mentor")}</span>
+                  <strong>Sénamé Koffi Agbodjinou</strong>
+                </figcaption>
+              </figure>
+            </div>
             <div className="cnx-project-copy">
               <div className="cnx-project-identity">
                 <Image
@@ -206,32 +236,6 @@ export async function HomeSections({
                   "ORIA accompagne les jeunes dans leurs choix d’études en les aidant à découvrir les formations et établissements adaptés à leurs aspirations.",
                 )}
               </p>
-            </div>
-            <div className="cnx-project-people">
-              <figure className="cnx-project-founder">
-                <div className="cnx-project-founder-portrait">
-                  <Image
-                    src="/assets/conex/oria-yao-grace-akogo.jpg"
-                    alt={t("Portrait de Yawo Grace Akogo")}
-                    fill
-                    sizes="(max-width: 600px) 210px, 248px"
-                  />
-                </div>
-                <figcaption>
-                  <span>{t("Porteur du projet")}</span>
-                  <strong>Yawo Grace Akogo</strong>
-                </figcaption>
-              </figure>
-              <figure className="cnx-project-mentor">
-                <div className="cnx-project-mentor-portrait">
-                  <Image
-                    src="/assets/conex/mentor.webp"
-                    alt={t("Portrait illustratif du mentor")}
-                    fill
-                    sizes="(max-width: 600px) 104px, 124px"
-                  />
-                </div>
-              </figure>
             </div>
           </article>
         </div>
