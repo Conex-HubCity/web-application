@@ -11,9 +11,9 @@ export async function PublicFooter() {
       <div className="cnx-footer-brand">
         <Brand full />
         <p>
-          {t("Un réseau de confiance.")}
-          <br />
-          {t("Une ambition partagée.")}
+          {t(
+            "Être le plus grand répertoire de talents africains : Un réseau de confiance avec des ambitions partagées.",
+          )}
         </p>
         <span className="cnx-footer-copyright">© 2026 CNX · A solution by HubCity</span>
       </div>

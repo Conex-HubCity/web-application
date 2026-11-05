@@ -31,14 +31,9 @@ const questions = [
       "Non. Le compagnonnage aide d’abord à faire mûrir le projet. Les dotations et contributions relèvent d’une phase ultérieure, d’un processus de sélection distinct et des fonds réellement disponibles. Aucun financement ni montant n’est garanti.",
   },
   {
-    question: "CNX et WoeAcademy sont-ils la même plateforme ?",
-    answer:
-      "Non. WoeAcademy assure la formation et la certification. CNX est une plateforme autonome de transmission et de mentorat. Le certificat WoeAcademy Niveau Rouge est le prérequis de validation des profils entrepreneurs ; CNX ne remplace pas le parcours pédagogique.",
-  },
-  {
     question: "À qui s’adresse le pilote CNX ?",
     answer:
-      "Le pilote s’adresse aux porteurs de projets en Afrique et aux professionnels expérimentés de la diaspora africaine. Les pays de lancement et les modalités d’ouverture seront précisés avant le démarrage du pilote.",
+      "Le pilote est réservé aux personnes majeures : porteurs de projets en Afrique et professionnels expérimentés de la diaspora africaine. Les pays de lancement et les modalités d’ouverture seront précisés avant le démarrage du pilote.",
   },
 ];
 
@@ -204,24 +199,7 @@ export async function HomeSections({
       >
         <div className="welcome-container cnx-faq-grid">
           <div className="cnx-section-heading cnx-faq-heading">
-            <div className="welcome-eyebrow">
-              <span /> {t("AVANT DE FAIRE LE PREMIER PAS")}{" "}
-            </div>
-            <h2 id="faq-title">
-              {" "}
-              {t("Vos questions.")} <br />
-              <em>{t("En toute clarté.")}</em>
-            </h2>
-            <p>
-              {" "}
-              {t(
-                "Quelques repères pour comprendre votre parcours et rejoindre CNX en connaissance de cause.",
-              )}{" "}
-            </p>
-            <a className="cnx-inline-link" href="#choix">
-              {t("Choisir mon parcours")}
-              <Icon name="arrow" size={18} />
-            </a>
+            <h2 id="faq-title">{t("FAQ")}</h2>
           </div>
           <div className="cnx-faq-items">
             {questions.map((item, index) => (

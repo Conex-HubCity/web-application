@@ -75,3 +75,11 @@ Un engagement d’accompagnement à la mesure de vos disponibilités.
 Les visuels, liens d’inscription, fermeture éventuelle du parcours Mentee et contribution de soutien mentor sont conservés.
 
 Les phrases « Vous êtes un jeune… » et « Vous êtes un professionnel… » figurent dans leurs cartes Mentee et Mentor respectives, sous le libellé du rôle. « Nous vous connectons. » conclut la section sous les deux cartes.
+
+## FAQ et footer — textes finaux
+
+La FAQ contient les six questions du document : création du compte avant certification, gratuité de l’inscription, formation du binôme, accès aux documents, financement et public du pilote. La question comparant CNX et WoeAcademy est retirée.
+
+Le pilote est réservé aux personnes majeures : porteurs de projets en Afrique et professionnels expérimentés de la diaspora africaine. Les pays de lancement et les modalités d’ouverture seront précisés avant le démarrage du pilote.
+
+Texte du footer : « Être le plus grand répertoire de talents africains : Un réseau de confiance avec des ambitions partagées. »
