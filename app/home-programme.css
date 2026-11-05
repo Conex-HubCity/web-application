@@ -1,8 +1,8 @@
 /* Forest background marks the transition into the training programme. */
 .welcome-page .cnx-training-section {
   --line: #f6f3eb30;
-  margin: clamp(16px, 2.5vw, 40px);
-  border-radius: clamp(16px, 2vw, 28px);
+  margin: 0;
+  border-radius: 0;
   background: var(--forest);
   color: var(--cream);
 }
@@ -25,21 +25,17 @@
   margin-top: 12px;
 }
 .welcome-page .cx-programme {
-  border-top: 1px solid var(--line);
   scroll-margin-top: 28px;
 }
 .welcome-page .cx-programme-block {
   min-width: 0;
-  padding-block: clamp(30px, 3.6vw, 48px);
-}
-.welcome-page .cx-programme-block + .cx-programme-block {
-  border-top: 1px solid var(--line);
+  padding-block: clamp(24px, 2.4vw, 32px);
 }
 .welcome-page .cx-programme-block:last-child {
   padding-bottom: 0;
 }
 .welcome-page .cx-programme-block h3 {
-  margin: 0 0 20px;
+  margin: 0 0 12px;
   color: var(--cream);
   font:
     400 clamp(27px, 2.8vw, 37px)/1.2 Georgia,
@@ -48,11 +44,11 @@
   letter-spacing: -0.035em;
 }
 .welcome-page .cx-programme-block p {
-  max-width: 74ch;
+  max-width: none;
   margin: 0;
   color: #dbe4d6;
   font-size: 15px;
-  line-height: 1.85;
+  line-height: 1.7;
 }
 .welcome-page .cx-programme-block p.cx-learning-note {
   max-width: 74ch;
@@ -63,7 +59,7 @@
   font-size: 13px;
 }
 .welcome-page .cx-programme-block p.cx-learning-subtitle {
-  margin: -6px 0 20px;
+  margin: 0 0 12px;
   color: var(--gold);
   font:
     italic 400 clamp(20px, 2vw, 24px)/1.5 Georgia,
@@ -71,11 +67,133 @@
     serif;
 }
 .welcome-page .cx-connection-copy p + p {
-  margin-top: 18px;
+  margin-top: 10px;
 }
 @media (max-width: 600px) {
   .welcome-page .cx-programme-block p {
     font-size: 14px;
     line-height: 1.8;
+  }
+}
+
+.welcome-page .cx-connection-copy {
+  margin-top: 22px;
+}
+.welcome-page .cx-connection-copy h4 {
+  display: inline;
+  color: var(--cream);
+  font:
+    400 22px/1.4 Georgia,
+    "Times New Roman",
+    serif;
+}
+.welcome-page .cx-connection-copy p.cx-connection-subtitle {
+  display: inline;
+  margin-left: 14px;
+  color: var(--gold);
+  font:
+    italic 400 18px/1.5 Georgia,
+    "Times New Roman",
+    serif;
+}
+@media (max-width: 600px) {
+  .welcome-page .cx-connection-copy p.cx-connection-subtitle {
+    display: block;
+    margin: 6px 0 12px;
+  }
+}
+
+/* One chapter, two stages. The panels share a grid cell to keep the chapter steady. */
+.welcome-page .cx-programme-tabs {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: min(100%, 440px);
+  padding: 5px;
+  margin-bottom: 30px;
+  border: 1px solid #f6f3eb30;
+  border-radius: 999px;
+  background: #071e1760;
+}
+.welcome-page .cx-programme-slider {
+  position: absolute;
+  z-index: -1;
+  inset: 5px auto 5px 5px;
+  width: calc((100% - 10px) / 2);
+  border-radius: inherit;
+  background: var(--gold);
+  box-shadow: 0 3px 14px #00000020;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.welcome-page .cx-programme-tabs button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 200ms;
+}
+.welcome-page .cx-programme-tabs button span {
+  font-size: 10px;
+  opacity: 0.65;
+}
+.welcome-page .cx-programme-tabs button[aria-selected="true"] {
+  color: var(--forest);
+}
+.welcome-page .cx-programme-tabs button:focus-visible,
+.welcome-page .cx-programme-block:focus-visible {
+  outline: 2px solid var(--cream);
+  outline-offset: 5px;
+}
+.welcome-page .cx-programme-panels {
+  display: grid;
+  border-top: 1px solid var(--line);
+}
+.welcome-page .cx-programme-panels > .cx-programme-block {
+  grid-area: 1 / 1;
+  padding-bottom: 0;
+}
+.welcome-page .cx-programme-block[aria-hidden="true"] {
+  visibility: hidden;
+  pointer-events: none;
+}
+.welcome-page .cx-programme-block[aria-hidden="false"] {
+  animation: cx-programme-reveal 350ms ease-out both;
+}
+@keyframes cx-programme-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 720px) {
+  .welcome-page .cx-programme-block[aria-hidden="true"] {
+    display: none;
+  }
+  .welcome-page .cx-programme-tabs {
+    margin-bottom: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .welcome-page .cx-programme-slider,
+  .welcome-page .cx-programme-tabs button {
+    transition: none;
+  }
+  .welcome-page .cx-programme-block[aria-hidden="false"] {
+    animation: none;
   }
 }

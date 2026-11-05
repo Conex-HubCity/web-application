@@ -1,6 +1,9 @@
 /* Composed from the conference reference, with platform-specific journeys. */
 .cnx-section {
-  padding-block: clamp(75px, 8vw, 125px);
+  display: flex;
+  align-items: center;
+  min-height: 800px;
+  padding-block: clamp(48px, 5vw, 72px);
   scroll-margin-top: 24px;
 }
 .cnx-section-heading h2 {
@@ -113,7 +116,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  min-height: 620px;
+  min-height: 480px;
   padding: 29px 36px 35px;
   border-radius: 17px;
   color: #fffdf7;
@@ -168,7 +171,7 @@
   color: var(--forest);
 }
 .cnx-pathway-bottom {
-  margin-top: 145px;
+  margin-top: 70px;
 }
 .cnx-pathway-label {
   display: inline-block;
@@ -1212,4 +1215,21 @@
 .cnx-pathway-bottom > p.cnx-pathway-availability {
   margin-top: 18px;
   color: var(--gold);
+}
+
+/* Match the hero's minimum height; content can grow without being cropped. */
+@media (min-width: 1700px) {
+  .cnx-section {
+    min-height: 880px;
+  }
+}
+@media (max-width: 1180px) {
+  .cnx-section {
+    min-height: 780px;
+  }
+}
+@media (max-width: 720px) {
+  .cnx-section {
+    min-height: 0;
+  }
 }

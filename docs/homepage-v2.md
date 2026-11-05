@@ -44,7 +44,9 @@ Un cadre prévu : des objectifs clairs, des échanges réguliers et un point men
 
 La charte HubCity pose un cadre de confiance, sans exclusivité.
 
-La présentation utilise une seule colonne sur fond vert forêt, avec des textes crème, des accents dorés et trois blocs séparés par des traits fins. Ce fond marque la transition depuis la section CNX sur fond crème. « Préalable et Suivi » et « Chapitre 3 » ne sont pas affichés ; le grand titre est « Formation mentorale & Co ».
+Le chapitre unique « Formation mentorale & Co » conserve une présentation en une colonne, sur fond vert forêt pleine largeur, sans cadre arrondi ni marge extérieure. Un sélecteur à deux onglets « Préalable » / « Suivi », avec un indicateur doré coulissant, permet de basculer entre les deux parties internes : « Préalable » (WoeAcademy) et « Suivi » (Formation mentorale, puis Connexion & Suivi). Les panneaux partagent le même espace sur ordinateur pour éviter les sauts de hauteur ; sur mobile, seul le panneau actif occupe de la place. Les onglets se parcourent aussi au clavier et respectent la préférence de réduction des animations. Tous les textes de référence sont conservés, avec des textes crème et des accents dorés. Aucun numéro de chapitre n’est affiché.
+
+Les chapitres reprennent la hauteur minimale du hero : 800 px, 880 px à partir de 1700 px et 780 px jusqu’à 1180 px. Ils peuvent grandir selon leur contenu ; à 720 px et moins, leur hauteur est libre. Le hero conserve ses dimensions et le footer reste compact.
 
 ## Les parcours — avant la FAQ
 

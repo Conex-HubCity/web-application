@@ -40,11 +40,9 @@ async function HomeContent() {
         {t("Aller au contenu")}{" "}
       </a>
       <header className="welcome-header welcome-public-header welcome-container">
-        <Brand full />
+        <Brand full label={t("PLATEFORME DE MENTORAT")} />
         <nav className="welcome-nav" aria-label={t("Navigation principale")}>
-          <a href="#formation">{t("La formation")}</a>
           <a href="#choix">{t("Les parcours")}</a>
-          <a href="#questions-frequentes">FAQ</a>
           <Link href="/connexion" className="welcome-login">
             {" "}
             {t("Se connecter")} <Icon name="diagonal" size={16} />
@@ -81,8 +79,7 @@ async function HomeContent() {
                   {t(
                     "Lutter contre l’isolement. Unifier l’Afrique. Organiser le levier diasporique.",
                   )}
-                </span>
-                {" "}
+                </span>{" "}
                 <span>{t("Relier pour construire.")}</span>
               </p>
             </div>

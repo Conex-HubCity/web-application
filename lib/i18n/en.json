@@ -1026,6 +1026,8 @@
   "Connexion & Suivi": "Connection & Follow-up",
   "Un cadre prévu : des objectifs clairs, des échanges réguliers et un point mensuel. Le binôme trouve son rythme, dans une relation suivie et choisie.": "A planned framework: clear goals, regular exchanges and a monthly check-in. The pair finds its own rhythm within an ongoing partnership chosen by both participants.",
   "Préalable et Suivi": "Preparation and Follow-up",
+  "Préalable": "Preparation",
+  "Suivi": "Follow-up",
   "Formation mentorale & Co": "Mentoring Training & Co",
   "Une véritable préparation au compagnonnage.": "A meaningful preparation for the mentoring journey.",
   "Mentor & Mentee : un même horizon.": "Mentor & Mentee: a shared horizon.",
@@ -1064,5 +1066,6 @@
   "Saisissez un numéro de téléphone valide.": "Enter a valid phone number.",
   "Ce numéro de téléphone est déjà utilisé.": "This phone number is already in use.",
   "Mentorat": "Mentoring",
-  "Aucun lien ajouté.": "No links added."
+  "Aucun lien ajouté.": "No links added.",
+  "PLATEFORME DE MENTORAT": "MENTORING PLATFORM"
 }
