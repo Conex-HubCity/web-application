@@ -5,7 +5,6 @@ import { getLocale, getTranslator } from "@/lib/i18n/server";
 import Image from "next/image";
 import { Link } from "@/components/i18n";
 import { Brand } from "@/components/brand";
-import { Icon } from "@/components/icon";
 import { SplashScreen } from "@/components/splash-screen";
 import { PublicFooter } from "@/components/public-footer";
 import { HomeSections } from "@/components/home-sections";
@@ -45,7 +44,7 @@ async function HomeContent() {
           <a href="#choix">{t("Les parcours")}</a>
           <Link href="/connexion" className="welcome-login">
             {" "}
-            {t("Se connecter")} <Icon name="diagonal" size={16} />
+            {t("Se connecter")}
           </Link>
         </nav>
       </header>
@@ -66,17 +65,13 @@ async function HomeContent() {
           <div className="welcome-hero welcome-container">
             <div className="welcome-hero-copy welcome-hero-purpose">
               <h1 id="welcome-title">
-                {t('Réaliser "l’Afrique Mondiale"')}{" "}
+                {t('Réaliser l’"Afrique Mondiale"')}{" "}
                 <em>{t("au service du dividende démographique.")}</em>
               </h1>
               <p className="welcome-hero-context">
                 {t(
-                  "Pour adresser les enjeux de transformation du continent africain, agir sur et par son capital humain.",
+                  "Agir sur et par son capital humain pour adresser les enjeux de transformation du continent africain.",
                 )}
-              </p>
-              <p className="welcome-hero-signature">
-                <span>{t("Lutter contre l’isolement. Organiser le levier diasporique.")}</span>{" "}
-                <span>{t("Relier pour construire.")}</span>
               </p>
             </div>
           </div>

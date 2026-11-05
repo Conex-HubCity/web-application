@@ -2,20 +2,18 @@
 
 import { useId, useRef } from "react";
 import { Link, useTranslations } from "@/components/i18n";
-import { Icon } from "@/components/icon";
 import "@/app/pathway-action.css";
 
 export function PathwayAction({ role, closed = false }: { role: string; closed?: boolean }) {
   const t = useTranslations();
   const dialog = useRef<HTMLDialogElement>(null);
   const id = useId();
-  const label = role === "mentor" ? t("Devenir mentor") : t("Rejoindre comme Mentee");
+  const label = role === "mentor" ? t("Devenir mentor") : t("Devenir Mentee");
 
   if (!closed || role === "mentor") {
     return (
       <Link href={`/inscription/${role}`} className="cnx-pathway-action">
         {label}
-        <Icon name="arrow" size={18} />
       </Link>
     );
   }
@@ -29,7 +27,6 @@ export function PathwayAction({ role, closed = false }: { role: string; closed?:
         onClick={() => dialog.current?.showModal()}
       >
         {label}
-        <Icon name="arrow" size={18} />
       </button>
       <dialog
         ref={dialog}

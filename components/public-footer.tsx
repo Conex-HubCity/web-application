@@ -9,59 +9,65 @@ import { CONTACT_EMAIL } from "@/lib/contact";
 export async function PublicFooter() {
   const t = await getTranslator();
   return (
-    <footer className="welcome-footer welcome-container cnx-public-footer">
-      <div className="cnx-footer-brand">
-        <Brand full />
-        <p>
-          {t(
-            "Être le plus grand répertoire de talents africains : Un réseau de confiance avec des ambitions partagées.",
-          )}
-        </p>
-        <span className="cnx-footer-copyright">© 2026 CNX · A solution by HubCity</span>
-      </div>
-      <nav className="cnx-footer-column" aria-label={t("Explorer CNX")}>
-        <h2>{t("Explorer")}</h2>
-        <Link href="/#formation">{t("La formation")}</Link>
-        <Link href="/#choix">{t("Choisir mon parcours")}</Link>
-        <Link href="/#questions-frequentes">{t("Questions fréquentes")}</Link>
-        <Link href="/connexion">{t("Accéder à mon espace")}</Link>
-      </nav>
-      <div className="cnx-footer-column" id="contact">
-        <h2>{t("Nous contacter")}</h2>
-        <a className="cnx-footer-email" href={`mailto:${CONTACT_EMAIL}`}>
-          <Icon name="mail" size={18} />
-          <span>{CONTACT_EMAIL}</span>
-        </a>
-        <span>{t("Une question sur CNX ou votre candidature ? Écrivez-nous.")}</span>
-        <nav className="cnx-footer-socials" aria-label={t("Réseaux sociaux")}>
-          <a href="https://www.facebook.com/Cnxhubcity" target="_blank" rel="noopener noreferrer">
-            <Icon name="facebook" size={18} /> Facebook
+    <footer className="welcome-footer cnx-public-footer cnx-section">
+      <div className="welcome-container cnx-footer-content">
+        <div className="cnx-footer-brand">
+          <Brand full />
+          <p>
+            {t(
+              "Être le plus grand répertoire de talents africains : Un réseau de confiance avec des ambitions partagées.",
+            )}
+          </p>
+          <span className="cnx-footer-copyright">© 2026 CNX · A solution by HubCity</span>
+        </div>
+        <nav className="cnx-footer-column" aria-label={t("Explorer CNX")}>
+          <h2>{t("Explorer")}</h2>
+          <Link href="/#formation">{t("La formation")}</Link>
+          <Link href="/#choix">{t("Choisir mon parcours")}</Link>
+          <Link href="/#questions-frequentes">{t("Questions fréquentes")}</Link>
+          <Link href="/connexion">{t("Accéder à mon espace")}</Link>
+        </nav>
+        <div className="cnx-footer-column" id="contact">
+          <h2>{t("Nous contacter")}</h2>
+          <a className="cnx-footer-email" href={`mailto:${CONTACT_EMAIL}`}>
+            <Icon name="mail" size={18} />
+            <span>{CONTACT_EMAIL}</span>
           </a>
-          <a href="https://www.instagram.com/cnxhubcity/" target="_blank" rel="noopener noreferrer">
-            <Icon name="instagram" size={18} /> Instagram
-          </a>
-          <a
-            href="https://linkedin.com/company/cnxhubcity/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Icon name="linkedin" size={18} /> LinkedIn
-          </a>
+          <span>{t("Une question sur CNX ou votre candidature ? Écrivez-nous.")}</span>
+          <nav className="cnx-footer-socials" aria-label={t("Réseaux sociaux")}>
+            <a href="https://www.facebook.com/Cnxhubcity" target="_blank" rel="noopener noreferrer">
+              <Icon name="facebook" size={18} /> Facebook
+            </a>
+            <a
+              href="https://www.instagram.com/cnxhubcity/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon name="instagram" size={18} /> Instagram
+            </a>
+            <a
+              href="https://linkedin.com/company/cnxhubcity/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon name="linkedin" size={18} /> LinkedIn
+            </a>
+          </nav>
+        </div>
+        <nav className="cnx-footer-column" aria-label={t("Informations utiles")}>
+          <h2>{t("Informations utiles")}</h2>
+          <Link href="/confidentialite">{t("Politique de confidentialité")}</Link>
+          <Link href="/charte-mentorat">{t("Charte du mentorat")}</Link>
+          <ReplayIntroduction />
         </nav>
       </div>
-      <nav className="cnx-footer-column" aria-label={t("Informations utiles")}>
-        <h2>{t("Informations utiles")}</h2>
-        <Link href="/confidentialite">{t("Politique de confidentialité")}</Link>
-        <Link href="/charte-mentorat">{t("Charte du mentorat")}</Link>
-        <ReplayIntroduction />
-      </nav>
       <div className="cnx-footer-visual">
         <Image
           className="cnx-footer-meeting"
-          src="/assets/conex/rencontre.webp"
+          src="/assets/conex/footer-cafe-wide-v2.webp"
           alt={t("Deux personnes échangent autour d’un projet et d’un ordinateur.")}
           fill
-          sizes="(max-width: 600px) 300px, (max-width: 1050px) 230px, 380px"
+          sizes="100vw"
         />
       </div>
     </footer>

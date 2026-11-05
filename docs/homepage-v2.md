@@ -96,7 +96,7 @@ Le footer propose les liens fournis vers Facebook (`https://www.facebook.com/Cnx
 
 Dans le footer crème, le logo transparent est affiché en monochrome vert forêt via CSS, au format 112 × 56 px. L’en-tête conserve le logo blanc et doré.
 
-La photo `rencontre.webp` occupe toute la hauteur du footer à droite, hors du flux. Sa largeur est limitée (280 à 380 px sur ordinateur), avec un fondu court à gauche. Une zone distincte est réservée aux textes et aux liens, sans superposition. Sur mobile, l’image reste à la fin du footer dans un format horizontal compact. Le miroir Afrique reste dans la section « CNX ? ».
+Le footer occupe une hauteur de section et toute la largeur de la page. La photo fournie `footer-cafe-wide-v2.webp` remplit le fond, avec les deux personnes à droite et un dégradé crème progressif depuis la gauche. Les liens sont regroupés à gauche. Sur mobile, le contenu précède la photo complète, reliée par un fondu vertical.
 
 ## Introduction HubCity
 
@@ -114,7 +114,7 @@ Locomo — La rééducation assistée par IA, à domicile.
 
 Locomo développe une solution de rééducation à domicile qui associe analyse des mouvements par IA, corrections en temps réel et suivi par un kinésithérapeute à distance.
 
-Le résumé s’appuie sur le pitch deck Locomo révisé fourni par le propriétaire. Le logo fourni remplace celui d’ORIA, dans l’identité du projet et en arrière-plan discret. Koumekpo Ablam Rodrigue, CEO et cofondateur cité dans le deck, apparaît dans la grande bulle avec un portrait illustratif au format passeport généré à partir de sa photo. Le propriétaire a confirmé son identité et le maintien de Sénamé Koffi Agbodjinou dans la petite bulle du mentor. Les portraits précèdent le résumé sur mobile.
+Le résumé s’appuie sur le pitch deck Locomo révisé fourni par le propriétaire. Le logo fourni reste dans l’identité du projet, près du nom Locomo ; aucune image de fond. Koumekpo Ablam Rodrigue, CEO et cofondateur cité dans le deck, apparaît dans la grande bulle avec la photo au format passeport fournie par le propriétaire (locomo-founder-passport-v2.jpg), conservée sans retouche. Les bulles conservent les dimensions de la version ORIA : porteur 248 px et mentor 164 px sur ordinateur, 210 px et 136 px sur mobile. Le propriétaire a confirmé son identité et le maintien de Sénamé Koffi Agbodjinou dans la petite bulle du mentor. Les portraits précèdent le résumé sur mobile.
 
 Les anciens assets sont conservés. Nouveaux fichiers : public/assets/conex/locomo-founder-passport-v1.webp et public/assets/conex/locomo-logo.webp. Le prompt et le mode de génération sont consignés dans references/generated/locomo-passport-v1.json.
 

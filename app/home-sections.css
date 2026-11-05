@@ -107,12 +107,13 @@
 .cnx-pathway-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
+  grid-template-rows: auto minmax(70px, 1fr) repeat(5, auto);
+  column-gap: 24px;
 }
 .cnx-pathway-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: grid;
+  grid-row: span 7;
+  grid-template-rows: subgrid;
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -130,7 +131,7 @@
   transition: transform 1s ease;
 }
 .cnx-pathway-card:nth-child(2) > img {
-  object-position: 42% top;
+  object-position: 42% center;
 }
 .cnx-pathway-card:hover > img {
   transform: scale(1.045);
@@ -150,9 +151,9 @@
   gap: 20px;
 }
 .cnx-pathway-top > span:first-child {
-  font-size: 9px;
+  font-size: 16px;
   font-weight: 600;
-  letter-spacing: 1.6px;
+  letter-spacing: 0.8px;
 }
 .cnx-circle-arrow {
   display: grid;
@@ -171,17 +172,40 @@
   color: var(--forest);
 }
 .cnx-pathway-bottom {
-  margin-top: 70px;
+  display: grid;
+  grid-row: 3 / span 5;
+  grid-template-rows: subgrid;
+  min-width: 0;
+}
+.cnx-pathway-bottom > h3 {
+  grid-row: 1;
+}
+.cnx-pathway-bottom > .cnx-pathway-intro {
+  grid-row: 2;
+}
+.cnx-pathway-bottom > .cnx-pathway-description {
+  grid-row: 3;
+}
+.cnx-pathway-bottom > .cnx-pathway-detail {
+  grid-row: 4;
+}
+.cnx-pathway-actions {
+  display: flex;
+  grid-row: 5;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 22px;
+}
+.welcome-page .cnx-pathway-actions > .cnx-pathway-action {
+  align-self: flex-start;
+  margin-top: 0;
 }
 .cnx-pathway-label {
   display: inline-block;
-  padding: 7px 11px;
-  background: #f4deb62b;
-  border: 1px solid #fbe8d360;
-  color: #ffdfad;
-  border-radius: 999px;
-  font-size: 8px;
-  letter-spacing: 0.6px;
+  color: #fffdf7;
+  text-shadow: 0 2px 8px #06150fcc;
 }
 .cnx-pathway-bottom h3 {
   font-family: Georgia, serif;
@@ -429,7 +453,7 @@
   margin-top: 13px;
 }
 .cnx-faq {
-  background: #fff;
+  background: #efeee5;
 }
 .cnx-faq-grid {
   display: grid;
@@ -441,35 +465,9 @@
   position: sticky;
   top: 35px;
 }
-.cnx-faq-heading::before {
-  content: "";
-  display: block;
-  width: 40px;
-  height: 2px;
-  margin-bottom: 24px;
-  background: var(--gold);
-}
-.cnx-faq-heading h2 {
-  margin-top: 0;
-  font-size: clamp(36px, 4vw, 56px);
-}
-.cnx-faq-contact {
-  display: inline-flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 32px;
-  color: var(--forest);
+.cnx-faq-heading > p {
   font-size: 13px;
-  text-decoration: underline;
-  text-underline-offset: 5px;
-}
-.cnx-faq-contact span {
-  color: var(--gold);
-  font-size: 20px;
-}
-.cnx-faq-contact:focus-visible {
-  outline: 3px solid var(--terracotta);
-  outline-offset: 5px;
+  max-width: 330px;
 }
 .cnx-faq-items {
   border-top: 1px solid #c9d0c6;
@@ -678,9 +676,21 @@
   .cnx-final-grid {
     grid-template-columns: 1fr;
   }
+  .cnx-pathway-grid {
+    grid-template-rows: none;
+    row-gap: 24px;
+  }
   .cnx-pathway-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    grid-row: auto;
     min-height: 580px;
     padding: 26px;
+  }
+  .cnx-pathway-bottom {
+    display: block;
+    margin-top: 70px;
   }
   .cnx-pathway-bottom h3 {
     font-size: 39px;
@@ -781,9 +791,6 @@
   .cnx-pathway-bottom h3 {
     font-size: 34px;
   }
-  .cnx-pathway-label {
-    font-size: 7px;
-  }
   .cnx-journey-switch button {
     font-size: 10px;
     padding-inline: 11px;
@@ -822,10 +829,11 @@
 .cnx-pathway-contribution {
   display: flex;
   gap: 12px;
-  align-items: center;
+  align-items: baseline;
   font-size: 11px;
   line-height: 1.6;
-  margin-top: 23px;
+  margin-left: auto;
+  text-align: right;
   color: #eee5d4;
 }
 .cnx-pathway-contribution strong {
@@ -847,19 +855,28 @@
 
 /* Discreet reassurance and a footer in the existing visual charter. */
 .welcome-footer.cnx-public-footer {
-  width: auto;
-  margin-left: max(52px, calc((100% - 1320px) / 2));
-  margin-right: 0;
-  display: grid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0;
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.8fr) minmax(0, 1.2fr) minmax(0, 1fr);
-  align-items: start;
-  gap: 28px;
-  padding-block: 48px;
-  padding-right: calc(clamp(280px, 28vw, 380px) + 28px);
+  padding-block: clamp(48px, 5vw, 72px);
+  background: var(--cream);
 }
+.cnx-footer-content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 36px 28px;
+  padding-right: 48%;
+}
+.cnx-footer-brand {
+  grid-column: 1 / -1;
+}
+
 .cnx-footer-column {
   display: flex;
   flex-direction: column;
@@ -938,20 +955,7 @@
 .cnx-privacy-main .cnx-privacy-date {
   font-size: 12px;
 }
-@media (max-width: 1050px) {
-  .welcome-footer.cnx-public-footer {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 35px;
-    padding-right: 200px;
-  }
-}
 @media (max-width: 600px) {
-  .welcome-footer.cnx-public-footer {
-    grid-template-columns: 1fr;
-    gap: 30px;
-    padding-block: 35px 0;
-    padding-right: 0;
-  }
   .cnx-footer-column {
     gap: 11px;
   }
@@ -1072,61 +1076,48 @@
   min-width: 0;
 }
 
-/* Keep the text aligned with the page while the image reaches the right edge. */
-@media (min-width: 1700px) {
-  .welcome-footer.cnx-public-footer {
-    margin-left: max(75px, calc((100% - 1440px) / 2));
-  }
-}
-@media (max-width: 1100px) {
-  .welcome-footer.cnx-public-footer {
-    margin-left: 32px;
-  }
-}
-@media (max-width: 800px) {
-  .welcome-footer.cnx-public-footer {
-    margin-left: 20px;
-  }
-}
-
-/* Full-height meeting image at the right; footer copy stays in its own area. */
+/* Full-width photograph with a cream fade extending behind the footer copy. */
 .cnx-footer-visual {
   position: absolute;
   z-index: -1;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: clamp(280px, 28vw, 380px);
+  inset: 0;
   overflow: hidden;
   pointer-events: none;
-  mask-image: linear-gradient(90deg, transparent, #000 14%);
+  mask-image: linear-gradient(90deg, transparent, #0000000a 35%, #000 82%);
 }
 .cnx-footer-meeting {
   object-fit: cover;
-  object-position: center;
+  object-position: right center;
 }
 @media (max-width: 1050px) {
-  .welcome-footer.cnx-public-footer {
-    padding-right: 254px;
+  .cnx-footer-content {
+    padding-right: 42%;
   }
   .cnx-footer-visual {
-    width: 230px;
+    mask-image: linear-gradient(90deg, transparent 24%, #000 90%);
   }
 }
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   .welcome-footer.cnx-public-footer {
+    flex-direction: column;
+    padding-bottom: 0;
+  }
+  .cnx-footer-content {
     padding-right: 0;
   }
   .cnx-footer-visual {
     position: relative;
-    grid-column: 1 / -1;
-    justify-self: end;
-    top: auto;
-    bottom: auto;
-    width: min(100%, 300px);
-    aspect-ratio: 765 / 506;
-    margin-block: 0 24px;
-    transform: none;
+    flex: none;
+    width: 100%;
+    aspect-ratio: 1672 / 941;
+    margin-top: 32px;
+    mask-image: linear-gradient(180deg, transparent, #000 40%);
+  }
+}
+@media (max-width: 480px) {
+  .cnx-footer-content {
+    grid-template-columns: 1fr;
+    gap: 28px;
   }
 }
 
@@ -1138,14 +1129,6 @@
   color: var(--cream);
   background: var(--forest);
   border-block: 1px solid #f0bf7d25;
-}
-.cnx-featured-project > .cnx-project-backdrop {
-  z-index: -2;
-  object-fit: contain;
-  object-position: 12% center;
-  opacity: 0.2;
-  mix-blend-mode: luminosity;
-  mask-image: radial-gradient(ellipse at 30% 48%, #000 12%, transparent 72%);
 }
 .cnx-featured-project::before {
   content: "";
@@ -1205,7 +1188,7 @@
 .cnx-project-people {
   position: relative;
   width: min(100%, 400px);
-  min-height: 390px;
+  min-height: 430px;
   justify-self: center;
   padding-top: 12px;
 }
@@ -1234,13 +1217,19 @@
   object-fit: cover;
   object-position: center;
 }
+.cnx-project-founder-portrait img {
+  object-fit: contain;
+  object-position: center;
+  padding: 10px;
+  background: #fff;
+}
 .cnx-project-founder figcaption,
 .cnx-project-mentor figcaption {
   position: absolute;
   top: 290px;
   display: grid;
   gap: 8px;
-  width: 48%;
+  width: 100%;
   margin: 0;
   text-align: left;
 }
@@ -1248,7 +1237,8 @@
   left: 0;
 }
 .cnx-project-mentor figcaption {
-  right: 0;
+  top: 366px;
+  left: 0;
 }
 .cnx-project-founder figcaption span,
 .cnx-project-mentor figcaption span {
@@ -1292,7 +1282,7 @@
 @media (max-width: 600px) {
   .cnx-project-people {
     width: min(100%, 320px);
-    min-height: 345px;
+    min-height: 380px;
   }
   .cnx-project-founder {
     width: 210px;
@@ -1304,6 +1294,9 @@
   .cnx-project-founder figcaption,
   .cnx-project-mentor figcaption {
     top: 246px;
+  }
+  .cnx-project-mentor figcaption {
+    top: 316px;
   }
   .cnx-project-founder figcaption strong,
   .cnx-project-mentor figcaption strong {

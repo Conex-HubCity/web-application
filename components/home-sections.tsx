@@ -58,7 +58,7 @@ export async function HomeSections({
     {
       role: "mentor",
       number: "02",
-      image: "mentor-bokeh-v2.webp",
+      image: "mentor-upright-v3.webp",
       label: t("Mentor"),
       introduction: t(
         "Vous êtes un professionnel en dehors du continent qui souhaite partager son expérience.",
@@ -76,20 +76,10 @@ export async function HomeSections({
       <section id="a-propos" className="cnx-about cnx-section" aria-labelledby="about-title">
         <div className="welcome-container cnx-about-grid">
           <div className="cnx-section-heading cnx-about-copy">
-            <div className="welcome-eyebrow">
-              <span />
-              CNX ?
-            </div>
-            <h2 id="about-title">
-              {t("Un ambitieux programme de mentorat")}{" "}
-              <em>{t("au service de la transformation de l’Afrique.")}</em>
-            </h2>
-            <p className="cnx-about-intro">
-              {t("Une bonne connexion peut ouvrir de nouveaux possibles.")}
-            </p>
+            <h2 id="about-title">{t("CNX est un ambitieux programme de mentorat")}</h2>
             <p>
               {t(
-                "CNX relie des primo-entrepreneurs du continent à des professionnels de la diaspora qui souhaitent partager leur expérience.",
+                "qui relie des primo-entrepreneurs du continent à des professionnels de la diaspora qui souhaitent partager leur expérience.",
               )}
             </p>
             <p className="cnx-about-signature">{t("JETER UN PONT POUR CONSTRUIRE ENSEMBLE")}</p>
@@ -114,7 +104,7 @@ export async function HomeSections({
       >
         <div className="welcome-container">
           <div className="cnx-section-heading cnx-training-heading">
-            <h2 id="training-title">{t("Formation mentorale & Co")}</h2>
+            <h2 id="training-title">{t("PRÉALABLE ET SUIVI")}</h2>
             <p className="cnx-training-subtitle">
               {t("Une véritable préparation au compagnonnage.")}
             </p>
@@ -156,15 +146,17 @@ export async function HomeSections({
                 <div className="cnx-pathway-bottom">
                   <h3>{pathway.title}</h3>
                   <p className="cnx-pathway-intro">{pathway.introduction}</p>
-                  <p>{pathway.text}</p>
+                  <p className="cnx-pathway-description">{pathway.text}</p>
                   {pathway.detail && <p className="cnx-pathway-detail">{pathway.detail}</p>}
-                  {pathway.role === "mentor" && (
-                    <span className="cnx-pathway-contribution">
-                      <span>{t("En tant que mentor vous soutenez CNX")}</span>
-                      <strong>30 USD</strong>
-                    </span>
-                  )}
-                  <PathwayAction role={pathway.role} closed={founderRegistrationClosed} />
+                  <div className="cnx-pathway-actions">
+                    <PathwayAction role={pathway.role} closed={founderRegistrationClosed} />
+                    {pathway.role === "mentor" && (
+                      <span className="cnx-pathway-contribution">
+                        <span>{t("En tant que mentor vous soutenez CNX")}</span>
+                        <strong>30 USD</strong>
+                      </span>
+                    )}
+                  </div>
                 </div>
               </article>
             ))}
@@ -178,13 +170,6 @@ export async function HomeSections({
         className="cnx-section cnx-featured-project"
         aria-labelledby="featured-project-title"
       >
-        <Image
-          className="cnx-project-backdrop"
-          src="/assets/conex/locomo-logo.webp"
-          alt=""
-          fill
-          sizes="100vw"
-        />
         <div className="welcome-container">
           <div className="cnx-section-heading">
             <h2 id="featured-project-title">{t("Le projet du mois")}</h2>
@@ -194,8 +179,8 @@ export async function HomeSections({
               <figure className="cnx-project-founder">
                 <div className="cnx-project-founder-portrait">
                   <Image
-                    src="/assets/conex/locomo-founder-passport-v1.webp"
-                    alt={t("Portrait illustratif du porteur de Locomo")}
+                    src="/assets/conex/locomo-founder-passport-v2.jpg"
+                    alt={t("Portrait de Koumekpo Ablam Rodrigue")}
                     fill
                     sizes="(max-width: 600px) 210px, 248px"
                   />
@@ -250,23 +235,13 @@ export async function HomeSections({
       >
         <div className="welcome-container cnx-faq-grid">
           <div className="cnx-section-heading cnx-faq-heading">
-            <h2 id="faq-title">
-              {t("Vos questions,")}
-              <br />
-              <em>{t("nos réponses.")}</em>
-            </h2>
-            <a className="cnx-faq-contact" href="#contact">
-              {t("Une autre question ? Écrivez-nous.")}
-              <span aria-hidden="true">↗</span>
-            </a>
+            <h2 id="faq-title">{t("FAQ")}</h2>
           </div>
           <div className="cnx-faq-items">
             {questions.map((item, index) => (
               <details key={item.question}>
                 <summary>
-                  <span className="cnx-faq-number" aria-hidden="true">
-                    0{index + 1}
-                  </span>
+                  <span className="cnx-faq-number">0{index + 1}</span>
                   <span>{t(item.question)}</span>
                   <span className="cnx-faq-plus" aria-hidden="true">
                     +

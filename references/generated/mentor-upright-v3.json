@@ -1,0 +1,9 @@
+{
+  "mode": "built-in image_gen",
+  "prompt": "Use case: identity-preserve. Edit target image 1 is the male mentor photo. Image 2 is STRICTLY framing reference, not an extra subject. Create a revised single photo of the same male mentor for a website card paired next to image 2. Landscape 3:2 aspect ratio matching image 2. Keep the exact mentor's identity, face, salt-and-pepper hair and beard, black glasses, dark forest-green sweater, warm elegant office with blurred shelves and soft gold lamp. KEY CHANGE: he is upright, facing the camera naturally, head perfectly vertical without lateral tilt, shoulders level and relaxed, torso upright, no forward lean, no hand under his chin. Hands resting naturally low, outside main crop. Match image 2's portrait scale and placement: top of hair at 4% of image height, eye line at 30% height, bottom of chin around 51%, top of both shoulders around 59% height. Face center at 55% of image width. Head size and head height must closely match the woman's head in image 2. Subject framed chest-up to waist, symmetrical calm poised seated portrait. Both shoulders contained naturally, no raised shoulder, no shoulder near face. No excessive extra headroom and no deep empty band above his head. Keep photographic warm cream/forest/gold visual identity, realistic skin and shallow depth of field. Only one person. No text or logos.",
+  "output": "public/assets/conex/mentor-upright-v3.webp",
+  "references": [
+    "public/assets/conex/mentor.webp",
+    "public/assets/conex/entrepreneure.webp"
+  ]
+}

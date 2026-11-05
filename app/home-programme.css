@@ -50,6 +50,9 @@
   font-size: 15px;
   line-height: 1.7;
 }
+.welcome-page .cx-programme-block p + h3 {
+  margin-top: 32px;
+}
 .welcome-page .cx-programme-block p.cx-learning-note {
   max-width: 74ch;
   margin-top: 18px;

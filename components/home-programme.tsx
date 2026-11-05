@@ -11,7 +11,7 @@ export function HomeProgramme() {
   const stages = ["Préalable", "Suivi"] as const;
   return (
     <div id="formation" className="cx-programme">
-      <div className="cx-programme-tabs" role="tablist" aria-label={t("Formation mentorale & Co")}>
+      <div className="cx-programme-tabs" role="tablist" aria-label={t("PRÉALABLE ET SUIVI")}>
         <span
           className="cx-programme-slider"
           style={{ transform: `translateX(${active * 100}%)` }}
@@ -41,7 +41,6 @@ export function HomeProgramme() {
               tabs.current[next]?.focus();
             }}
           >
-            <span aria-hidden="true">0{index + 1}</span>
             {t(stage)}
           </button>
         ))}
@@ -56,7 +55,7 @@ export function HomeProgramme() {
           inert={active !== 0}
           tabIndex={active === 0 ? 0 : -1}
         >
-          <h3 id={`${id}-academy-title`}>WoeAcademy</h3>
+          <h3 id={`${id}-academy-title`}>1. WoeAcademy</h3>
           <p>
             {t(
               "Vous portez un projet ? Le parcours de formation WoeAcademy vous aide à le structurer avant de l’inscrire sur la plateforme et espérer bénéficier d’un mentorat.",
@@ -64,6 +63,15 @@ export function HomeProgramme() {
           </p>
           <p className="cx-learning-note">
             {t("(Le Niveau de certification Rouge est le prérequis pour devenir Mentee sur CNX)")}
+          </p>
+          <h3 id={`${id}-mentoring-title`}>2. {t("Formation mentorale")}</h3>
+          <p className="cx-learning-subtitle">
+            {t("Apprendre à transmettre, apprendre à écouter")}
+          </p>
+          <p>
+            {t(
+              "Le socle commun : la Formation Mentorale prépare les deux parties pour une relation utile et efficace.",
+            )}
           </p>
         </section>
         <section
@@ -75,15 +83,6 @@ export function HomeProgramme() {
           inert={active !== 1}
           tabIndex={active === 1 ? 0 : -1}
         >
-          <h3 id={`${id}-mentoring-title`}>{t("Formation mentorale")}</h3>
-          <p className="cx-learning-subtitle">
-            {t("Apprendre à transmettre, apprendre à écouter")}
-          </p>
-          <p>
-            {t(
-              "Le socle commun : la Formation Mentorale prépare les deux parties pour une relation utile et efficace.",
-            )}
-          </p>
           <div className="cx-connection-copy">
             <h4>{t("Connexion & Suivi")}</h4>
             <p className="cx-connection-subtitle">{t("Un engagement libre")}</p>
