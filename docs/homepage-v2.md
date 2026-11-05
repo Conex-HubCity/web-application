@@ -94,7 +94,7 @@ Le footer propose les liens fournis vers Facebook (`https://www.facebook.com/Cnx
 
 Dans le footer crème, le logo transparent est affiché en monochrome vert forêt via CSS, au format 112 × 56 px. L’en-tête conserve le logo blanc et doré.
 
-La photo `rencontre.webp` est affichée dans une colonne indépendante tout à droite du footer, détachée des liens utiles, dans un format compact de 160 px de large. Le miroir Afrique reste dans la section « CNX ? ».
+La photo `rencontre.webp` occupe toute la hauteur du footer à droite, hors du flux. Sa largeur est limitée (280 à 380 px sur ordinateur), avec un fondu court à gauche. Une zone distincte est réservée aux textes et aux liens, sans superposition. Sur mobile, l’image reste à la fin du footer dans un format horizontal compact. Le miroir Afrique reste dans la section « CNX ? ».
 
 ## Introduction HubCity
 

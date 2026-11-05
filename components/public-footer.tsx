@@ -55,14 +55,15 @@ export async function PublicFooter() {
         <Link href="/charte-mentorat">{t("Charte du mentorat")}</Link>
         <ReplayIntroduction />
       </nav>
-      <Image
-        className="cnx-footer-meeting"
-        src="/assets/conex/rencontre.webp"
-        alt={t("Deux personnes échangent autour d’un projet et d’un ordinateur.")}
-        width={765}
-        height={506}
-        sizes="160px"
-      />
+      <div className="cnx-footer-visual">
+        <Image
+          className="cnx-footer-meeting"
+          src="/assets/conex/rencontre.webp"
+          alt={t("Deux personnes échangent autour d’un projet et d’un ordinateur.")}
+          fill
+          sizes="(max-width: 600px) 300px, (max-width: 1050px) 230px, 380px"
+        />
+      </div>
     </footer>
   );
 }
