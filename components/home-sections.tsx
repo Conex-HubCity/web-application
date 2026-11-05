@@ -58,7 +58,7 @@ export async function HomeSections({
     {
       role: "mentor",
       number: "02",
-      image: "mentor.webp",
+      image: "mentor-bokeh-v2.webp",
       label: t("Mentor"),
       introduction: t(
         "Vous êtes un professionnel en dehors du continent qui souhaite partager son expérience.",
@@ -96,9 +96,9 @@ export async function HomeSections({
           </div>
           <figure className="cnx-about-visual">
             <Image
-              src="/assets/conex/africa-mirror-v1.png"
+              src="/assets/conex/africa-mirror-v2.webp"
               alt={t(
-                "Une entrepreneure et un mentor se font face autour d’un miroir en forme d’Afrique.",
+                "Une entrepreneure dans une cour et un mentor dans un bureau sont reliés par un miroir en forme d’Afrique.",
               )}
               width={1536}
               height={1024}
@@ -180,7 +180,7 @@ export async function HomeSections({
       >
         <Image
           className="cnx-project-backdrop"
-          src="/assets/conex/oria-logo.jpg"
+          src="/assets/conex/locomo-logo.webp"
           alt=""
           fill
           sizes="100vw"
@@ -189,20 +189,20 @@ export async function HomeSections({
           <div className="cnx-section-heading">
             <h2 id="featured-project-title">{t("Le projet du mois")}</h2>
           </div>
-          <article className="cnx-project-banner" aria-labelledby="oria-title">
+          <article className="cnx-project-banner" aria-labelledby="locomo-title">
             <div className="cnx-project-people">
               <figure className="cnx-project-founder">
                 <div className="cnx-project-founder-portrait">
                   <Image
-                    src="/assets/conex/oria-yawo-passport-v1.webp"
-                    alt={t("Portrait illustratif de Yawo Grace Akogo")}
+                    src="/assets/conex/locomo-founder-passport-v1.webp"
+                    alt={t("Portrait illustratif du porteur de Locomo")}
                     fill
                     sizes="(max-width: 600px) 210px, 248px"
                   />
                 </div>
                 <figcaption>
                   <span>{t("Porteur du projet")}</span>
-                  <strong>Yawo Grace Akogo</strong>
+                  <strong>Koumekpo Ablam Rodrigue</strong>
                 </figcaption>
               </figure>
               <figure className="cnx-project-mentor">
@@ -223,17 +223,19 @@ export async function HomeSections({
             <div className="cnx-project-copy">
               <div className="cnx-project-identity">
                 <Image
-                  src="/assets/conex/oria-logo.jpg"
-                  alt={t("Logo ORIA")}
+                  src="/assets/conex/locomo-logo.webp"
+                  alt={t("Logo Locomo")}
                   width={64}
                   height={64}
                 />
-                <h3 id="oria-title">ORIA</h3>
+                <h3 id="locomo-title">Locomo</h3>
               </div>
-              <p className="cnx-project-tagline">{t("Trouver sa voie, construire son avenir.")}</p>
+              <p className="cnx-project-tagline">
+                {t("La rééducation assistée par IA, à domicile.")}
+              </p>
               <p className="cnx-project-description">
                 {t(
-                  "ORIA accompagne les jeunes dans leurs choix d’études en les aidant à découvrir les formations et établissements adaptés à leurs aspirations.",
+                  "Locomo développe une solution de rééducation à domicile qui associe analyse des mouvements par IA, corrections en temps réel et suivi par un kinésithérapeute à distance.",
                 )}
               </p>
             </div>
@@ -248,13 +250,23 @@ export async function HomeSections({
       >
         <div className="welcome-container cnx-faq-grid">
           <div className="cnx-section-heading cnx-faq-heading">
-            <h2 id="faq-title">{t("FAQ")}</h2>
+            <h2 id="faq-title">
+              {t("Vos questions,")}
+              <br />
+              <em>{t("nos réponses.")}</em>
+            </h2>
+            <a className="cnx-faq-contact" href="#contact">
+              {t("Une autre question ? Écrivez-nous.")}
+              <span aria-hidden="true">↗</span>
+            </a>
           </div>
           <div className="cnx-faq-items">
             {questions.map((item, index) => (
-              <details key={t(item.question)}>
+              <details key={item.question}>
                 <summary>
-                  <span className="cnx-faq-number">0{index + 1}</span>
+                  <span className="cnx-faq-number" aria-hidden="true">
+                    0{index + 1}
+                  </span>
                   <span>{t(item.question)}</span>
                   <span className="cnx-faq-plus" aria-hidden="true">
                     +

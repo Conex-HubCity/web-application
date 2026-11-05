@@ -1,0 +1,8 @@
+{
+  "mode": "built-in image_gen",
+  "prompt": "Use case: identity-preserve. Edit target: attached portrait of Locomo founder. Create a photorealistic passport-style editorial head-and-shoulders portrait for a project website. Preserve the exact person's identity, facial features, skin tone, hairstyle, age and natural expression. Straight-on camera at eye level, upright head, centered symmetrical shoulders, full hair visible with margin, chest-up vertical 4:5 composition. Plain warm light cream studio background, soft even realistic lighting, natural skin texture. Plain dark navy crewneck shirt replacing patterned sports shirt. Remove blue seat and original surroundings. No text, no props, no watermark. This is a website portrait, not an identification document.",
+  "output": "public/assets/conex/locomo-founder-passport-v1.webp",
+  "source": "User-provided founder portrait",
+  "identity": "Koumekpo Ablam Rodrigue — confirmed by user",
+  "mentor": "Sénamé Koffi Agbodjinou — retained at user's confirmation"
+}

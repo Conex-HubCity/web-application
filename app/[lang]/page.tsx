@@ -66,7 +66,7 @@ async function HomeContent() {
           <div className="welcome-hero welcome-container">
             <div className="welcome-hero-copy welcome-hero-purpose">
               <h1 id="welcome-title">
-                {t("Réaliser \"l’Afrique Mondiale\"")}{" "}
+                {t('Réaliser "l’Afrique Mondiale"')}{" "}
                 <em>{t("au service du dividende démographique.")}</em>
               </h1>
               <p className="welcome-hero-context">
@@ -75,11 +75,7 @@ async function HomeContent() {
                 )}
               </p>
               <p className="welcome-hero-signature">
-                <span>
-                  {t(
-                    "Lutter contre l’isolement. Organiser le levier diasporique.",
-                  )}
-                </span>{" "}
+                <span>{t("Lutter contre l’isolement. Organiser le levier diasporique.")}</span>{" "}
                 <span>{t("Relier pour construire.")}</span>
               </p>
             </div>

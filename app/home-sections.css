@@ -130,7 +130,7 @@
   transition: transform 1s ease;
 }
 .cnx-pathway-card:nth-child(2) > img {
-  object-position: 42% center;
+  object-position: 42% top;
 }
 .cnx-pathway-card:hover > img {
   transform: scale(1.045);
@@ -429,7 +429,7 @@
   margin-top: 13px;
 }
 .cnx-faq {
-  background: #efeee5;
+  background: #fff;
 }
 .cnx-faq-grid {
   display: grid;
@@ -441,9 +441,35 @@
   position: sticky;
   top: 35px;
 }
-.cnx-faq-heading > p {
+.cnx-faq-heading::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 2px;
+  margin-bottom: 24px;
+  background: var(--gold);
+}
+.cnx-faq-heading h2 {
+  margin-top: 0;
+  font-size: clamp(36px, 4vw, 56px);
+}
+.cnx-faq-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+  color: var(--forest);
   font-size: 13px;
-  max-width: 330px;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.cnx-faq-contact span {
+  color: var(--gold);
+  font-size: 20px;
+}
+.cnx-faq-contact:focus-visible {
+  outline: 3px solid var(--terracotta);
+  outline-offset: 5px;
 }
 .cnx-faq-items {
   border-top: 1px solid #c9d0c6;
@@ -714,9 +740,6 @@
   .cnx-faq-heading {
     position: static;
   }
-  .cnx-faq-heading > p {
-    max-width: 470px;
-  }
   .cnx-faq-items summary {
     padding-block: 21px;
     font-size: 13px;
@@ -824,6 +847,9 @@
 
 /* Discreet reassurance and a footer in the existing visual charter. */
 .welcome-footer.cnx-public-footer {
+  width: auto;
+  margin-left: max(52px, calc((100% - 1320px) / 2));
+  margin-right: 0;
   display: grid;
   position: relative;
   isolation: isolate;
@@ -1044,6 +1070,23 @@
 }
 .cnx-footer-email span {
   min-width: 0;
+}
+
+/* Keep the text aligned with the page while the image reaches the right edge. */
+@media (min-width: 1700px) {
+  .welcome-footer.cnx-public-footer {
+    margin-left: max(75px, calc((100% - 1440px) / 2));
+  }
+}
+@media (max-width: 1100px) {
+  .welcome-footer.cnx-public-footer {
+    margin-left: 32px;
+  }
+}
+@media (max-width: 800px) {
+  .welcome-footer.cnx-public-footer {
+    margin-left: 20px;
+  }
 }
 
 /* Full-height meeting image at the right; footer copy stays in its own area. */

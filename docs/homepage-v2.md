@@ -82,6 +82,8 @@ Les phrases « Vous êtes un jeune… » et « Vous êtes un professionnel… »
 
 La FAQ contient les six questions du document : création du compte avant certification, gratuité de l’inscription, formation du binôme, accès aux documents, financement et public du pilote. La question comparant CNX et WoeAcademy est retirée.
 
+La FAQ conserve un fond blanc, des lignes séparées et des accordéons natifs accessibles au clavier. À gauche, le titre « Vos questions, nos réponses. » reprend la typographie de la charte avec un accent doré discret ; le lien « Une autre question ? Écrivez-nous. » rejoint le bloc contact du footer via l’ancre `#contact`. Aucun panneau vert ni paragraphe promotionnel. Les styles sont centralisés dans `app/home-sections.css`, sans module CSS ni copie dans `globals.css`. L’ancre `questions-frequentes` reste celle du lien du footer. Les réponses conditionnelles liées à la fermeture des inscriptions Mentee sont conservées.
+
 Le pilote est réservé aux personnes majeures : porteurs de projets en Afrique et professionnels expérimentés de la diaspora africaine. Les pays de lancement et les modalités d’ouverture seront précisés avant le démarrage du pilote.
 
 Texte du footer : « Être le plus grand répertoire de talents africains : Un réseau de confiance avec des ambitions partagées. »
@@ -104,19 +106,17 @@ La durée, le bouton Passer, la touche Échap, le verrouillage du défilement, l
 
 L’animation HubCity est renforcée : attribution d’abord, révélation latérale et rebond léger du logo entier avec mise à l’échelle uniforme, halo discret et expansion des cercles, puis trait doré. Le fichier du logo reste inchangé ; le mode mouvement réduit supprime ces effets. La clé de session passe en v3.
 
-## Le projet du mois — ORIA
+## Le projet du mois — Locomo
 
-Bandeau placé après les cartes Mentee/Mentor et avant la FAQ. Cette vitrine reste illustrative ; le badge visuel est retiré à la demande du propriétaire.
+Bandeau placé après les cartes Mentee/Mentor et avant la FAQ, dans la mise en page vert forêt, crème et doré existante.
 
-ORIA — Trouver sa voie, construire son avenir.
+Locomo — La rééducation assistée par IA, à domicile.
 
-ORIA accompagne les jeunes dans leurs choix d’études en les aidant à découvrir les formations et établissements adaptés à leurs aspirations.
+Locomo développe une solution de rééducation à domicile qui associe analyse des mouvements par IA, corrections en temps réel et suivi par un kinésithérapeute à distance.
 
-Le résumé s’appuie sur le parcours utilisateur fourni : https://docs.google.com/document/d/1H5s0BjOk6inkZM8URiRFF4C-TAapgyyVAleT281Btr8/edit
+Le résumé s’appuie sur le pitch deck Locomo révisé fourni par le propriétaire. Le logo fourni remplace celui d’ORIA, dans l’identité du projet et en arrière-plan discret. Koumekpo Ablam Rodrigue, CEO et cofondateur cité dans le deck, apparaît dans la grande bulle avec un portrait illustratif au format passeport généré à partir de sa photo. Le propriétaire a confirmé son identité et le maintien de Sénamé Koffi Agbodjinou dans la petite bulle du mentor. Les portraits précèdent le résumé sur mobile.
 
-Le chapitre utilise le vert forêt de la charte en pleine largeur, sans carte intérieure, avec le logo ORIA en fond discret sous un dégradé vert et une lumière dorée. À gauche, deux portraits générés au format photo d’identité sur fond neutre : Yawo Grace Akogo dans la grande bulle, puis Sénamé Koffi Agbodjinou dans la petite bulle au premier plan à sa droite. Le projet ORIA, son logo et son résumé sont à droite. Sur mobile, les portraits précèdent le projet. Les noms de Yawo Grace Akogo et de Sénamé Koffi Agbodjinou sont affichés sous leurs portraits ; cette vitrine reste illustrative et ne présente pas une relation de mentorat confirmée.
-
-Les originaux sont conservés. Nouveaux fichiers : `public/assets/conex/oria-yawo-passport-v1.webp` et `public/assets/conex/sename-passport-v1.webp`. Les prompts imagegen et la référence photographique du mentor sont consignés dans `references/generated/project-passport-portraits-v1.json`.
+Les anciens assets sont conservés. Nouveaux fichiers : public/assets/conex/locomo-founder-passport-v1.webp et public/assets/conex/locomo-logo.webp. Le prompt et le mode de génération sont consignés dans references/generated/locomo-passport-v1.json.
 
 ## Vérification éditoriale — 5 novembre 2026
 
@@ -131,3 +131,7 @@ Ajustements validés dans la conversation conservés : titres sans numéros de c
 Vérification technique : 32 passages de référence et les six questions/réponses applicables sont contrôlés dans le HTML français. Le lien LinkedIn et les messages conditionnels sont vérifiés en FR/EN. La traduction manquante du libellé de navigation « La formation » est ajoutée (« Training »). Lint et formatage ciblés validés.
 
 Lorsque les inscriptions Mentee sont fermées, seul le texte de disponibilité orange est affiché dans la carte : la fausse action « Bientôt disponible » et sa flèche sont retirées. Le bouton du parcours Mentor et le bouton Mentee lorsque les inscriptions sont ouvertes restent affichés.
+
+## Image CNX ? — deux environnements
+
+Le visuel `public/assets/conex/africa-mirror-v2.webp` conserve les personnages, la palette crème, vert forêt et doré, et le miroir Afrique frontal sur son socle. La mentorée est dans une cour extérieure avec arches et végétation ; le mentor est dans un bureau urbain avec baies vitrées, bibliothèque et parquet. Les architectures et les sols distincts rendent visible la distance entre les deux lieux. La version originale est conservée. Prompt : `references/generated/africa-mirror-v2.json`.

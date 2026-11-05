@@ -1,0 +1,6 @@
+{
+  "mode": "built-in image_gen",
+  "prompt": "Use case: precise-object-edit / identity-preserve. Edit target: supplied mentor photo. Outpaint ONLY above the original photo, adding about 22% of the original image height in extra headroom. Keep the original photograph intact in the lower 82% of the finished image: exact same man, face, glasses, hair, pose, hand, dark green sweater, shoulders, laptop, lighting and office. Do not change facial identity or redraw the man. Extend the existing office background upwards naturally, with softly out-of-focus dark wood shelves, forest green wall and warm golden bokeh, matching the original lens depth of field and warm lighting. The top added strip is genuine photographic office background, not a solid green color, not a fade to a flat color, not a blurred duplicate of the person's head. Finished image roughly 765:650 landscape, man and his shoulders lower in frame, enough air above hair. No seams, no text, no new objects attracting attention. Preserve original scene and photographic realism.",
+  "output": "public/assets/conex/mentor-bokeh-v2.webp",
+  "original": "public/assets/conex/mentor.webp"
+}
