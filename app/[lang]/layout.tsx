@@ -19,7 +19,15 @@ export async function generateMetadata({
       lang === "en"
         ? "A space for African entrepreneurs and diaspora professionals to connect and share experience."
         : "L’espace de rencontre et de transmission entre entrepreneurs africains et professionnels de la diaspora.",
-    icons: { icon: "/assets/conex/favicon.svg" },
+    manifest: "/manifest.webmanifest",
+    icons: {
+      icon: [
+        { url: "/assets/conex/cnx-icon-192.png", sizes: "192x192", type: "image/png" },
+        { url: "/assets/conex/cnx-icon-512.png", sizes: "512x512", type: "image/png" },
+      ],
+      shortcut: "/assets/conex/cnx-icon-192.png",
+      apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+    },
   };
 }
 export default async function RootLayout({
