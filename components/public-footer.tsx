@@ -28,15 +28,16 @@ export async function PublicFooter() {
       <div className="cnx-footer-column" id="contact">
         <h2>{t("Nous contacter")}</h2>
         <a className="cnx-footer-email" href={`mailto:${CONTACT_EMAIL}`}>
-          {CONTACT_EMAIL}
+          <Icon name="mail" size={18} />
+          <span>{CONTACT_EMAIL}</span>
         </a>
         <span>{t("Une question sur CNX ou votre candidature ? Écrivez-nous.")}</span>
         <nav className="cnx-footer-socials" aria-label={t("Réseaux sociaux")}>
           <a href="https://www.facebook.com/Cnxhubcity" target="_blank" rel="noopener noreferrer">
-            Facebook <Icon name="diagonal" size={14} />
+            <Icon name="facebook" size={18} /> Facebook
           </a>
           <a href="https://www.instagram.com/cnxhubcity/" target="_blank" rel="noopener noreferrer">
-            Instagram <Icon name="diagonal" size={14} />
+            <Icon name="instagram" size={18} /> Instagram
           </a>
         </nav>
       </div>

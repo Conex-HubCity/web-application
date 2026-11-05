@@ -1020,3 +1020,19 @@
   outline: 2px solid var(--forest);
   outline-offset: 3px;
 }
+
+.cnx-footer-email {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.cnx-footer-email svg,
+.cnx-footer-socials svg {
+  flex-shrink: 0;
+}
+.cnx-footer-email svg {
+  margin-top: 2px;
+}
+.cnx-footer-email span {
+  min-width: 0;
+}
