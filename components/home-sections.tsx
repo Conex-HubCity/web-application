@@ -1,8 +1,7 @@
 import { getTranslator } from "@/lib/i18n/server";
 import Image from "next/image";
-import { Link } from "@/components/i18n";
-import { Icon } from "./icon";
 import { HomeProgramme } from "./home-programme";
+import { PathwayAction } from "./pathway-action";
 
 const questions = [
   {
@@ -43,21 +42,6 @@ export async function HomeSections({
   founderRegistrationClosed?: boolean;
 }) {
   const t = await getTranslator();
-  function PathwayCard({ role, children }: { role: string; children: React.ReactNode }) {
-    return founderRegistrationClosed && role === "porteur" ? (
-      <div className="cnx-pathway-card" aria-disabled="true" data-founder-registration="closed">
-        {children}
-      </div>
-    ) : (
-      <Link
-        href={`/inscription/${role}`}
-        className="cnx-pathway-card"
-        data-founder-registration={role === "porteur" ? "open" : undefined}
-      >
-        {children}
-      </Link>
-    );
-  }
   const pathways = [
     {
       role: "porteur",
@@ -70,7 +54,6 @@ export async function HomeSections({
         "Prenez du recul, progressez avec les conseils d’un aîné. Vous restez aux commandes de votre parcours.",
       ),
       detail: null,
-      action: t("Rejoindre comme Mentee"),
     },
     {
       role: "mentor",
@@ -85,7 +68,6 @@ export async function HomeSections({
         "Transmettez, guidez, faites bénéficier de votre expertise, de votre savoir-faire, de vos compétences, de votre réseau.",
       ),
       detail: t("Un engagement d’accompagnement à la mesure de vos disponibilités."),
-      action: t("Devenir mentor"),
     },
   ];
 
@@ -146,11 +128,21 @@ export async function HomeSections({
         <div className="welcome-container">
           <div className="cnx-section-heading cnx-pathways-heading">
             <h2 id="pathways-title">{t("Les parcours")}</h2>
-            <p className="cnx-pathways-subtitle">{t("Mentor & Mentee : un même horizon.")}</p>
+            <p className="cnx-pathways-subtitle">{t("Mentor, Mentee : un même horizon.")}</p>
           </div>
           <div className="cnx-pathway-grid">
             {pathways.map((pathway) => (
-              <PathwayCard role={pathway.role} key={pathway.role}>
+              <article
+                className="cnx-pathway-card"
+                key={pathway.role}
+                data-founder-registration={
+                  pathway.role === "porteur"
+                    ? founderRegistrationClosed
+                      ? "closed"
+                      : "open"
+                    : undefined
+                }
+              >
                 <Image
                   src={`/assets/conex/${pathway.image}`}
                   alt=""
@@ -159,17 +151,11 @@ export async function HomeSections({
                 />
                 <div className="cnx-photo-shade" />
                 <div className="cnx-pathway-top">
-                  <span>
-                    {t("PARCOURS")} {pathway.number}
-                  </span>
-                  <span className="cnx-circle-arrow">
-                    <Icon name="diagonal" size={19} />
-                  </span>
+                  <span className="cnx-pathway-label">{pathway.label}</span>
                 </div>
                 <div className="cnx-pathway-bottom">
-                  <span className="cnx-pathway-label">{pathway.label}</span>
-                  <p className="cnx-pathway-intro">{pathway.introduction}</p>
                   <h3>{pathway.title}</h3>
+                  <p className="cnx-pathway-intro">{pathway.introduction}</p>
                   <p>{pathway.text}</p>
                   {pathway.detail && <p className="cnx-pathway-detail">{pathway.detail}</p>}
                   {pathway.role === "mentor" && (
@@ -178,21 +164,9 @@ export async function HomeSections({
                       <strong>30 USD</strong>
                     </span>
                   )}
-                  {founderRegistrationClosed && pathway.role === "porteur" && (
-                    <p className="cnx-pathway-availability">
-                      {t(
-                        "Bientôt vous pourrez créer votre compte, renseigner votre profil Mentee et inscrire votre projet.",
-                      )}
-                    </p>
-                  )}
-                  {!(founderRegistrationClosed && pathway.role === "porteur") && (
-                    <span className="cnx-pathway-link">
-                      {pathway.action}
-                      <Icon name="arrow" size={18} />
-                    </span>
-                  )}
+                  <PathwayAction role={pathway.role} closed={founderRegistrationClosed} />
                 </div>
-              </PathwayCard>
+              </article>
             ))}
           </div>
           <p className="cnx-pathways-connection">{t("Nous vous connectons.")}</p>

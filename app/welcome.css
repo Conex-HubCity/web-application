@@ -1483,11 +1483,12 @@
   letter-spacing: -1px;
 }
 
-/* Hero copy in the editorial order: context, purpose, signature. */
+/* Hero copy in the editorial order: purpose, context, signature. */
 .welcome-hero .welcome-hero-purpose {
   max-width: 650px;
 }
 .welcome-hero-context {
+  margin-bottom: 20px;
   max-width: 560px;
   color: #e6e9dd;
   font:
@@ -1500,7 +1501,7 @@
   font-size: clamp(39px, 3.9vw, 62px);
   line-height: 1.1;
   letter-spacing: -0.045em;
-  margin-block: 25px 28px;
+  margin-block: 0 28px;
   text-wrap: balance;
 }
 .welcome-hero-purpose h1 em {
@@ -1521,7 +1522,7 @@
   }
   .welcome-hero .welcome-hero-purpose h1 {
     font-size: clamp(31px, 8vw, 45px);
-    margin-block: 23px;
+    margin-block: 0 23px;
   }
   .welcome-hero-context {
     font-size: 16px;

@@ -1,0 +1,60 @@
+.welcome-page .cnx-pathway-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  min-height: 46px;
+  margin-top: 22px;
+  padding: 12px 20px;
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  background: var(--gold);
+  color: var(--forest);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 180ms,
+    border-color 180ms;
+}
+.welcome-page .cnx-pathway-action:hover {
+  background: var(--cream);
+  border-color: var(--cream);
+}
+.welcome-page .cnx-pathway-action:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 5px;
+}
+.welcome-page .cnx-pathway-notice {
+  position: fixed;
+  inset: 0;
+  width: min(460px, calc(100% - 40px));
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  margin: auto;
+  padding: clamp(24px, 5vw, 36px);
+  border: 1px solid #132d2620;
+  border-radius: 18px;
+  background: var(--cream);
+  color: var(--forest);
+  box-shadow: 0 24px 80px #00000040;
+}
+.welcome-page .cnx-pathway-notice::backdrop {
+  background: #071e17b3;
+  backdrop-filter: blur(4px);
+}
+.welcome-page .cnx-pathway-notice h3 {
+  margin: 0 0 16px;
+  font:
+    400 32px/1.2 Georgia,
+    "Times New Roman",
+    serif;
+  letter-spacing: -0.03em;
+}
+.welcome-page .cnx-pathway-notice p {
+  color: #53685a;
+  font-size: 14px;
+  line-height: 1.7;
+}

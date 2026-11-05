@@ -65,19 +65,19 @@ async function HomeContent() {
           <div className="welcome-hero-grain" aria-hidden="true" />
           <div className="welcome-hero welcome-container">
             <div className="welcome-hero-copy welcome-hero-purpose">
+              <h1 id="welcome-title">
+                {t("Réaliser \"l’Afrique Mondiale\"")}{" "}
+                <em>{t("au service du dividende démographique.")}</em>
+              </h1>
               <p className="welcome-hero-context">
                 {t(
                   "Pour adresser les enjeux de transformation du continent africain, agir sur et par son capital humain.",
                 )}
               </p>
-              <h1 id="welcome-title">
-                {t("Réaliser une Afrique mondiale")}{" "}
-                <em>{t("au service du dividende démographique.")}</em>
-              </h1>
               <p className="welcome-hero-signature">
                 <span>
                   {t(
-                    "Lutter contre l’isolement. Unifier l’Afrique. Organiser le levier diasporique.",
+                    "Lutter contre l’isolement. Organiser le levier diasporique.",
                   )}
                 </span>{" "}
                 <span>{t("Relier pour construire.")}</span>
