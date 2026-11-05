@@ -5,12 +5,10 @@
   border-radius: 0;
   background: var(--forest);
   color: var(--cream);
+  --cnx-section-title-color: var(--cream);
 }
 .welcome-page .cnx-training-heading > p {
   color: #dbe4d6;
-}
-.welcome-page .cnx-training-heading h2 {
-  margin-top: 0;
 }
 .welcome-page .cnx-training-heading > p.cnx-training-subtitle {
   max-width: none;
@@ -19,7 +17,7 @@
     italic 400 clamp(22px, 2.3vw, 30px)/1.45 Georgia,
     "Times New Roman",
     serif;
-  margin-top: 20px;
+  margin-top: 24px;
 }
 .welcome-page .cnx-training-heading > p + p {
   margin-top: 12px;

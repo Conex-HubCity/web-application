@@ -11,7 +11,7 @@ export function HomeProgramme() {
   const stages = ["Préalable", "Suivi"] as const;
   return (
     <div id="formation" className="cx-programme">
-      <div className="cx-programme-tabs" role="tablist" aria-label={t("PRÉALABLE ET SUIVI")}>
+      <div className="cx-programme-tabs" role="tablist" aria-label={t("Préalable et suivi")}>
         <span
           className="cx-programme-slider"
           style={{ transform: `translateX(${active * 100}%)` }}

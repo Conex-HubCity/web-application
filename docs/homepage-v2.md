@@ -114,7 +114,7 @@ Locomo — La rééducation assistée par IA, à domicile.
 
 Locomo développe une solution de rééducation à domicile qui associe analyse des mouvements par IA, corrections en temps réel et suivi par un kinésithérapeute à distance.
 
-Le résumé s’appuie sur le pitch deck Locomo révisé fourni par le propriétaire. Le logo fourni reste dans l’identité du projet, près du nom Locomo ; aucune image de fond. Koumekpo Ablam Rodrigue, CEO et cofondateur cité dans le deck, apparaît dans la grande bulle avec la photo au format passeport fournie par le propriétaire (locomo-founder-passport-v2.jpg), conservée sans retouche. Les bulles conservent les dimensions de la version ORIA : porteur 248 px et mentor 164 px sur ordinateur, 210 px et 136 px sur mobile. Le propriétaire a confirmé son identité et le maintien de Sénamé Koffi Agbodjinou dans la petite bulle du mentor. Les portraits précèdent le résumé sur mobile.
+Le résumé s’appuie sur le pitch deck Locomo révisé fourni par le propriétaire. Le logo fourni reste dans l’identité du projet, près du nom Locomo ; aucune image de fond. Koumekpo Ablam Rodrigue, CEO et cofondateur cité dans le deck, apparaît dans la grande bulle avec la photo studio fournie par le propriétaire (locomo-founder-passport-v3.webp), convertie en WebP sans retouche du portrait. Les bulles conservent les dimensions de la version ORIA : porteur 248 px et mentor 164 px sur ordinateur, 210 px et 136 px sur mobile. Le propriétaire a confirmé son identité et le maintien de Sénamé Koffi Agbodjinou dans la petite bulle du mentor. Les portraits précèdent le résumé sur mobile.
 
 Les anciens assets sont conservés. Nouveaux fichiers : public/assets/conex/locomo-founder-passport-v1.webp et public/assets/conex/locomo-logo.webp. Le prompt et le mode de génération sont consignés dans references/generated/locomo-passport-v1.json.
 
@@ -135,3 +135,7 @@ Lorsque les inscriptions Mentee sont fermées, seul le texte de disponibilité o
 ## Image CNX ? — deux environnements
 
 Le visuel `public/assets/conex/africa-mirror-v2.webp` conserve les personnages, la palette crème, vert forêt et doré, et le miroir Afrique frontal sur son socle. La mentorée est dans une cour extérieure avec arches et végétation ; le mentor est dans un bureau urbain avec baies vitrées, bibliothèque et parquet. Les architectures et les sols distincts rendent visible la distance entre les deux lieux. La version originale est conservée. Prompt : `references/generated/africa-mirror-v2.json`.
+
+## Titres de section harmonisés
+
+Les titres CNX, Préalable et suivi, Les parcours, Le projet du mois et FAQ partagent une seule règle dans `app/home-sections.css` : Georgia, taille responsive de 33 à 48 px, graisse 500, interligne 1,14 et marge nulle. Ils commencent au même retrait supérieur dans chaque section. Le titre est vert forêt sur fond clair et crème sur fond vert. Les blocs suivants utilisent un espacement commun responsive de 32 à 48 px ; les paragraphes sous un titre commencent à 24 px. Le hero et les titres de navigation du footer restent distincts.

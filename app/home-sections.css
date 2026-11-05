@@ -1,18 +1,26 @@
 /* Composed from the conference reference, with platform-specific journeys. */
 .cnx-section {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   min-height: 800px;
   padding-block: clamp(48px, 5vw, 72px);
   scroll-margin-top: 24px;
 }
+.cnx-section-heading {
+  margin-bottom: clamp(32px, 4vw, 48px);
+}
+.cnx-about-copy,
+.cnx-faq-heading {
+  margin-bottom: 0;
+}
 .cnx-section-heading h2 {
   font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
-  font-size: clamp(37px, 4.5vw, 65px);
+  font-size: clamp(33px, 3.15vw, 48px);
   font-weight: 500;
   letter-spacing: -0.052em;
-  line-height: 1.12;
-  margin-top: 22px;
+  line-height: 1.14;
+  margin: 0;
+  color: var(--cnx-section-title-color, var(--forest));
 }
 .cnx-section-heading h2 em {
   font-family: inherit;
@@ -72,15 +80,9 @@
   background: #faf8f2;
 }
 /* Pathways precede the FAQ, with the shared purpose above both cards. */
-.cnx-pathways-heading {
-  margin-bottom: 40px;
-}
-.cnx-pathways-heading h2 {
-  margin-top: 0;
-}
 .cnx-pathways-heading > p.cnx-pathways-subtitle {
   max-width: none;
-  margin-top: 20px;
+  margin-top: 24px;
   color: #9b6b45;
   font:
     italic 400 clamp(22px, 2.3vw, 30px)/1.45 Georgia,
@@ -648,9 +650,6 @@
   .cnx-section {
     padding-block: 65px;
   }
-  .cnx-section-heading h2 {
-    font-size: clamp(36px, 7.7vw, 52px);
-  }
   .cnx-section-heading > p {
     font-size: 13px;
   }
@@ -796,9 +795,6 @@
     padding-inline: 11px;
     gap: 10px;
   }
-  .cnx-section-heading h2 {
-    font-size: 35px;
-  }
   .cnx-trust-photo {
     height: 430px;
   }
@@ -823,9 +819,6 @@
 }
 
 /* Targeted additions using the original forest, cream and gold charter. */
-.cnx-training-section > .welcome-container > .cnx-section-heading {
-  margin-bottom: 43px;
-}
 .cnx-pathway-contribution {
   display: flex;
   gap: 12px;
@@ -846,11 +839,6 @@
 #choix,
 #formation {
   scroll-margin-top: 28px;
-}
-@media (max-width: 720px) {
-  .cnx-training-section > .welcome-container > .cnx-section-heading {
-    margin-bottom: 30px;
-  }
 }
 
 /* Discreet reassurance and a footer in the existing visual charter. */
@@ -974,12 +962,8 @@
 .cnx-about-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  align-items: center;
+  align-items: start;
   gap: clamp(32px, 4.5vw, 70px);
-}
-.cnx-about-copy h2 {
-  font-size: clamp(33px, 3.15vw, 48px);
-  line-height: 1.14;
 }
 .cnx-about-copy h2 em {
   display: block;
@@ -1017,9 +1001,6 @@
   }
   .cnx-about-copy {
     max-width: 620px;
-  }
-  .cnx-about-copy h2 {
-    font-size: clamp(33px, 5.1vw, 46px);
   }
 }
 @media (max-width: 600px) {
@@ -1129,6 +1110,7 @@
   color: var(--cream);
   background: var(--forest);
   border-block: 1px solid #f0bf7d25;
+  --cnx-section-title-color: var(--cream);
 }
 .cnx-featured-project::before {
   content: "";
@@ -1139,16 +1121,11 @@
     linear-gradient(100deg, #132d2640 0%, #132d26a6 42%, #132d26f2 73%),
     radial-gradient(ellipse at 15% 45%, #b58d4730, transparent 62%);
 }
-.cnx-featured-project .cnx-section-heading h2 {
-  margin-top: 0;
-  color: var(--cream);
-}
 .cnx-project-banner {
   display: grid;
   grid-template-columns: minmax(340px, 1fr) minmax(0, 1fr);
   align-items: center;
   gap: clamp(40px, 6vw, 96px);
-  margin-top: clamp(40px, 5vw, 72px);
 }
 .cnx-project-identity {
   display: flex;
@@ -1216,12 +1193,6 @@
 .cnx-project-mentor-portrait img {
   object-fit: cover;
   object-position: center;
-}
-.cnx-project-founder-portrait img {
-  object-fit: contain;
-  object-position: center;
-  padding: 10px;
-  background: #fff;
 }
 .cnx-project-founder figcaption,
 .cnx-project-mentor figcaption {

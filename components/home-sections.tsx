@@ -104,7 +104,7 @@ export async function HomeSections({
       >
         <div className="welcome-container">
           <div className="cnx-section-heading cnx-training-heading">
-            <h2 id="training-title">{t("PRÉALABLE ET SUIVI")}</h2>
+            <h2 id="training-title">{t("Préalable et suivi")}</h2>
             <p className="cnx-training-subtitle">
               {t("Une véritable préparation au compagnonnage.")}
             </p>
@@ -179,7 +179,7 @@ export async function HomeSections({
               <figure className="cnx-project-founder">
                 <div className="cnx-project-founder-portrait">
                   <Image
-                    src="/assets/conex/locomo-founder-passport-v2.jpg"
+                    src="/assets/conex/locomo-founder-passport-v3.webp"
                     alt={t("Portrait de Koumekpo Ablam Rodrigue")}
                     fill
                     sizes="(max-width: 600px) 210px, 248px"
