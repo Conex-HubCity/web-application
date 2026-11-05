@@ -1,3 +1,4 @@
+import { storeProfilePhoto, removeProfilePhoto } from "@/lib/profile-photos";
 import { PRIVACY_POLICY_VERSION } from "@/lib/privacy-policy";
 import "server-only";
 import { MENTOR_CHARTER_VERSION } from "@/lib/mentor-charter";
@@ -70,7 +71,7 @@ export function sessionData() {
 
 export function createAuthService(
   db: PrismaClient = getDb(),
-  options: { founderRegistration?: boolean } = {},
+  options: { founderRegistration?: boolean; photoDirectory?: string } = {},
 ) {
   const founderRegistration = options.founderRegistration ?? isFounderRegistrationEnabled();
   // Atomic, persistent per-email window, shared across server processes.
@@ -100,6 +101,7 @@ export function createAuthService(
       role: unknown;
       privacyAcknowledged: unknown;
       charterAccepted?: unknown;
+      profilePhoto?: unknown;
     }) {
       if (input.role === "FOUNDER" && !founderRegistration)
         throw new AuthError("Les porteurs de projet rejoignent CNX sur invitation.");
@@ -118,9 +120,18 @@ export function createAuthService(
         throw new AuthError("Veuillez prendre connaissance de la politique de confidentialité.");
       if (input.role === "MENTOR" && input.charterAccepted !== true)
         throw new AuthError("Veuillez accepter la charte du mentorat de Hubcity.");
+      if (
+        input.role === "MENTOR" &&
+        (!(input.profilePhoto instanceof File) || !input.profilePhoto.size)
+      )
+        throw new AuthError("Ajoutez votre photo de profil.");
       await throttle(email, "register");
       const passwordHash = await hashPassword(password);
       const session = sessionData();
+      const photoId =
+        input.role === "MENTOR"
+          ? await storeProfilePhoto(input.profilePhoto, options.photoDirectory)
+          : null;
       try {
         await db.user.create({
           data: {
@@ -128,6 +139,7 @@ export function createAuthService(
             passwordHash,
             firstName,
             lastName,
+            profilePhotoId: photoId,
             privacyAcknowledgedAt: new Date(),
             privacyPolicyVersion: PRIVACY_POLICY_VERSION,
             // Authentication does not approve a contact, an account or a professional dossier.
@@ -147,6 +159,7 @@ export function createAuthService(
           },
         });
       } catch (error) {
+        if (photoId) await removeProfilePhoto(photoId, options.photoDirectory).catch(() => {});
         if ((error as { code?: string }).code === "P2002") {
           throw new AuthError(
             "Impossible de créer ce compte. Si vous êtes déjà inscrit, connectez-vous.",

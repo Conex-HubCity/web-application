@@ -1,4 +1,6 @@
+/* eslint-disable @next/next/no-img-element -- Private profile images are already sized on the server. */
 "use client";
+import { ProfilePhotoEditor } from "@/components/profile-photo-editor";
 import { useTranslations } from "@/components/i18n";
 
 import { useActionState, useEffect, useRef, useState } from "react";
@@ -30,7 +32,18 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
       <section className="md-card md-profile-card">
         <div className="md-profile-title">
           <div className="md-profile-heading">
-            <span className="md-avatar md-large-avatar">{initials}</span>
+            <span className="md-avatar md-large-avatar">
+              {data.profilePhotoUrl ? (
+                <img
+                  src={data.profilePhotoUrl}
+                  alt={t("Votre photo de profil")}
+                  width={72}
+                  height={72}
+                />
+              ) : (
+                initials
+              )}
+            </span>
             <div>
               <h2>
                 {data.firstName} {data.lastName}
@@ -45,6 +58,7 @@ export function MentorProfile({ data }: { data: MentorDashboardData }) {
             </button>
           )}
         </div>
+        {editing && <ProfilePhotoEditor url={data.profilePhotoUrl} />}
         {editing ? (
           <form action={action} className="md-profile-form">
             <fieldset disabled={pending}>

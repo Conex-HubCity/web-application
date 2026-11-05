@@ -4,7 +4,8 @@ import { useTranslations } from "@/components/i18n";
 import Image from "next/image";
 import { MENTOR_CHARTER_PATH } from "@/lib/mentor-charter";
 import { Link } from "@/components/i18n";
-import { useActionState } from "react";
+import { ProfilePhotoPicker } from "@/components/profile-photo-picker";
+import { useActionState, useState } from "react";
 import { authenticate } from "@/app/actions/auth";
 import { Brand } from "./brand";
 import { Icon } from "./icon";
@@ -21,7 +22,14 @@ export function AuthEntry({
 }) {
   const role = !founderRegistrationOpen ? "mentor" : initialRole;
   const t = useTranslations();
-  const [state, action, pending] = useActionState(authenticate.bind(null, mode), null);
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [state, action, pending] = useActionState(
+    async (previous: { error: string } | null, form: FormData) => {
+      if (photo && mode === "register") form.set("profilePhoto", photo);
+      return authenticate(mode, previous, form);
+    },
+    null,
+  );
   const register = mode === "register";
   const mentor = role === "mentor";
   return (
@@ -82,6 +90,9 @@ export function AuthEntry({
             </p>
           )}
           <form className="auth-form" action={action}>
+            {register && mentor && (
+              <ProfilePhotoPicker required onChange={setPhoto} disabled={pending} />
+            )}
             {register && <input type="hidden" name="role" value={mentor ? "MENTOR" : "FOUNDER"} />}
             {register && (
               <label>

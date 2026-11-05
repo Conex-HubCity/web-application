@@ -61,6 +61,7 @@ erDiagram
         string last_name
         datetime email_verified_at
         datetime phone_verified_at
+        uuid profile_photo_id
         datetime privacy_acknowledged_at
         string privacy_policy_version
         string account_status
@@ -637,3 +638,5 @@ Le porteur dispose d’un aperçu propriétaire séparé (`/compte/projet/apercu
 Aucune étape « Mon adhésion » ni activation supplémentaire : une contribution unique `ContributionPayment` payée et un dossier mentor validé suffisent pour le tableau de bord et le catalogue, avec les contrôles de compte, email, charte et preuves. Le modèle historique `Membership` reste dans le schéma sans créer d’abonnement ni intervenir dans cet accès. Les données existantes sont conservées ; aucune migration n’est nécessaire.
 
 Depuis le 5 novembre 2026, l’inscription et l’acceptation des invitations demandent la prise de connaissance de la politique de confidentialité, enregistrée sur `users` avec sa version. Aucun contrôle de majorité ne conditionne l’inscription, les projets ou leur consultation. `founder_profiles.adult_confirmed_at` est uniquement une donnée historique, jamais reprise comme preuve de lecture de la politique. La charte mentor reste distincte.
+
+La photo mentor est obligatoire pour les nouvelles inscriptions. `users.profile_photo_id` référence le dossier UUID privé `uploads/private/profile-photos/<id>/` contenant `full.jpg` (512 × 512 maximum) et `thumbnail.jpg` (128 × 128 maximum). Le fichier est choisi directement, avec un aperçu rond, puis contrôlé et redimensionné proportionnellement côté serveur, sans découpe. L’affichage dans le cadre rond préserve l’image entière. Les fichiers ne sont accessibles que par leur propriétaire connecté. Le remplacement met à jour la référence puis retire les anciennes variantes ; un échec en base supprime les nouveaux fichiers. Les comptes existants restent utilisables sans photo et peuvent en ajouter une depuis leur profil.

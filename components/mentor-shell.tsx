@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element -- Authenticated thumbnails are already sized server-side. */
 "use client";
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
@@ -7,6 +8,7 @@ import { Brand } from "./brand";
 import { Icon } from "./icon";
 import { logout } from "@/app/actions/auth";
 import "@/app/mentor-dashboard.css";
+import "@/app/profile-photo.css";
 import { mentorNavigation, type MentorView } from "@/lib/mentor-navigation";
 export function MentorShell({
   data,
@@ -14,7 +16,7 @@ export function MentorShell({
   children,
   onNavigate,
 }: {
-  data: { firstName: string; lastName?: string | null };
+  data: { firstName: string; lastName?: string | null; profilePhotoUrl?: string | null };
   view: MentorView;
   children: ReactNode;
   onNavigate?: (view: MentorView) => void;
@@ -25,6 +27,11 @@ export function MentorShell({
   const firstName = data.firstName.charAt(0).toLocaleUpperCase(locale) + data.firstName.slice(1);
   const initials = (data.firstName.charAt(0) + (data.lastName?.charAt(0) ?? "")).toLocaleUpperCase(
     locale,
+  );
+  const avatar = data.profilePhotoUrl ? (
+    <img src={data.profilePhotoUrl} alt="" width={42} height={42} />
+  ) : (
+    initials
   );
   const activeLabel = mentorNavigation.find((item) => item.id === view)!.label;
   function go(next: MentorView) {
@@ -64,7 +71,7 @@ export function MentorShell({
         </nav>
         <div className="md-sidebar-bottom">
           <button type="button" className="md-sidebar-user" onClick={() => go("profile")}>
-            <span className="md-avatar">{initials}</span>
+            <span className="md-avatar">{avatar}</span>
             <span>
               <strong>
                 {firstName} {data.lastName}
@@ -100,7 +107,7 @@ export function MentorShell({
               aria-label={t("Ouvrir mon profil")}
               onClick={() => go("profile")}
             >
-              {initials}
+              {avatar}
             </button>
           </div>
         </header>

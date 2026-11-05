@@ -1,3 +1,9 @@
+import {
+  ProfilePhotoError,
+  storeProfilePhoto,
+  readProfilePhoto,
+  replaceMentorPhoto,
+} from "../lib/profile-photos";
 import { getFounderDashboard, saveFounderProject } from "../lib/domain/founder-dashboard";
 import {
   createPasswordLinkService,
@@ -24,7 +30,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, type Role } from "../generated/prisma/client";
 import { createPlatformService } from "../lib/domain/platform-service";
-import { AuthError, createAuthService } from "../lib/auth/service";
+import { AuthError, createAuthService as authService } from "../lib/auth/service";
 import { createOnboardingService } from "../lib/onboarding/service";
 import { MAX_CERTIFICATION_BYTES } from "../lib/onboarding/policy";
 import {
@@ -40,6 +46,25 @@ import {
   assertProjectReplacement,
 } from "../lib/domain/policies";
 
+const testPhotoRoot = path.join(tmpdir(), `cnx-auth-photos-${randomUUID()}`);
+function createAuthService(
+  database: PrismaClient,
+  options: Parameters<typeof authService>[1] = {},
+) {
+  return authService(database, { ...options, photoDirectory: testPhotoRoot });
+}
+function registrationPhoto() {
+  return new File(
+    [
+      Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAPElEQVR4AbXBAQEAIAyAME56K5jFcD4F29x3PiGJSUxiEpOYxCQmMYlJTGISk5jEJCYxiUlMYhKTmMQkttTDAwu8R5RxAAAAAElFTkSuQmCC",
+        "base64",
+      ),
+    ],
+    "photo.png",
+    { type: "image/png" },
+  );
+}
 const DAY = 86400000;
 const hash = "a".repeat(64);
 const connectionString = process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL;
@@ -79,6 +104,8 @@ before(async () => {
 });
 
 after(async () => {
+  assert.equal(path.dirname(testPhotoRoot), path.resolve(tmpdir()));
+  await rm(testPhotoRoot, { recursive: true, force: true });
   await db?.$disconnect();
   if (pool && !pool.ended) await pool.end();
   if (control) {
@@ -211,6 +238,7 @@ databaseTest(
         role,
         privacyAcknowledged: true,
         charterAccepted: true,
+        profilePhoto: registrationPhoto(),
       });
       const account = await auth.getSession(session.token);
       assert.ok(account);
@@ -245,6 +273,7 @@ databaseTest(
           role,
           privacyAcknowledged: true,
           charterAccepted: true,
+          profilePhoto: registrationPhoto(),
         }),
         AuthError,
       );
@@ -415,7 +444,9 @@ databaseTest(
       role: "MENTOR",
       privacyAcknowledged: true,
       charterAccepted: true,
+      profilePhoto: registrationPhoto(),
     };
+    await assert.rejects(auth.register({ ...input, profilePhoto: undefined }), /photo de profil/);
     await assert.rejects(auth.register({ ...input, role: "ADMIN" }), AuthError);
     await assert.rejects(auth.register({ ...input, lastName: "  " }), AuthError);
     await assert.rejects(auth.register({ ...input, lastName: "a".repeat(101) }), AuthError);
@@ -1309,6 +1340,7 @@ databaseTest(
       role: "MENTOR",
       privacyAcknowledged: true,
       charterAccepted: true,
+      profilePhoto: registrationPhoto(),
     };
     const registered = await auth.register(input);
     const actor = await auth.getSession(registered.token);
@@ -2406,3 +2438,70 @@ databaseTest("project field limits and concurrent first saves preserve one proje
   const project = await db.project.findUniqueOrThrow({ where: { founderUserId: founder.id } });
   assert.equal(await db.projectRevision.count({ where: { projectId: project.id } }), 1);
 });
+
+databaseTest(
+  "profile photos validate contents, produce two private variants and replace only the owner photo",
+  async () => {
+    const owner = await user("MENTOR"),
+      other = await user("MENTOR");
+    await assert.rejects(
+      storeProfilePhoto(
+        new File(["not an image"], "photo.png", { type: "image/png" }),
+        testPhotoRoot,
+      ),
+      ProfilePhotoError,
+    );
+    await assert.rejects(
+      storeProfilePhoto(new File([new Uint8Array(5 * 1024 * 1024 + 1)], "big.jpg"), testPhotoRoot),
+      /5 Mo/,
+    );
+    const id = await replaceMentorPhoto(db, owner.id, registrationPhoto(), testPhotoRoot);
+    const full = await readProfilePhoto(db, owner.id, id, "full", testPhotoRoot);
+    const thumbnail = await readProfilePhoto(db, owner.id, id, "thumbnail", testPhotoRoot);
+    assert.ok(full);
+    assert.ok(thumbnail);
+    const { Jimp } = await import("jimp");
+    const fullImage = await Jimp.fromBuffer(full),
+      thumbImage = await Jimp.fromBuffer(thumbnail);
+    assert.deepEqual([fullImage.bitmap.width, fullImage.bitmap.height], [512, 512]);
+    assert.deepEqual([thumbImage.bitmap.width, thumbImage.bitmap.height], [128, 128]);
+    // A landscape photo keeps both edges; a square cover would discard them.
+    const { JimpMime } = await import("jimp");
+    const landscape = new Jimp({ width: 800, height: 400, color: 0xffffffff });
+    landscape.composite(new Jimp({ width: 100, height: 400, color: 0xff0000ff }), 0, 0);
+    landscape.composite(new Jimp({ width: 100, height: 400, color: 0x0000ffff }), 700, 0);
+    const landscapeId = await storeProfilePhoto(
+      new File([new Uint8Array(await landscape.getBuffer(JimpMime.png))], "landscape.png", {
+        type: "image/png",
+      }),
+      testPhotoRoot,
+    );
+    const landscapeFull = await Jimp.fromBuffer(
+      await readFile(path.join(testPhotoRoot, landscapeId, "full.jpg")),
+    );
+    const landscapeThumb = await Jimp.fromBuffer(
+      await readFile(path.join(testPhotoRoot, landscapeId, "thumbnail.jpg")),
+    );
+    assert.deepEqual([landscapeFull.bitmap.width, landscapeFull.bitmap.height], [512, 256]);
+    assert.deepEqual([landscapeThumb.bitmap.width, landscapeThumb.bitmap.height], [128, 64]);
+    const left = landscapeFull.getPixelColor(5, 128),
+      right = landscapeFull.getPixelColor(506, 128);
+    assert(left >>> 24 > 200 && ((left >>> 8) & 255) < 30, "Left edge is preserved");
+    assert(((right >>> 8) & 255) > 200 && right >>> 24 < 30, "Right edge is preserved");
+    const jpeg = new File([full], "photo.jpg", { type: "image/jpeg" });
+    const jpegId = await storeProfilePhoto(jpeg, testPhotoRoot);
+    assert.ok(await readFile(path.join(testPhotoRoot, jpegId, "full.jpg")));
+    assert(full.length > thumbnail.length);
+    assert.equal(await readProfilePhoto(db, other.id, id, "full", testPhotoRoot), null);
+    assert.equal(await readProfilePhoto(db, owner.id, id, "../full", testPhotoRoot), null);
+    const updated = await replaceMentorPhoto(db, owner.id, registrationPhoto(), testPhotoRoot);
+    assert.notEqual(updated, id);
+    assert.equal(await readProfilePhoto(db, owner.id, id, "full", testPhotoRoot), null);
+    await assert.rejects(readFile(path.join(testPhotoRoot, id, "full.jpg")), { code: "ENOENT" });
+    const founder = await user("FOUNDER");
+    await assert.rejects(
+      replaceMentorPhoto(db, founder.id, registrationPhoto(), testPhotoRoot),
+      /autorisée/,
+    );
+  },
+);

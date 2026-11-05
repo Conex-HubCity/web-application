@@ -1,3 +1,4 @@
+import { profilePhotoUrl } from "@/lib/profile-photos";
 import "server-only";
 import type { PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
@@ -14,6 +15,7 @@ export async function getMentorDashboard(userId: string, db: PrismaClient = getD
   const user = await db.user.findUnique({
     where: { id: userId },
     select: {
+      profilePhotoId: true,
       firstName: true,
       lastName: true,
       email: true,
@@ -107,6 +109,7 @@ export async function getMentorDashboard(userId: string, db: PrismaClient = getD
     }),
   ]);
   return {
+    profilePhotoUrl: profilePhotoUrl(user.profilePhotoId),
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,

@@ -1,4 +1,5 @@
 "use server";
+import { ProfilePhotoError } from "@/lib/profile-photos";
 import { createEmailVerificationService } from "@/lib/auth/email-verification";
 import { actionPath, getActionLocale } from "@/lib/i18n/action-locale";
 
@@ -28,6 +29,7 @@ export async function authenticate(
             role: form.get("role"),
             privacyAcknowledged: form.get("privacyAcknowledged") === "on",
             charterAccepted: form.get("charterAccepted") === "on",
+            profilePhoto: form.get("profilePhoto"),
           })
         : mode === "login"
           ? await service.login(credentials)
@@ -44,7 +46,8 @@ export async function authenticate(
       }
     }
   } catch (error) {
-    if (error instanceof AuthError) return { error: error.message };
+    if (error instanceof AuthError || error instanceof ProfilePhotoError)
+      return { error: error.message };
     // Never return database errors or log credentials, hashes or tokens.
     console.error("Authentication failed", error instanceof Error ? error.name : "UnknownError");
     return {
