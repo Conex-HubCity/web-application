@@ -1579,3 +1579,121 @@
   filter: brightness(0) saturate(100%) invert(14%) sepia(24%) saturate(778%) hue-rotate(111deg)
     brightness(94%) contrast(94%);
 }
+
+/* Staged HubCity reveal: keep the artwork intact, animate its whole frame. */
+.splash-hubcity {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 520px);
+  margin-inline: auto;
+}
+.splash-hubcity::before {
+  content: "";
+  position: absolute;
+  inset: -65% -30%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse, #f0bf7d16, transparent 65%);
+}
+.splash-hubcity::after {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 2px;
+  margin: 28px auto 0;
+  background: var(--gold);
+  transform-origin: center;
+}
+.splash-hubcity img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(36dvh, 220px);
+  object-fit: contain;
+}
+.splash-hubcity-attribution {
+  margin-bottom: 22px;
+  color: #bfcbb6;
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 2.5px;
+}
+.cnx-splash[open] .splash-hubcity-attribution {
+  animation: cnx-rise-in 0.7s 0.1s both;
+}
+.cnx-splash[open] .splash-hubcity-mark {
+  animation: hubcity-logo-arrive 1.65s 0.5s both cubic-bezier(0.22, 0.65, 0.3, 1);
+}
+.cnx-splash[open] .splash-hubcity::before {
+  animation: hubcity-halo 3.2s 0.3s both ease-out;
+}
+.cnx-splash[open] .splash-hubcity::after {
+  animation: cnx-rule-reveal 0.85s 1.8s both;
+}
+.cnx-splash[open] .splash-orbit-one {
+  animation: hubcity-orbit 3.2s 0.2s both ease-out;
+}
+.cnx-splash[open] .splash-orbit-two {
+  animation: hubcity-orbit 3.6s 0.45s both ease-out;
+}
+@keyframes hubcity-logo-arrive {
+  0% {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+    transform: translateY(48px) scale(0.92);
+  }
+  45% {
+    opacity: 1;
+    clip-path: inset(0);
+    transform: translateY(-9px) scale(1.02);
+  }
+  70% {
+    transform: translateY(4px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(0);
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes hubcity-halo {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.55;
+    transform: scale(1.15);
+  }
+}
+@keyframes hubcity-orbit {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.78);
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cnx-splash[open] .splash-hubcity-attribution,
+  .cnx-splash[open] .splash-hubcity-mark,
+  .cnx-splash[open] .splash-hubcity::before,
+  .cnx-splash[open] .splash-hubcity::after {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+  .cnx-splash[open] .splash-orbit-one,
+  .cnx-splash[open] .splash-orbit-two {
+    animation: none;
+  }
+}

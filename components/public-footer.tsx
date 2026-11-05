@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Icon } from "@/components/icon";
 import { Brand } from "@/components/brand";
 import { Link } from "@/components/i18n";
@@ -47,6 +48,14 @@ export async function PublicFooter() {
         <Link href="/charte-mentorat">{t("Charte du mentorat")}</Link>
         <ReplayIntroduction />
       </nav>
+      <Image
+        className="cnx-footer-meeting"
+        src="/assets/conex/rencontre.webp"
+        alt={t("Deux personnes échangent autour d’un projet et d’un ordinateur.")}
+        width={765}
+        height={506}
+        sizes="160px"
+      />
     </footer>
   );
 }

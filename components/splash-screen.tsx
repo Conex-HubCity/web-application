@@ -4,7 +4,7 @@ import { useTranslations } from "@/components/i18n";
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 
-const SESSION_KEY = "conex:introduction-seen:v1";
+const SESSION_KEY = "conex:introduction-seen:v3";
 const REPLAY_EVENT = "conex:replay-introduction";
 
 export function SplashScreen() {
@@ -84,7 +84,7 @@ export function SplashScreen() {
     <dialog
       ref={dialogRef}
       className="cnx-splash"
-      aria-label={t("Présentation de CNX")}
+      aria-label={t("Présentation de HubCity")}
       onCancel={(event) => {
         event.preventDefault();
         dismissRef.current();
@@ -94,27 +94,21 @@ export function SplashScreen() {
       <div className="splash-orbit splash-orbit-two" aria-hidden="true" />
       <div className="splash-content">
         <div className="splash-center">
-          <p className="splash-kicker" lang="en">
-            CONNECTIONS THAT HELP US GROW
-          </p>
-          <div className="splash-word" role="img" aria-label="CNX">
-            <span aria-hidden="true">C</span>
-            <span aria-hidden="true">N</span>
-            <span aria-hidden="true">X</span>
-            <i aria-hidden="true">.</i>
+          <div className="splash-hubcity">
+            <p className="splash-hubcity-attribution" lang="en">
+              A solution by
+            </p>
+            <div className="splash-hubcity-mark">
+              <Image
+                src="/assets/conex/hubcity-wordmark.png"
+                alt="HubCity"
+                width={752}
+                height={271}
+                preload
+                unoptimized
+              />
+            </div>
           </div>
-          <div className="splash-rule" aria-hidden="true" />
-          <p className="splash-tagline">{t("Le lien nous élève.")}</p>
-        </div>
-        <div className="splash-signature" lang="en">
-          <span>A solution by</span>
-          <Image
-            src="/assets/conex/hubcity-wordmark.png"
-            alt="HubCity"
-            width={176}
-            height={63}
-            unoptimized
-          />
         </div>
       </div>
       <button className="splash-skip" onClick={() => dismissRef.current()}>

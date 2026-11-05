@@ -1,6 +1,6 @@
 # Accueil — ajustements dans la charte existante
 
-La charte d’origine est conservée : hero photographique pleine largeur, vert forêt, crème, doré, titres Georgia et accents en italique. Le splash et ses timings d’origine sont restaurés. La refonte nuit/lagon, son hero en arche et les blocs de preuves vides sont retirés.
+La charte d’origine est conservée : hero photographique pleine largeur, vert forêt, crème, doré, titres Georgia et accents en italique. L’introduction présente uniquement le logo HubCity fourni, avec une apparition progressive et une légère montée, sans déformation ni recoloration. Les timings d’origine sont conservés. La refonte nuit/lagon, son hero en arche et les blocs de preuves vides sont retirés.
 
 Les améliorations conservées sont ciblées : formation mise en avant dans le même style, présentation de parcours regroupée en une frise, contribution unique de soutien mentor de 30 USD visible uniquement dans la carte finale, terme public Mentee, cartes photographiques existantes placées au choix des parcours avant la FAQ. Leurs routes et le contrôle d’inscription à la requête restent inchangés. La mise en relation reste annoncée en développement.
 
@@ -91,3 +91,13 @@ Le logo complet CNX avec l’Afrique (troisième image fournie) est affiché dan
 Le footer propose les liens fournis vers Facebook (`https://www.facebook.com/Cnxhubcity`) et Instagram (`https://www.instagram.com/cnxhubcity/`), ouverts dans un nouvel onglet.
 
 Dans le footer crème, le logo transparent est affiché en monochrome vert forêt via CSS, au format 112 × 56 px. L’en-tête conserve le logo blanc et doré.
+
+La photo `rencontre.webp` est affichée dans une colonne indépendante tout à droite du footer, détachée des liens utiles, dans un format compact de 160 px de large. Le miroir Afrique reste dans la section « CNX ? ».
+
+## Introduction HubCity
+
+Le grand mot CNX et sa baseline sont retirés du splash. La mention « A solution by » est conservée au-dessus du logo HubCity, dans le même bloc animé. Le fichier `hubcity-wordmark.png` est affiché au centre dans ses couleurs et proportions d’origine. L’animation agit uniquement sur l’opacité et le déplacement vertical du bloc entier. Le fond vert forêt et les cercles discrets restent en place.
+
+La durée, le bouton Passer, la touche Échap, le verrouillage du défilement, la commande Revoir l’introduction et la prise en compte du mouvement réduit sont conservés. La clé de session passe en v2 pour présenter cette nouvelle introduction une fois aux visiteurs de la session en cours.
+
+L’animation HubCity est renforcée : attribution d’abord, révélation latérale et rebond léger du logo entier avec mise à l’échelle uniforme, halo discret et expansion des cercles, puis trait doré. Le fichier du logo reste inchangé ; le mode mouvement réduit supprime ces effets. La clé de session passe en v3.

@@ -822,7 +822,7 @@
 /* Discreet reassurance and a footer in the existing visual charter. */
 .welcome-footer.cnx-public-footer {
   display: grid;
-  grid-template-columns: 1.15fr 0.8fr 1.2fr 1fr;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.8fr) minmax(0, 1.2fr) minmax(0, 1fr) 160px;
   align-items: start;
   gap: 38px;
   padding-block: 48px;
@@ -1035,4 +1035,16 @@
 }
 .cnx-footer-email span {
   min-width: 0;
+}
+
+/* Independent meeting photo at the far right of the footer. */
+.cnx-footer-meeting {
+  grid-column: -2 / -1;
+  justify-self: end;
+  align-self: center;
+  display: block;
+  width: min(100%, 160px);
+  height: auto;
+  margin-top: 4px;
+  border-radius: 10px;
 }
