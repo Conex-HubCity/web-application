@@ -83,3 +83,11 @@ La FAQ contient les six questions du document : création du compte avant certif
 Le pilote est réservé aux personnes majeures : porteurs de projets en Afrique et professionnels expérimentés de la diaspora africaine. Les pays de lancement et les modalités d’ouverture seront précisés avant le démarrage du pilote.
 
 Texte du footer : « Être le plus grand répertoire de talents africains : Un réseau de confiance avec des ambitions partagées. »
+
+## Logo et réseaux sociaux
+
+Le logo complet CNX avec l’Afrique (troisième image fournie) est affiché dans l’en-tête public et le footer. Les deux fichiers JPG d’origine sont conservés dans `public/assets/conex/cnx-logo-full.jpg` et `public/assets/conex/cnx-logo-symbol.jpg`. Le site utilise la version PNG détourée `public/assets/conex/cnx-logo-transparent.png`, avec transparence réelle du fond et des découpes vertes. Le fond CSS du logo est également retiré.
+
+Le footer propose les liens fournis vers Facebook (`https://www.facebook.com/Cnxhubcity`) et Instagram (`https://www.instagram.com/cnxhubcity/`), ouverts dans un nouvel onglet.
+
+Dans le footer crème, le logo transparent est affiché en monochrome vert forêt via CSS, au format 112 × 56 px. L’en-tête conserve le logo blanc et doré.

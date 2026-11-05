@@ -1,0 +1,6 @@
+Mode: built-in image_gen edit
+Input: public/assets/conex/cnx-logo-full.jpg
+Output: public/assets/conex/cnx-logo-transparent.png
+Transparent background: true
+
+Use case: background-extraction. Edit target: the supplied existing CNX logo. Remove ONLY the entire dark forest green color to true alpha transparency, including the outer background, gaps between letters, inside the C, and the Africa silhouette cutout and Madagascar. Preserve the exact original CNX letter shapes, layout, relative proportions, white strokes, gold coloring and Africa outline; do not redraw or redesign or add any elements, shadows or outlines. Output a clean transparent PNG of the existing white-and-gold logo. Frame the complete horizontal logo with a small transparent margin; no large empty square padding. All green pixels should become transparent. No checkerboard or solid background baked in.

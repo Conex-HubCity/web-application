@@ -1530,3 +1530,52 @@
     font-size: 15px;
   }
 }
+
+/* Transparent CNX logo; supplied originals remain in public/assets. */
+.cnx-brand.cnx-brand-image {
+  width: 160px;
+  height: 80px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 6px;
+}
+.cnx-brand-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+@media (max-width: 600px) {
+  .cnx-brand.cnx-brand-image {
+    width: 124px;
+    height: 62px;
+  }
+}
+
+@media (max-width: 600px) {
+  .welcome-public-header {
+    gap: 10px;
+  }
+  .welcome-public-header .cnx-brand-group {
+    gap: 8px;
+  }
+  .welcome-public-header .cnx-brand-image {
+    width: 96px;
+    height: 48px;
+  }
+  .welcome-public-header .welcome-login {
+    gap: 8px;
+    padding-inline: 10px;
+  }
+}
+
+/* Compact dark logo for the cream footer; header keeps the original colours. */
+.welcome-footer .cnx-brand.cnx-brand-image {
+  width: 112px;
+  height: 56px;
+}
+.welcome-footer .cnx-brand-logo {
+  filter: brightness(0) saturate(100%) invert(14%) sepia(24%) saturate(778%) hue-rotate(111deg)
+    brightness(94%) contrast(94%);
+}
