@@ -1208,3 +1208,8 @@
     width: 104px;
   }
 }
+
+.cnx-pathway-bottom > p.cnx-pathway-availability {
+  margin-top: 18px;
+  color: var(--gold);
+}

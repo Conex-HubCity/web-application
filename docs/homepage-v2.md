@@ -88,7 +88,7 @@ Texte du footer : « Être le plus grand répertoire de talents africains : Un r
 
 Le logo complet CNX avec l’Afrique (troisième image fournie) est affiché dans l’en-tête public et le footer. Les deux fichiers JPG d’origine sont conservés dans `public/assets/conex/cnx-logo-full.jpg` et `public/assets/conex/cnx-logo-symbol.jpg`. Le site utilise la version PNG détourée `public/assets/conex/cnx-logo-transparent.png`, avec transparence réelle du fond et des découpes vertes. Le fond CSS du logo est également retiré.
 
-Le footer propose les liens fournis vers Facebook (`https://www.facebook.com/Cnxhubcity`) et Instagram (`https://www.instagram.com/cnxhubcity/`), ouverts dans un nouvel onglet.
+Le footer propose les liens fournis vers Facebook (`https://www.facebook.com/Cnxhubcity`) Instagram (`https://www.instagram.com/cnxhubcity/`) et LinkedIn (`https://linkedin.com/company/cnxhubcity/`), ouverts dans un nouvel onglet.
 
 Dans le footer crème, le logo transparent est affiché en monochrome vert forêt via CSS, au format 112 × 56 px. L’en-tête conserve le logo blanc et doré.
 
@@ -112,4 +112,18 @@ ORIA accompagne les jeunes dans leurs choix d’études en les aidant à découv
 
 Le résumé s’appuie sur le parcours utilisateur fourni : https://docs.google.com/document/d/1H5s0BjOk6inkZM8URiRFF4C-TAapgyyVAleT281Btr8/edit
 
-Le logo ORIA fourni est conservé dans `public/assets/conex/oria-logo.jpg` et apparaît en fond discret et près du nom du projet. La photo fournie de Yao Grace Akogo est conservée dans `public/assets/conex/oria-yao-grace-akogo.jpg`. Elle occupe la grande bulle ; le portrait `mentor.webp`, déjà utilisé par la carte Mentor, occupe la plus petite bulle, superposée au premier plan. La petite bulle du mentor est au premier plan à gauche de celle de Grace ; sa légende est retirée. Le nom de Yao Grace Akogo reste affiché.
+Le logo ORIA fourni est conservé dans `public/assets/conex/oria-logo.jpg` et apparaît en fond discret et près du nom du projet. La photo fournie de Yawo Grace Akogo est conservée dans `public/assets/conex/oria-yao-grace-akogo.jpg`. Elle occupe la grande bulle ; le portrait `mentor.webp`, déjà utilisé par la carte Mentor, occupe la plus petite bulle, superposée au premier plan. La petite bulle du mentor est au premier plan à gauche de celle de Grace ; sa légende est retirée. Le nom de Yawo Grace Akogo reste affiché.
+
+## Vérification éditoriale — 5 novembre 2026
+
+Référence : [Textes actuels du site — relecture](https://docs.google.com/document/d/17FcPTQDzOkYrJdUzEXoR3HxDafFmZV-7d05XWeGX8pQ/edit?tab=t.k44ytkpgovkd), version actualisée du 4 novembre 2026. Contrôle du seul onglet indiqué et des contenus de l’accueil, sans modifier le document source ni les pages de paiement.
+
+Le hero, CNX ?, les deux formations, Connexion & Suivi, les présentations Mentee/Mentor, les six questions de la FAQ, le texte du footer et l’adresse de contact reprennent le contenu de référence. Les coquilles du document sont corrigées : « des primo-entrepreneurs », « son projet », suppression du doublon « intérêt », « Votre expérience peut booster un projet » et ponctuation homogénéisée.
+
+Les messages conditionnels de fermeture Mentee sont alignés sur le document : « Les inscriptions Mentee sont actuellement fermées. Les candidatures mentors restent ouvertes. » et « Bientôt vous pourrez créer votre compte, renseigner votre profil Mentee et inscrire votre projet. ». Ils sont affichés uniquement lorsque la fermeture est activée ; aucune disponibilité n’est modifiée.
+
+Ajustements validés dans la conversation conservés : titres sans numéros de chapitre ni « Préalable et Suivi », FAQ sans introduction, message de soutien « En tant que mentor vous soutenez CNX » accompagné de 30 USD, introduction HubCity animée et bandeau ORIA. La formulation annexe « early adopter Mentor » n’est donc pas réintroduite. Les actions d’inscription restent fonctionnelles et les liens sociaux incluent désormais LinkedIn avec son icône.
+
+Vérification technique : 32 passages de référence et les six questions/réponses applicables sont contrôlés dans le HTML français. Le lien LinkedIn et les messages conditionnels sont vérifiés en FR/EN. La traduction manquante du libellé de navigation « La formation » est ajoutée (« Training »). Lint et formatage ciblés validés.
+
+Lorsque les inscriptions Mentee sont fermées, seul le texte de disponibilité orange est affiché dans la carte : la fausse action « Bientôt disponible » et sa flèche sont retirées. Le bouton du parcours Mentor et le bouton Mentee lorsque les inscriptions sont ouvertes restent affichés.

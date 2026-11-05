@@ -178,12 +178,19 @@ export async function HomeSections({
                       <strong>30 USD</strong>
                     </span>
                   )}
-                  <span className="cnx-pathway-link">
-                    {founderRegistrationClosed && pathway.role === "porteur"
-                      ? t("Bientôt disponible")
-                      : pathway.action}
-                    <Icon name="arrow" size={18} />
-                  </span>
+                  {founderRegistrationClosed && pathway.role === "porteur" && (
+                    <p className="cnx-pathway-availability">
+                      {t(
+                        "Bientôt vous pourrez créer votre compte, renseigner votre profil Mentee et inscrire votre projet.",
+                      )}
+                    </p>
+                  )}
+                  {!(founderRegistrationClosed && pathway.role === "porteur") && (
+                    <span className="cnx-pathway-link">
+                      {pathway.action}
+                      <Icon name="arrow" size={18} />
+                    </span>
+                  )}
                 </div>
               </PathwayCard>
             ))}
@@ -231,14 +238,14 @@ export async function HomeSections({
                 <div className="cnx-project-founder-portrait">
                   <Image
                     src="/assets/conex/oria-yao-grace-akogo.jpg"
-                    alt={t("Portrait de Yao Grace Akogo")}
+                    alt={t("Portrait de Yawo Grace Akogo")}
                     fill
                     sizes="(max-width: 600px) 210px, 248px"
                   />
                 </div>
                 <figcaption>
                   <span>{t("Porteur du projet")}</span>
-                  <strong>Yao Grace Akogo</strong>
+                  <strong>Yawo Grace Akogo</strong>
                 </figcaption>
               </figure>
               <figure className="cnx-project-mentor">
@@ -279,7 +286,7 @@ export async function HomeSections({
                   <p>
                     {t(
                       founderRegistrationClosed && index === 0
-                        ? "Les inscriptions Mentee sont actuellement fermées. Les comptes existants et les personnes invitées conservent leur accès."
+                        ? "Les inscriptions Mentee sont actuellement fermées. Les candidatures mentors restent ouvertes."
                         : founderRegistrationClosed && index === 1
                           ? "La création du compte est gratuite. Après confirmation de l’email, une contribution unique de 30 USD permet de soutenir le fonctionnement de CNX. Vous pouvez ensuite vous arrêter là ou déposer vos justificatifs pour proposer votre candidature mentor."
                           : item.answer,

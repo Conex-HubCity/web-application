@@ -40,6 +40,13 @@ export async function PublicFooter() {
           <a href="https://www.instagram.com/cnxhubcity/" target="_blank" rel="noopener noreferrer">
             <Icon name="instagram" size={18} /> Instagram
           </a>
+          <a
+            href="https://linkedin.com/company/cnxhubcity/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Icon name="linkedin" size={18} /> LinkedIn
+          </a>
         </nav>
       </div>
       <nav className="cnx-footer-column" aria-label={t("Informations utiles")}>

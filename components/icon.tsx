@@ -14,6 +14,17 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
         stroke="none"
       />
     ),
+    linkedin: (
+      <>
+        <circle cx="5" cy="4" r="2" fill="currentColor" stroke="none" />
+        <rect x="3" y="8" width="4" height="13" fill="currentColor" stroke="none" />
+        <path
+          d="M10 8h4v2c1-3 7-3 7 3v8h-4v-7c0-3-3-3-3 0v7h-4Z"
+          fill="currentColor"
+          stroke="none"
+        />
+      </>
+    ),
     instagram: (
       <>
         <rect x="3" y="3" width="18" height="18" rx="5" />
