@@ -68,6 +68,39 @@
 .cnx-pathways {
   background: #faf8f2;
 }
+/* Pathways precede the FAQ, with the shared purpose above both cards. */
+.cnx-pathways-heading {
+  margin-bottom: 40px;
+}
+.cnx-pathways-heading h2 {
+  margin-top: 0;
+}
+.cnx-pathways-heading > p.cnx-pathways-subtitle {
+  max-width: none;
+  margin-top: 20px;
+  color: #9b6b45;
+  font:
+    italic 400 clamp(22px, 2.3vw, 30px)/1.45 Georgia,
+    "Times New Roman",
+    serif;
+}
+.cnx-pathways-connection {
+  margin-top: 28px;
+  color: var(--forest);
+  text-align: center;
+  font:
+    italic 400 24px/1.5 Georgia,
+    "Times New Roman",
+    serif;
+}
+.cnx-pathway-bottom > p.cnx-pathway-intro {
+  margin-top: 14px;
+  color: #fffdf7;
+  font-size: 13px;
+}
+.cnx-pathway-bottom > p.cnx-pathway-detail {
+  margin-top: 10px;
+}
 .cnx-pathway-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

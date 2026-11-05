@@ -2,7 +2,7 @@
 
 La charte d’origine est conservée : hero photographique pleine largeur, vert forêt, crème, doré, titres Georgia et accents en italique. Le splash et ses timings d’origine sont restaurés. La refonte nuit/lagon, son hero en arche et les blocs de preuves vides sont retirés.
 
-Les améliorations conservées sont ciblées : formation mise en avant dans le même style, présentation de parcours regroupée en une frise, contribution unique de soutien mentor de 30 USD visible uniquement dans la carte finale, terme public Mentee, cartes photographiques existantes déplacées au choix final. Leurs routes et le contrôle d’inscription à la requête restent inchangés. La mise en relation reste annoncée en développement.
+Les améliorations conservées sont ciblées : formation mise en avant dans le même style, présentation de parcours regroupée en une frise, contribution unique de soutien mentor de 30 USD visible uniquement dans la carte finale, terme public Mentee, cartes photographiques existantes placées au choix des parcours avant la FAQ. Leurs routes et le contrôle d’inscription à la requête restent inchangés. La mise en relation reste annoncée en développement.
 
 Aucun chiffre ni témoignage fictif n’est affiché. Les éléments non fournis ne sont pas exposés comme emplacements vides dans la page. Les contenus de formation détaillés, durée et format restent à confirmer. Les assets existants sont conservés.
 
@@ -45,3 +45,33 @@ Un cadre prévu : des objectifs clairs, des échanges réguliers et un point men
 La charte HubCity pose un cadre de confiance, sans exclusivité.
 
 La présentation utilise une seule colonne sur fond vert forêt, avec des textes crème, des accents dorés et trois blocs séparés par des traits fins. Ce fond marque la transition depuis la section CNX sur fond crème. « Préalable et Suivi » et « Chapitre 3 » ne sont pas affichés ; le grand titre est « Formation mentorale & Co ».
+
+## Les parcours — avant la FAQ
+
+Ordre de l’accueil : hero, CNX ?, Formation mentorale & Co, Les parcours, FAQ, footer.
+
+Mentor & Mentee : un même horizon.
+
+Mentee — Vous êtes un jeune sur le continent qui désire être guidé dans son projet.
+
+Mentor — Vous êtes un professionnel en dehors du continent qui souhaite partager son expérience.
+
+Nous vous connectons.
+
+### Mentee
+
+Vous avez l’élan. Trouvez le regard qui vous fait avancer.
+
+Prenez du recul, progressez avec les conseils d’un aîné. Vous restez aux commandes de votre parcours.
+
+### Mentor
+
+Votre expérience peut booster un projet.
+
+Transmettez, guidez, faites bénéficier de votre expertise, de votre savoir-faire, de vos compétences, de votre réseau.
+
+Un engagement d’accompagnement à la mesure de vos disponibilités.
+
+Les visuels, liens d’inscription, fermeture éventuelle du parcours Mentee et contribution de soutien mentor sont conservés.
+
+Les phrases « Vous êtes un jeune… » et « Vous êtes un professionnel… » figurent dans leurs cartes Mentee et Mentor respectives, sous le libellé du rôle. « Nous vous connectons. » conclut la section sous les deux cartes.

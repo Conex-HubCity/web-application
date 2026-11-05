@@ -68,33 +68,28 @@ export async function HomeSections({
       role: "porteur",
       number: "01",
       image: "entrepreneure.webp",
-      label: t("MENTEES"),
-      title: (
-        <>
-          {" "}
-          {t("Vous avez l’élan.")} <br /> {t("Trouvez le regard")} <br />{" "}
-          {t("qui fait avancer.")}{" "}
-        </>
-      ),
+      label: t("Mentee"),
+      introduction: t("Vous êtes un jeune sur le continent qui désire être guidé dans son projet."),
+      title: t("Vous avez l’élan. Trouvez le regard qui vous fait avancer."),
       text: t(
-        "Prenez du recul, structurez votre projet et avancez avec l’expérience d’un mentor. Vous restez aux commandes de votre parcours.",
+        "Prenez du recul, progressez avec les conseils d’un aîné. Vous restez aux commandes de votre parcours.",
       ),
+      detail: null,
       action: t("Rejoindre comme Mentee"),
     },
     {
       role: "mentor",
       number: "02",
       image: "mentor.webp",
-      label: t("PROFESSIONNELS DE LA DIASPORA"),
-      title: (
-        <>
-          {" "}
-          {t("Votre expérience")} <br /> {t("peut ouvrir")} <br /> {t("d’autres possibles.")}{" "}
-        </>
+      label: t("Mentor"),
+      introduction: t(
+        "Vous êtes un professionnel en dehors du continent qui souhaite partager son expérience.",
       ),
+      title: t("Votre expérience peut booster un projet."),
       text: t(
-        "Partagez votre regard et vos savoir-faire avec un entrepreneur africain. Un engagement de transmission, à la mesure de vos disponibilités.",
+        "Transmettez, guidez, faites bénéficier de votre expertise, de votre savoir-faire, de vos compétences, de votre réseau.",
       ),
+      detail: t("Un engagement d’accompagnement à la mesure de vos disponibilités."),
       action: t("Devenir mentor"),
     },
   ];
@@ -152,6 +147,56 @@ export async function HomeSections({
         </div>
       </section>
 
+      <section id="choix" className="cnx-pathways cnx-section" aria-labelledby="pathways-title">
+        <div className="welcome-container">
+          <div className="cnx-section-heading cnx-pathways-heading">
+            <h2 id="pathways-title">{t("Les parcours")}</h2>
+            <p className="cnx-pathways-subtitle">{t("Mentor & Mentee : un même horizon.")}</p>
+          </div>
+          <div className="cnx-pathway-grid">
+            {pathways.map((pathway) => (
+              <PathwayCard role={pathway.role} key={pathway.role}>
+                <Image
+                  src={`/assets/conex/${pathway.image}`}
+                  alt=""
+                  fill
+                  sizes="(max-width: 760px) 100vw, 46vw"
+                />
+                <div className="cnx-photo-shade" />
+                <div className="cnx-pathway-top">
+                  <span>
+                    {t("PARCOURS")} {pathway.number}
+                  </span>
+                  <span className="cnx-circle-arrow">
+                    <Icon name="diagonal" size={19} />
+                  </span>
+                </div>
+                <div className="cnx-pathway-bottom">
+                  <span className="cnx-pathway-label">{pathway.label}</span>
+                  <p className="cnx-pathway-intro">{pathway.introduction}</p>
+                  <h3>{pathway.title}</h3>
+                  <p>{pathway.text}</p>
+                  {pathway.detail && <p className="cnx-pathway-detail">{pathway.detail}</p>}
+                  {pathway.role === "mentor" && (
+                    <span className="cnx-pathway-contribution">
+                      <span>{t("En tant que mentor vous soutenez CNX")}</span>
+                      <strong>30 USD</strong>
+                    </span>
+                  )}
+                  <span className="cnx-pathway-link">
+                    {founderRegistrationClosed && pathway.role === "porteur"
+                      ? t("Bientôt disponible")
+                      : pathway.action}
+                    <Icon name="arrow" size={18} />
+                  </span>
+                </div>
+              </PathwayCard>
+            ))}
+          </div>
+          <p className="cnx-pathways-connection">{t("Nous vous connectons.")}</p>
+        </div>
+      </section>
+
       <section
         id="questions-frequentes"
         className="cnx-faq cnx-section"
@@ -200,67 +245,6 @@ export async function HomeSections({
                   </p>
                 </div>
               </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="choix" className="cnx-pathways cnx-section" aria-labelledby="pathways-title">
-        <div className="welcome-container">
-          <div className="cnx-split-heading">
-            <div className="cnx-section-heading">
-              <div className="welcome-eyebrow">
-                <span /> {t("CHOISIR SA PLACE")}{" "}
-              </div>
-              <h2 id="pathways-title">
-                {" "}
-                {t("Mentee ou mentor.")} <br />
-                <em>{t("Un même horizon.")}</em>
-              </h2>
-            </div>
-            <p>
-              {" "}
-              {t(
-                "Une idée à faire grandir. Une expérience à transmettre. Choisissez la place depuis laquelle vous souhaitez avancer.",
-              )}{" "}
-            </p>
-          </div>
-          <div className="cnx-pathway-grid">
-            {pathways.map((pathway) => (
-              <PathwayCard role={pathway.role} key={pathway.role}>
-                <Image
-                  src={`/assets/conex/${pathway.image}`}
-                  alt=""
-                  fill
-                  sizes="(max-width: 760px) 100vw, 46vw"
-                />
-                <div className="cnx-photo-shade" />
-                <div className="cnx-pathway-top">
-                  <span>
-                    {t("PARCOURS")} {pathway.number}
-                  </span>
-                  <span className="cnx-circle-arrow">
-                    <Icon name="diagonal" size={19} />
-                  </span>
-                </div>
-                <div className="cnx-pathway-bottom">
-                  <span className="cnx-pathway-label">{pathway.label}</span>
-                  <h3>{pathway.title}</h3>
-                  <p>{pathway.text}</p>
-                  {pathway.role === "mentor" && (
-                    <span className="cnx-pathway-contribution">
-                      <strong>30 USD</strong>
-                      {t("de soutien, en un seul paiement")}
-                    </span>
-                  )}
-                  <span className="cnx-pathway-link">
-                    {founderRegistrationClosed && pathway.role === "porteur"
-                      ? t("Bientôt disponible")
-                      : pathway.action}
-                    <Icon name="arrow" size={18} />
-                  </span>
-                </div>
-              </PathwayCard>
             ))}
           </div>
         </div>
