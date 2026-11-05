@@ -1,4 +1,5 @@
 import "server-only";
+import { profilePhotoUrl } from "@/lib/profile-photos";
 import type { PrismaClient } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
 import { approvedCertificationFilter } from "@/lib/onboarding/policy";
@@ -40,6 +41,14 @@ export async function getFounderDashboard(userId: string, db: PrismaClient = get
   return {
     firstName: user.firstName,
     lastName: user.lastName,
+    email: user.email,
+    phone: user.phone,
+    profilePhotoUrl: profilePhotoUrl(user.profilePhotoId),
+    profile: {
+      biography: user.founderProfile!.biography,
+      city: user.founderProfile!.city,
+      countryCode: user.founderProfile!.countryCode,
+    },
     certified: Boolean(certificate),
     project:
       project && revision

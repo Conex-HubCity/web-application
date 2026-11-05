@@ -2,6 +2,7 @@
 import { useActionState, useRef, useState } from "react";
 import Image from "next/image";
 import { Link, useLocale, useTranslations } from "@/components/i18n";
+import { FounderProfile } from "@/components/founder-profile";
 import { Brand } from "@/components/brand";
 import { Icon } from "@/components/icon";
 import { logout } from "@/app/actions/auth";
@@ -26,8 +27,15 @@ const needs = [
 export function FounderDashboard({ data }: { data: FounderDashboardData }) {
   const t = useTranslations(),
     locale = useLocale();
-  const [view, setView] = useState<"overview" | "project">("overview");
+  const [view, setView] = useState<"overview" | "project" | "profile">("overview");
   const project = data.project;
+  const viewTitle =
+    view === "overview" ? "Vue d’ensemble" : view === "profile" ? "Mon profil" : "Mon projet";
+  const avatar = data.profilePhotoUrl ? (
+    <Image src={data.profilePhotoUrl} alt="" width={34} height={34} unoptimized />
+  ) : (
+    data.firstName.charAt(0)
+  );
   const externalLinks = (project?.socialLinks.length ?? 0) + (project?.customLinks.length ?? 0);
   const updated = project
     ? new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "fr-FR", {
@@ -37,7 +45,7 @@ export function FounderDashboard({ data }: { data: FounderDashboardData }) {
         timeZone: "UTC",
       }).format(new Date(project.updatedAt))
     : null;
-  function go(next: "overview" | "project") {
+  function go(next: "overview" | "project" | "profile") {
     setView(next);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -48,10 +56,6 @@ export function FounderDashboard({ data }: { data: FounderDashboardData }) {
       </a>
       <aside className="fd-sidebar">
         <Brand />
-        <div className="fd-space-label">
-          <span />
-          {t("ESPACE PORTEUR")}
-        </div>
         <nav aria-label={t("Navigation de mon espace")}>
           <button
             onClick={() => go("overview")}
@@ -59,6 +63,13 @@ export function FounderDashboard({ data }: { data: FounderDashboardData }) {
           >
             <Icon name="home" />
             {t("Vue d’ensemble")}
+          </button>
+          <button
+            onClick={() => go("profile")}
+            aria-current={view === "profile" ? "page" : undefined}
+          >
+            <Icon name="user" />
+            {t("Mon profil")}
           </button>
           <button
             onClick={() => go("project")}
@@ -73,24 +84,14 @@ export function FounderDashboard({ data }: { data: FounderDashboardData }) {
               {t("Voir la présentation")}
             </Link>
           )}
-          {!data.certified && (
-            <Link href="/certification">
-              <Icon name="check" />
-              {t("Ma certification")}
-            </Link>
-          )}
         </nav>
-        <div className="fd-sidebar-note">
-          <Icon name="compass" size={23} />
-          <p>{t("Une idée à partager. Des rencontres à venir.")}</p>
-        </div>
         <div className="fd-sidebar-user">
-          <span className="fd-avatar">{data.firstName.charAt(0)}</span>
+          <span className="fd-avatar">{avatar}</span>
           <div>
             <strong>
               {data.firstName} {data.lastName}
             </strong>
-            <small>{t("Porteur de projet")}</small>
+            <small>{t("Mentee")}</small>
           </div>
         </div>
         <form action={logout}>
@@ -103,37 +104,31 @@ export function FounderDashboard({ data }: { data: FounderDashboardData }) {
       <main className="fd-main" id="founder-main">
         <header className="fd-header">
           <span>
-            {t("Mon espace")} <i>/</i>{" "}
-            <strong>{t(view === "overview" ? "Vue d’ensemble" : "Mon projet")}</strong>
+            {t("Mon espace")} <i>/</i> <strong>{t(viewTitle)}</strong>
           </span>
-          <span className="fd-account">
-            <span className="fd-avatar">{data.firstName.charAt(0)}</span>
+          <button
+            type="button"
+            className="fd-account"
+            onClick={() => go("profile")}
+            aria-label={t("Mon profil")}
+          >
+            <span className="fd-avatar">{avatar}</span>
             {data.firstName}
-          </span>
+          </button>
         </header>
         <div className="fd-heading">
           <div>
-            <p className="fd-eyebrow">
-              {t(view === "overview" ? "VOTRE PROJET PREND SA PLACE" : "PRÉSENTATION DU PROJET")}
-            </p>
             <h1>
               {view === "overview" ? (
                 <>
                   {t("Bonjour,")} <em>{data.firstName}.</em>
                 </>
               ) : (
-                t("Mon projet")
+                t(viewTitle)
               )}
             </h1>
-            <p>
-              {t(
-                view === "overview"
-                  ? "Faites découvrir ce que vous construisez."
-                  : "La présentation que les mentors découvriront.",
-              )}
-            </p>
           </div>
-          {project && (
+          {project && view !== "profile" && (
             <span className={`fd-status ${project.visible ? "is-visible" : ""}`}>
               <span />
               {t(project.visible ? "Visible aux mentors" : "Présentation à compléter")}
@@ -141,155 +136,134 @@ export function FounderDashboard({ data }: { data: FounderDashboardData }) {
           )}
         </div>
         {view === "overview" ? (
-          <>
-            <div className="fd-overview-grid">
-              <section className="fd-feature-card">
-                <div className={`fd-cover ${project?.image ? "has-image" : ""}`}>
-                  {project?.image ? (
-                    <Image
-                      src={project.image.fullUrl}
-                      alt={project.title}
-                      fill
-                      unoptimized
-                      sizes="(max-width: 760px) 100vw, 60vw"
-                      className="fd-cover-image"
-                    />
-                  ) : (
-                    <div className="fd-cover-placeholder">
-                      <span className="fd-brand-mark">
-                        {project?.title.slice(0, 1).toUpperCase() || "CNX"}
-                      </span>
-                      <span className="fd-cover-orbit" />
-                    </div>
-                  )}
-                  <span className="fd-cover-tag">{t("VOTRE PROJET")}</span>
-                </div>
-                <div className="fd-feature-copy">
-                  <div className="fd-chips">
-                    {project?.sector && <span>{project.sector}</span>}
-                    {project?.stage && (
-                      <span>
-                        {t(
-                          stages.find((stage) => stage.value === project.stage)?.label ??
-                            project.stage,
-                        )}
-                      </span>
+          project ? (
+            <>
+              <div className="fd-overview-grid">
+                <section className="fd-feature-card">
+                  <div className={`fd-cover ${project?.image ? "has-image" : ""}`}>
+                    {project?.image ? (
+                      <Image
+                        src={project.image.fullUrl}
+                        alt={project.title}
+                        fill
+                        unoptimized
+                        sizes="(max-width: 760px) 100vw, 60vw"
+                        className="fd-cover-image"
+                      />
+                    ) : (
+                      <div className="fd-cover-placeholder">
+                        <span className="fd-brand-mark">
+                          {project.title.slice(0, 1).toUpperCase()}
+                        </span>
+                        <span className="fd-cover-orbit" />
+                      </div>
                     )}
                   </div>
-                  <h2>{project?.title || t("Votre prochaine grande idée commence ici.")}</h2>
-                  <p>
-                    {project?.summary ||
-                      t(
-                        "Présentez votre projet, partagez votre pitch et rendez votre initiative visible aux mentors.",
-                      )}
-                  </p>
-                  <div className="fd-feature-actions">
-                    <button className="fd-primary" onClick={() => go("project")}>
-                      {t(project ? "Modifier la présentation" : "Présenter mon projet")}
-                      <Icon name="arrow" size={17} />
-                    </button>
-                    {project?.visible && (
-                      <Link href="/compte/projet/apercu" className="fd-text-action">
-                        {t("Voir la présentation")}
-                        <Icon name="diagonal" size={15} />
-                      </Link>
-                    )}
-                  </div>
-                  {updated && (
-                    <span className="fd-updated">
-                      {t("Mis à jour le")} {updated}
-                    </span>
-                  )}
-                </div>
-              </section>
-              <div className="fd-side-cards">
-                <section className="fd-card fd-visibility">
-                  <div className="fd-icon-circle">
-                    <Icon name="people" size={23} />
-                  </div>
-                  <span className="fd-eyebrow">{t("VISIBILITÉ")}</span>
-                  <h2>
-                    {t(
-                      project?.visible
-                        ? "Votre projet est en ligne."
-                        : "Donnez vie à votre présentation.",
-                    )}
-                  </h2>
-                  <p>
-                    {t(
-                      project?.visible
-                        ? "Les mentors peuvent découvrir votre projet et consulter votre pitch."
-                        : "Une présentation complète permet aux mentors de découvrir votre initiative.",
-                    )}
-                  </p>
-                  <div className="fd-checklist">
-                    {[
-                      ["Présentation du projet", Boolean(project?.summary)],
-                      ["Lien du pitch", Boolean(project?.pitchUrl)],
-                      ["Image du projet", Boolean(project?.image)],
-                    ].map(([label, done]) => (
-                      <div key={label as string} className={done ? "is-complete" : ""}>
+                  <div className="fd-feature-copy">
+                    <div className="fd-chips">
+                      {project?.sector && <span>{project.sector}</span>}
+                      {project?.stage && (
                         <span>
-                          {done ? (
-                            <Icon name="check" size={13} />
-                          ) : (
-                            <span className="fd-empty-dot" />
+                          {t(
+                            stages.find((stage) => stage.value === project.stage)?.label ??
+                              project.stage,
                           )}
                         </span>
-                        {t(label as string)}
-                        {!done && label === "Image du projet" && <small>{t("Facultatif")}</small>}
-                      </div>
-                    ))}
+                      )}
+                    </div>
+                    <h2>{project.title}</h2>
+                    {project.summary && <p>{project.summary}</p>}
+                    <div className="fd-feature-actions">
+                      <button className="fd-primary" onClick={() => go("project")}>
+                        {t("Modifier la présentation")}
+                        <Icon name="arrow" size={17} />
+                      </button>
+                      {project?.visible && (
+                        <Link href="/compte/projet/apercu" className="fd-text-action">
+                          {t("Voir la présentation")}
+                          <Icon name="diagonal" size={15} />
+                        </Link>
+                      )}
+                    </div>
+                    {updated && (
+                      <span className="fd-updated">
+                        {t("Mis à jour le")} {updated}
+                      </span>
+                    )}
                   </div>
                 </section>
-                <section className="fd-card fd-support-card">
-                  <span className="fd-development">{t("En cours de développement")}</span>
-                  <h2>{t("Les rencontres arrivent.")}</h2>
-                  <p>{t("Les demandes d’accompagnement seront disponibles prochainement.")}</p>
-                  <button type="button" disabled>
-                    <Icon name="lock" size={15} />
-                    {t("Recevoir une demande de mentorat")}
+                <div className="fd-side-cards">
+                  <section className="fd-card fd-visibility">
+                    <div className="fd-icon-circle">
+                      <Icon name="people" size={23} />
+                    </div>
+                    <h2>{t("Présentation")}</h2>
+                    <div className="fd-checklist">
+                      {[
+                        ["Présentation du projet", Boolean(project?.summary)],
+                        ["Lien du pitch", Boolean(project?.pitchUrl)],
+                        ["Image du projet", Boolean(project?.image)],
+                      ].map(([label, done]) => (
+                        <div key={label as string} className={done ? "is-complete" : ""}>
+                          <span>
+                            {done ? (
+                              <Icon name="check" size={13} />
+                            ) : (
+                              <span className="fd-empty-dot" />
+                            )}
+                          </span>
+                          {t(label as string)}
+                          {!done && label === "Image du projet" && <small>{t("Facultatif")}</small>}
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              </div>
+              <section className="fd-media-strip">
+                <div>
+                  <Icon name="document" size={22} />
+                  <span>
+                    <strong>{t("Votre pitch")}</strong>
+                  </span>
+                  {project?.pitchUrl ? (
+                    <a href={project.pitchUrl} target="_blank" rel="noopener noreferrer">
+                      {t("Ouvrir le pitch")}
+                      <Icon name="diagonal" size={14} />
+                    </a>
+                  ) : (
+                    <button onClick={() => go("project")}>{t("Ajouter")}</button>
+                  )}
+                </div>
+                <div>
+                  <Icon name="globe" size={22} />
+                  <span>
+                    <strong>{t("Vos liens")}</strong>
+                    <small>
+                      {externalLinks} {t("lien(s) partagé(s)")}
+                    </small>
+                  </span>
+                  <button onClick={() => go("project")}>
+                    {t("Gérer les liens")}
+                    <Icon name="arrow" size={14} />
                   </button>
-                </section>
-              </div>
-            </div>
-            <section className="fd-media-strip">
-              <div>
-                <Icon name="document" size={22} />
-                <span>
-                  <strong>{t("Votre pitch")}</strong>
-                  <small>
-                    {t(
-                      project?.pitchUrl
-                        ? "Prêt à être découvert"
-                        : "Ajoutez le lien de votre présentation",
-                    )}
-                  </small>
-                </span>
-                {project?.pitchUrl ? (
-                  <a href={project.pitchUrl} target="_blank" rel="noopener noreferrer">
-                    {t("Ouvrir le pitch")}
-                    <Icon name="diagonal" size={14} />
-                  </a>
-                ) : (
-                  <button onClick={() => go("project")}>{t("Ajouter")}</button>
-                )}
-              </div>
-              <div>
-                <Icon name="globe" size={22} />
-                <span>
-                  <strong>{t("Vos liens")}</strong>
-                  <small>
-                    {externalLinks} {t("lien(s) partagé(s)")}
-                  </small>
-                </span>
-                <button onClick={() => go("project")}>
-                  {t("Gérer les liens")}
-                  <Icon name="arrow" size={14} />
-                </button>
-              </div>
+                </div>
+              </section>
+            </>
+          ) : (
+            <section className="fd-empty-project" aria-labelledby="empty-project-title">
+              <span className="fd-empty-project-icon" aria-hidden="true">
+                <Icon name="document" size={30} />
+              </span>
+              <h2 id="empty-project-title">{t("Ajoutez votre projet.")}</h2>
+              <button className="fd-primary" onClick={() => go("project")}>
+                {t("Ajouter mon projet")}
+                <Icon name="arrow" size={17} />
+              </button>
             </section>
-          </>
+          )
+        ) : view === "profile" ? (
+          <FounderProfile data={data} />
         ) : (
           <>
             {project && !project.editable ? (
@@ -340,7 +314,6 @@ function FounderProjectForm({ project }: { project: FounderDashboardData["projec
             <span>01</span>
             <div>
               <h2>{t("L’essentiel du projet")}</h2>
-              <p>{t("Ce que vous construisez et à qui cela s’adresse.")}</p>
             </div>
           </div>
           <label>
@@ -351,7 +324,6 @@ function FounderProjectForm({ project }: { project: FounderDashboardData["projec
               maxLength={200}
               value={values.title}
               onChange={(e) => setValues({ ...values, title: e.target.value })}
-              placeholder={t("Le nom de votre projet")}
             />
           </label>
           <label>
@@ -363,7 +335,6 @@ function FounderProjectForm({ project }: { project: FounderDashboardData["projec
               maxLength={6000}
               value={values.summary}
               onChange={(e) => setValues({ ...values, summary: e.target.value })}
-              placeholder={t("Quel problème résolvez-vous, pour qui et avec quelle solution ?")}
             />
           </label>
           <div className="fd-form-row">
@@ -402,7 +373,6 @@ function FounderProjectForm({ project }: { project: FounderDashboardData["projec
             <span>02</span>
             <div>
               <h2>{t("Pitch et identité visuelle")}</h2>
-              <p>{t("Donnez aux mentors une première impression de votre projet.")}</p>
             </div>
           </div>
           <label>
@@ -416,7 +386,6 @@ function FounderProjectForm({ project }: { project: FounderDashboardData["projec
               onChange={(e) => setValues({ ...values, pitchUrl: e.target.value })}
               placeholder="https://…"
             />
-            <small>{t("Une vidéo, un document ou une présentation accessible par lien.")}</small>
           </label>
           <input name="brandingImageId" type="hidden" value={image?.id ?? ""} />
           <div className="fd-image-field">
@@ -435,7 +404,7 @@ function FounderProjectForm({ project }: { project: FounderDashboardData["projec
             </div>
             <div>
               <strong>{t("Image du projet")}</strong>
-              <p>{t("Logo ou visuel de marque. PNG, JPEG ou WebP, 5 Mo maximum.")}</p>
+              <p>{t("PNG, JPEG ou WebP · 5 Mo max.")}</p>
               <div className="fd-image-actions">
                 <button type="button" className="fd-secondary" onClick={() => setUploadOpen(true)}>
                   {t(image ? "Changer l’image" : "Ajouter une image")}
@@ -454,7 +423,6 @@ function FounderProjectForm({ project }: { project: FounderDashboardData["projec
             <span>03</span>
             <div>
               <h2>{t("Votre présence en ligne")}</h2>
-              <p>{t("Partagez vos réseaux et les liens utiles à votre projet.")}</p>
             </div>
           </div>
           <div className="fd-social-fields">
@@ -543,7 +511,6 @@ function FounderProjectForm({ project }: { project: FounderDashboardData["projec
             <span>04</span>
             <div>
               <h2>{t("L’accompagnement recherché")}</h2>
-              <p>{t("Sur quels sujets aimeriez-vous échanger avec un mentor ?")}</p>
             </div>
           </div>
           <fieldset>
@@ -584,7 +551,6 @@ function FounderProjectForm({ project }: { project: FounderDashboardData["projec
                 {t(state.success)}
               </p>
             )}
-            <p>{t("Cette présentation sera consultable par les mentors.")}</p>
           </div>
           <button className="fd-primary" disabled={pending}>
             {t(

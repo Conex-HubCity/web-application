@@ -230,7 +230,10 @@ databaseTest(
     assert.equal(saved.currentRevision?.reviewStatus, "DRAFT");
     assert.equal(saved.currentRevision?.publishedAt, null);
     assert.equal(saved.currentRevision?.privatePitchStorageKey, null);
-    assertSafe(dashboard);
+    // The authenticated owner can read their own email in the profile editor.
+    const { email, ...dashboardFields } = dashboard;
+    assert.equal(email, owner.email);
+    assertSafe(dashboardFields);
   },
 );
 

@@ -1,3 +1,4 @@
+import { saveFounderProfile } from "../lib/domain/founder-profile";
 import {
   ProfilePhotoError,
   storeProfilePhoto,
@@ -2508,5 +2509,145 @@ databaseTest(
       replaceMentorPhoto(db, founder.id, registrationPhoto(), testPhotoRoot),
       /autorisée/,
     );
+  },
+);
+
+function menteeProfileForm(overrides: Record<string, string> = {}) {
+  const form = new FormData();
+  for (const [key, value] of Object.entries({
+    firstName: "Amina",
+    lastName: "Kossi",
+    phone: "",
+    city: "Lomé",
+    countryCode: "tg",
+    biography: "Entrepreneure dans l’agriculture.",
+    ...overrides,
+  }))
+    form.set(key, value);
+  return form;
+}
+
+databaseTest(
+  "Mentee profile saves identity and a private photo without changing privileges",
+  async () => {
+    const owner = await user("FOUNDER"),
+      other = await user("FOUNDER");
+    const phone = "+228" + randomUUID().replace(/\D/g, "").padEnd(8, "1").slice(0, 8);
+    await db.user.update({ where: { id: owner.id }, data: { phoneVerifiedAt: new Date() } });
+    const form = menteeProfileForm({
+      phone,
+      userId: other.id,
+      email: "forged@example.test",
+      role: "ADMIN",
+      accountStatus: "SUSPENDED",
+    });
+    form.set("profilePhoto", registrationPhoto());
+    await saveFounderProfile(owner.id, form, db, testPhotoRoot);
+    const dashboard = await getFounderDashboard(owner.id, db);
+    assert.equal(dashboard.firstName, "Amina");
+    assert.equal(dashboard.lastName, "Kossi");
+    assert.equal(dashboard.email, owner.email);
+    assert.equal(dashboard.phone, phone);
+    assert.equal(dashboard.profile.city, "Lomé");
+    assert.equal(dashboard.profile.countryCode, "TG");
+    assert.equal(dashboard.profile.biography, "Entrepreneure dans l’agriculture.");
+    assert.equal(dashboard.project, null);
+    const saved = await db.user.findUniqueOrThrow({
+      where: { id: owner.id },
+      include: { roles: true },
+    });
+    assert.equal(saved.accountStatus, "ACTIVE");
+    assert.deepEqual(
+      saved.roles.map(({ role }) => role),
+      ["FOUNDER"],
+    );
+    assert.equal(saved.phoneVerifiedAt, null);
+    assert.ok(saved.profilePhotoId);
+    assert.equal(
+      dashboard.profilePhotoUrl,
+      `/api/profile-photos/${saved.profilePhotoId}/thumbnail`,
+    );
+    assert.ok(
+      await readProfilePhoto(db, owner.id, saved.profilePhotoId, "thumbnail", testPhotoRoot),
+    );
+    assert.equal(
+      await readProfilePhoto(db, other.id, saved.profilePhotoId, "thumbnail", testPhotoRoot),
+      null,
+    );
+    assert.equal((await db.user.findUniqueOrThrow({ where: { id: other.id } })).firstName, "Test");
+    await db.user.update({ where: { id: owner.id }, data: { phoneVerifiedAt: new Date() } });
+    await saveFounderProfile(owner.id, menteeProfileForm({ phone }), db, testPhotoRoot);
+    const unchanged = await db.user.findUniqueOrThrow({ where: { id: owner.id } });
+    assert.equal(unchanged.profilePhotoId, saved.profilePhotoId);
+    assert.ok(unchanged.phoneVerifiedAt);
+    const remove = menteeProfileForm({ phone });
+    remove.set("removeProfilePhoto", "true");
+    await saveFounderProfile(owner.id, remove, db, testPhotoRoot);
+    assert.equal((await getFounderDashboard(owner.id, db)).profilePhotoUrl, null);
+    await assert.rejects(readFile(path.join(testPhotoRoot, saved.profilePhotoId, "full.jpg")), {
+      code: "ENOENT",
+    });
+  },
+);
+
+databaseTest("Mentee profile validates fields and refuses unauthorized accounts", async () => {
+  const owner = await user("FOUNDER");
+  const invalidProfiles: Record<string, string>[] = [
+    { firstName: "" },
+    { lastName: "" },
+    { firstName: "a".repeat(101) },
+    { city: "x".repeat(151) },
+    { countryCode: "123" },
+    { phone: "------" },
+    { phone: "not a phone" },
+    { biography: "x".repeat(4001) },
+  ];
+  for (const values of invalidProfiles)
+    await assert.rejects(
+      saveFounderProfile(owner.id, menteeProfileForm(values), db, testPhotoRoot),
+      expectCode("INVALID_PROFILE"),
+    );
+  const actor = await user("MENTOR");
+  await assert.rejects(
+    saveFounderProfile(actor.id, menteeProfileForm(), db, testPhotoRoot),
+    expectCode("FOUNDER_UNAVAILABLE"),
+  );
+  await db.user.update({ where: { id: owner.id }, data: { emailVerifiedAt: null } });
+  await assert.rejects(
+    saveFounderProfile(owner.id, menteeProfileForm(), db, testPhotoRoot),
+    expectCode("FOUNDER_UNAVAILABLE"),
+  );
+  for (const status of ["SUSPENDED", "CLOSED"] as const) {
+    await db.user.update({
+      where: { id: owner.id },
+      data: { emailVerifiedAt: new Date(), accountStatus: status },
+    });
+    await assert.rejects(
+      saveFounderProfile(owner.id, menteeProfileForm(), db, testPhotoRoot),
+      expectCode("FOUNDER_UNAVAILABLE"),
+    );
+  }
+});
+
+databaseTest(
+  "Mentee profile rolls back fields and removes the new photo on a conflicting phone",
+  async () => {
+    const owner = await user("FOUNDER"),
+      other = await user("FOUNDER");
+    const phone = "+228" + randomUUID().replace(/\D/g, "").padEnd(8, "2").slice(0, 8);
+    await db.user.update({ where: { id: other.id }, data: { phone } });
+    await saveFounderProfile(owner.id, menteeProfileForm(), db, testPhotoRoot);
+    const before = await readdir(testPhotoRoot).catch(() => [] as string[]);
+    const conflict = menteeProfileForm({ phone, firstName: "Should roll back", city: "Changed" });
+    conflict.set("profilePhoto", registrationPhoto());
+    await assert.rejects(
+      saveFounderProfile(owner.id, conflict, db, testPhotoRoot),
+      expectCode("PHONE_IN_USE"),
+    );
+    const current = await getFounderDashboard(owner.id, db);
+    assert.equal(current.firstName, "Amina");
+    assert.equal(current.profile.city, "Lomé");
+    assert.equal(current.profilePhotoUrl, null);
+    assert.deepEqual((await readdir(testPhotoRoot)).sort(), before.sort());
   },
 );

@@ -8,10 +8,13 @@ export async function requireFounderAccount(userId: string, db: Pick<PrismaClien
       id: true,
       firstName: true,
       lastName: true,
+      email: true,
+      phone: true,
+      profilePhotoId: true,
       accountStatus: true,
       emailVerifiedAt: true,
       roles: { select: { role: true } },
-      founderProfile: { select: { userId: true } },
+      founderProfile: { select: { userId: true, biography: true, city: true, countryCode: true } },
     },
   });
   if (

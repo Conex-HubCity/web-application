@@ -33,11 +33,13 @@ function previewDetails(source: string | null | undefined) {
 
 export function ProfilePhotoPicker({
   onChange,
+  onRemove,
   initialUrl,
   required = false,
   disabled = false,
 }: {
   onChange: (file: File | null) => void;
+  onRemove?: () => void;
   initialUrl?: string | null;
   required?: boolean;
   disabled?: boolean;
@@ -165,7 +167,7 @@ export function ProfilePhotoPicker({
       setError(t("Impossible de lire cette photo."));
     }
   }
-  function remove() {
+  function remove(persistRemoval = false) {
     photoLog("remove", { preview: previewDetails(preview), selection: selection.current });
     selection.current++;
     reader.current?.abort();
@@ -173,6 +175,7 @@ export function ProfilePhotoPicker({
     setCleared(true);
     setError("");
     onChange(null);
+    if (persistRemoval) onRemove?.();
     if (input.current) input.current.value = "";
   }
   function imageFailed() {
@@ -195,27 +198,29 @@ export function ProfilePhotoPicker({
           aria-label={t(displayed ? "Changer la photo" : "Ajouter une photo")}
         >
           {displayed ? (
-            <img
-              src={displayed}
-              alt={t("Votre photo de profil")}
-              width={104}
-              height={104}
-              onLoad={(event) => {
-                const image = event.currentTarget,
-                  bounds = image.getBoundingClientRect(),
-                  style = getComputedStyle(image);
-                photoLog("image:loaded", {
-                  naturalWidth: image.naturalWidth,
-                  naturalHeight: image.naturalHeight,
-                  renderedWidth: bounds.width,
-                  renderedHeight: bounds.height,
-                  display: style.display,
-                  visibility: style.visibility,
-                  opacity: style.opacity,
-                });
-              }}
-              onError={imageFailed}
-            />
+            <span className="profile-photo-frame">
+              <img
+                src={displayed}
+                alt={t("Votre photo de profil")}
+                width={104}
+                height={104}
+                onLoad={(event) => {
+                  const image = event.currentTarget,
+                    bounds = image.getBoundingClientRect(),
+                    style = getComputedStyle(image);
+                  photoLog("image:loaded", {
+                    naturalWidth: image.naturalWidth,
+                    naturalHeight: image.naturalHeight,
+                    renderedWidth: bounds.width,
+                    renderedHeight: bounds.height,
+                    display: style.display,
+                    visibility: style.visibility,
+                    opacity: style.opacity,
+                  });
+                }}
+                onError={imageFailed}
+              />
+            </span>
           ) : (
             <Icon name="user" size={36} />
           )}
@@ -234,7 +239,7 @@ export function ProfilePhotoPicker({
             {t(displayed ? "Changer la photo" : "Ajouter une photo")}
           </label>
           {displayed && (
-            <button type="button" disabled={disabled} onClick={remove}>
+            <button type="button" disabled={disabled} onClick={() => remove(true)}>
               {t("Retirer")}
             </button>
           )}
