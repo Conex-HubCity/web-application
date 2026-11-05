@@ -141,21 +141,12 @@ export async function HomeSections({
         aria-labelledby="training-title"
       >
         <div className="welcome-container">
-          <div className="cnx-section-heading">
-            <div className="welcome-eyebrow">
-              <span />
-              {t("APPRENDRE POUR AVANCER ENSEMBLE")}
-            </div>
-            <h2 id="training-title">
-              {t("Se former.")}
-              <br />
-              <em>{t("Puis grandir ensemble.")}</em>
-            </h2>
-            <p>
-              {t(
-                "Mentee ou mentor, la formation prépare une relation utile. Un socle commun avant la rencontre, puis un chemin à construire à deux.",
-              )}
+          <div className="cnx-section-heading cnx-training-heading">
+            <h2 id="training-title">{t("Formation mentorale & Co")}</h2>
+            <p className="cnx-training-subtitle">
+              {t("Une véritable préparation au compagnonnage.")}
             </p>
+            <p>{t("WoeAcademy et Formation Mentorale : les arches sous le pont.")}</p>
           </div>
           <HomeProgramme />
         </div>

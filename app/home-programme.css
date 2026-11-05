@@ -1,373 +1,81 @@
-/* Programme addition: original forest, cream, gold and serif charter. */
-.welcome-page .cx-programme-list {
-  position: relative;
-  display: grid;
-  gap: 28px;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-.welcome-page .cx-programme-list::before {
-  content: "";
-  position: absolute;
-  top: 24px;
-  bottom: 24px;
-  left: 23px;
-  width: 2px;
-  background: linear-gradient(180deg, var(--sage), #b5bea5 55%, var(--gold));
-}
-.welcome-page .cx-programme-item {
-  position: relative;
-  display: grid;
-  grid-template-columns: 48px minmax(0, 1fr);
-  gap: 28px;
-  min-width: 0;
-}
-.welcome-page .cx-programme-number {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: var(--cream);
-  color: var(--forest);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 15px;
-  font-weight: 400;
-  font-variant-numeric: tabular-nums;
-}
-.welcome-page .cx-programme-item:last-child .cx-programme-number {
-  color: #775016;
-}
-.welcome-page .cx-chapter {
-  min-width: 0;
-  border-radius: 17px;
-  border: 1px solid var(--line);
-  overflow: hidden;
-  scroll-margin-top: 112px;
-}
-.welcome-page .cx-chapter h3 {
-  margin: 0;
-  color: inherit;
-  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
-  font-size: clamp(29px, 2.8vw, 40px);
-  line-height: 1.13;
-  letter-spacing: -0.04em;
-  font-weight: 400;
-  max-width: 490px;
-}
-.welcome-page .cx-chapter p {
-  line-height: 1.7;
-}
-.welcome-page .cx-chapter-training {
-  display: grid;
-  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+/* Forest background marks the transition into the training programme. */
+.welcome-page .cnx-training-section {
+  --line: #f6f3eb30;
+  margin: clamp(16px, 2.5vw, 40px);
+  border-radius: clamp(16px, 2vw, 28px);
   background: var(--forest);
-  border-color: var(--forest);
-  color: var(--white);
+  color: var(--cream);
 }
-.welcome-page .cx-chapter-training-copy {
-  padding: 38px;
+.welcome-page .cnx-training-heading > p {
+  color: #dbe4d6;
 }
-.welcome-page .cx-chapter-training-symbol {
-  display: grid;
-  place-items: center;
-  width: 49px;
-  height: 49px;
-  margin-bottom: 25px;
-  border-radius: 50%;
-  border: 1px solid #ffffff30;
+.welcome-page .cnx-training-heading h2 {
+  margin-top: 0;
+}
+.welcome-page .cnx-training-heading > p.cnx-training-subtitle {
+  max-width: none;
   color: var(--gold);
+  font:
+    italic 400 clamp(22px, 2.3vw, 30px)/1.45 Georgia,
+    "Times New Roman",
+    serif;
+  margin-top: 20px;
 }
-.welcome-page .cx-chapter-intro {
-  margin: 18px 0 25px;
-  color: #d6dfd0;
-  font-size: 14px;
-  max-width: 460px;
+.welcome-page .cnx-training-heading > p + p {
+  margin-top: 12px;
 }
-.welcome-page .cx-programme-selector {
-  display: inline-flex;
-  gap: 5px;
-  padding: 5px;
-  border: 1px solid #ffffff30;
-  border-radius: 10px;
-  margin-bottom: 25px;
+.welcome-page .cx-programme {
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 28px;
 }
-.welcome-page .cx-programme-selector button {
-  padding: 10px 23px;
-  border-radius: 6px;
-  background: transparent;
-  color: #e6ebdf;
-  font-size: 13px;
-  font-weight: 600;
-  min-width: 100px;
-}
-.welcome-page .cx-programme-selector button:hover {
-  background: #ffffff12;
-}
-.welcome-page .cx-programme-selector button[aria-pressed="true"] {
-  background: var(--gold);
-  color: var(--forest);
-}
-.welcome-page .cx-programme-selector button[aria-pressed="true"]:hover {
-  background: var(--gold);
-}
-.welcome-page .cx-programme-selector button:focus-visible {
-  outline: 3px solid #fff;
-  outline-offset: 2px;
-}
-.welcome-page .cx-programme-learning {
-  min-height: 176px;
-}
-.welcome-page .cx-programme-learning ul {
-  display: grid;
-  gap: 18px;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-.welcome-page .cx-programme-learning li {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-.welcome-page .cx-programme-learning li > svg {
-  color: var(--sage);
-  margin-top: 3px;
-}
-.welcome-page .cx-programme-learning strong {
-  font-size: 13px;
-  font-weight: 600;
-}
-.welcome-page .cx-programme-learning p {
-  margin-top: 4px;
-  color: #d6dfd0;
-  font-size: 12px;
-}
-.welcome-page .cx-programme-red-badge {
-  display: table;
-  padding: 4px 8px;
-  margin-top: 7px;
-  border-radius: 5px;
-  background: #ffe4dd;
-  color: #982f1e;
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1.4;
-}
-.welcome-page .cx-chapter-training-visual {
-  position: relative;
-  display: flex;
+.welcome-page .cx-programme-block {
   min-width: 0;
-  padding: 0;
+  padding-block: clamp(30px, 3.6vw, 48px);
+}
+.welcome-page .cx-programme-block + .cx-programme-block {
+  border-top: 1px solid var(--line);
+}
+.welcome-page .cx-programme-block:last-child {
+  padding-bottom: 0;
+}
+.welcome-page .cx-programme-block h3 {
+  margin: 0 0 20px;
+  color: var(--cream);
+  font:
+    400 clamp(27px, 2.8vw, 37px)/1.2 Georgia,
+    "Times New Roman",
+    serif;
+  letter-spacing: -0.035em;
+}
+.welcome-page .cx-programme-block p {
+  max-width: 74ch;
   margin: 0;
+  color: #dbe4d6;
+  font-size: 15px;
+  line-height: 1.85;
 }
-.welcome-page .cx-chapter-training-visual::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, #132d2600 45%, #0c211be0);
-  pointer-events: none;
-}
-.welcome-page .cx-chapter-training-visual > img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 49% center;
-}
-.welcome-page .cx-training-image-accent {
-  position: absolute;
-  z-index: 1;
-  bottom: 32px;
-  left: 28px;
-  right: 28px;
-  padding-top: 22px;
-  border-top: 1px solid #ffffff50;
-}
-.welcome-page .cx-training-image-accent > span {
-  display: block;
-  width: 32px;
-  height: 3px;
-  margin-bottom: 13px;
-  background: var(--gold);
-}
-.welcome-page .cx-chapter-meeting {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 31%;
-  background: var(--white);
-}
-.welcome-page .cx-chapter-copy {
-  padding: 34px 38px;
-}
-.welcome-page .cx-chapter-copy > p {
+.welcome-page .cx-programme-block p.cx-learning-note {
+  max-width: 74ch;
   margin-top: 18px;
-  font-size: 14px;
-  color: #657568;
-  max-width: 680px;
+  border-left: 2px solid #f0bf7d80;
+  padding-left: 15px;
+  color: #c7d3c4;
+  font-size: 13px;
 }
-.welcome-page .cx-chapter-meeting-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.welcome-page .cx-programme-block p.cx-learning-subtitle {
+  margin: -6px 0 20px;
+  color: var(--gold);
+  font:
+    italic 400 clamp(20px, 2vw, 24px)/1.5 Georgia,
+    "Times New Roman",
+    serif;
 }
-.welcome-page .cx-chapter-future {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: #6e7667;
-  font-size: 11px;
-  line-height: 1.6;
-  margin-top: 24px;
+.welcome-page .cx-connection-copy p + p {
+  margin-top: 18px;
 }
-.welcome-page .cx-chapter-future > span {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #b59060;
-  flex-shrink: 0;
-}
-.welcome-page .cx-chapter-progress {
-  background: var(--soft-green);
-}
-.welcome-page .cx-chapter-rhythm {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 0 38px 34px;
-  max-width: 710px;
-}
-.welcome-page .cx-chapter-rhythm > div {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  color: #566c57;
-  font-size: 12px;
-}
-.welcome-page .cx-chapter-rhythm svg {
-  color: var(--forest);
-}
-.welcome-page .cx-chapter-rhythm > i {
-  flex: 1;
-  height: 1px;
-  background: #c5cebc;
-}
-@media (max-width: 1050px) {
-  .welcome-page .cx-chapter-training-copy {
-    padding: 30px;
-  }
-  .welcome-page .cx-chapter-training {
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
-  }
-  .welcome-page .cx-chapter-copy {
-    padding: 30px;
-  }
-  .welcome-page .cx-chapter-rhythm {
-    padding: 0 30px 30px;
-  }
-}
-@media (max-width: 760px) {
-  .welcome-page .cx-programme-item {
-    grid-template-columns: 30px minmax(0, 1fr);
-    gap: 14px;
-  }
-  .welcome-page .cx-programme-number {
-    width: 30px;
-    height: 30px;
-    font-size: 10px;
-  }
-  .welcome-page .cx-programme-list::before {
-    left: 14px;
-    top: 15px;
-    bottom: 15px;
-  }
-  .welcome-page .cx-chapter {
-    border-radius: 17px;
-    scroll-margin-top: 110px;
-  }
-  .welcome-page .cx-chapter-training {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .welcome-page .cx-chapter-training-copy {
-    padding: 26px;
-  }
-  .welcome-page .cx-chapter h3 {
-    font-size: clamp(27px, 5.8vw, 34px);
-    letter-spacing: -0.035em;
-  }
-  .welcome-page .cx-chapter-intro {
-    font-size: 13px;
-  }
-  .welcome-page .cx-programme-learning {
-    min-height: 185px;
-  }
-  .welcome-page .cx-chapter-training-visual {
-    height: 240px;
-  }
-  .welcome-page .cx-chapter-training-visual > img {
-    object-position: center 40%;
-  }
-  .welcome-page .cx-training-image-accent {
-    bottom: 22px;
-    left: 26px;
-    right: 26px;
-  }
-  .welcome-page .cx-chapter-meeting {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .welcome-page .cx-chapter-meeting-photo {
-    height: 200px;
-  }
-  .welcome-page .cx-chapter-copy {
-    padding: 26px;
-  }
-  .welcome-page .cx-chapter-copy > p {
-    font-size: 13px;
-  }
-  .welcome-page .cx-chapter-rhythm {
-    padding: 0 26px 26px;
-    gap: 9px;
-  }
-  .welcome-page .cx-chapter-rhythm > div {
-    flex: 1;
-    flex-direction: column;
-    text-align: center;
-    gap: 9px;
-    font-size: 10px;
-    line-height: 1.4;
-  }
-}
-@media (max-width: 390px) {
-  .welcome-page .cx-programme-item {
-    grid-template-columns: 25px minmax(0, 1fr);
-    gap: 10px;
-  }
-  .welcome-page .cx-programme-number {
-    height: 25px;
-    width: 25px;
-    font-size: 9px;
-  }
-  .welcome-page .cx-programme-list::before {
-    left: 11.5px;
-  }
-  .welcome-page .cx-chapter-training-copy,
-  .welcome-page .cx-chapter-copy {
-    padding: 22px;
-  }
-  .welcome-page .cx-programme-selector {
-    display: flex;
-  }
-  .welcome-page .cx-programme-selector button {
-    flex: 1;
-    min-width: 0;
-    padding-inline: 12px;
-  }
-  .welcome-page .cx-programme-learning {
-    min-height: 190px;
-  }
-  .welcome-page .cx-chapter-rhythm {
-    padding-inline: 22px;
+@media (max-width: 600px) {
+  .welcome-page .cx-programme-block p {
+    font-size: 14px;
+    line-height: 1.8;
   }
 }
