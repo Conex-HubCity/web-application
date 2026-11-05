@@ -48,7 +48,7 @@ La présentation utilise une seule colonne sur fond vert forêt, avec des textes
 
 ## Les parcours — avant la FAQ
 
-Ordre de l’accueil : hero, CNX ?, Formation mentorale & Co, Les parcours, FAQ, footer.
+Ordre de l’accueil : hero, CNX ?, Formation mentorale & Co, Les parcours, Le projet du mois, FAQ, footer.
 
 Mentor & Mentee : un même horizon.
 
@@ -101,3 +101,15 @@ Le grand mot CNX et sa baseline sont retirés du splash. La mention « A solutio
 La durée, le bouton Passer, la touche Échap, le verrouillage du défilement, la commande Revoir l’introduction et la prise en compte du mouvement réduit sont conservés. La clé de session passe en v2 pour présenter cette nouvelle introduction une fois aux visiteurs de la session en cours.
 
 L’animation HubCity est renforcée : attribution d’abord, révélation latérale et rebond léger du logo entier avec mise à l’échelle uniforme, halo discret et expansion des cercles, puis trait doré. Le fichier du logo reste inchangé ; le mode mouvement réduit supprime ces effets. La clé de session passe en v3.
+
+## Le projet du mois — ORIA
+
+Bandeau placé après les cartes Mentee/Mentor et avant la FAQ. Cette vitrine reste illustrative ; le badge visuel est retiré à la demande du propriétaire.
+
+ORIA — Trouver sa voie, construire son avenir.
+
+ORIA accompagne les jeunes dans leurs choix d’études en les aidant à découvrir les formations et établissements adaptés à leurs aspirations.
+
+Le résumé s’appuie sur le parcours utilisateur fourni : https://docs.google.com/document/d/1H5s0BjOk6inkZM8URiRFF4C-TAapgyyVAleT281Btr8/edit
+
+Le logo ORIA fourni est conservé dans `public/assets/conex/oria-logo.jpg` et apparaît en fond discret et près du nom du projet. La photo fournie de Yao Grace Akogo est conservée dans `public/assets/conex/oria-yao-grace-akogo.jpg`. Elle occupe la grande bulle ; le portrait `mentor.webp`, déjà utilisé par la carte Mentor, occupe la plus petite bulle, superposée au premier plan. La petite bulle du mentor est au premier plan à gauche de celle de Grace ; sa légende est retirée. Le nom de Yao Grace Akogo reste affiché.

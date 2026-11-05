@@ -1048,3 +1048,163 @@
   margin-top: 4px;
   border-radius: 10px;
 }
+
+/* Illustrative project showcase: the existing mentor sits in front of the founder. */
+.cnx-featured-project {
+  padding-top: 45px;
+  background: var(--cream);
+}
+.cnx-featured-project .cnx-section-heading h2 {
+  margin-top: 0;
+}
+.cnx-project-banner {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  align-items: center;
+  gap: clamp(28px, 4vw, 64px);
+  margin-top: 34px;
+  padding: clamp(30px, 4.5vw, 64px);
+  border-radius: 22px;
+  overflow: hidden;
+  color: var(--cream);
+  background: var(--forest);
+}
+.cnx-project-banner > .cnx-project-backdrop {
+  z-index: -2;
+  object-fit: contain;
+  object-position: right center;
+  opacity: 0.16;
+}
+.cnx-project-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(100deg, #132d26 12%, #132d26ed 48%, #132d2640);
+}
+.cnx-project-identity {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.cnx-project-identity img {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+.cnx-project-identity h3 {
+  font:
+    400 clamp(48px, 5vw, 72px)/1 Georgia,
+    "Times New Roman",
+    serif;
+  letter-spacing: -0.04em;
+}
+.cnx-project-tagline {
+  max-width: 420px;
+  margin-top: 24px;
+  color: var(--gold);
+  font:
+    italic 400 clamp(24px, 2.6vw, 34px)/1.3 Georgia,
+    "Times New Roman",
+    serif;
+}
+.cnx-project-description {
+  max-width: 48ch;
+  margin-top: 20px;
+  color: #dbe4d6;
+  font-size: 14px;
+  line-height: 1.85;
+}
+.cnx-project-people {
+  position: relative;
+  width: min(100%, 336px);
+  justify-self: center;
+  margin-inline: auto;
+  padding: 12px 0 84px;
+}
+.cnx-project-founder {
+  width: 248px;
+  max-width: 100%;
+  margin: 0 0 0 auto;
+  text-align: center;
+}
+.cnx-project-founder-portrait,
+.cnx-project-mentor-portrait {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--forest);
+  box-shadow: 0 12px 36px #06150f40;
+}
+.cnx-project-founder-portrait {
+  border: 5px solid var(--cream);
+}
+.cnx-project-founder-portrait img {
+  object-fit: cover;
+  object-position: 50% 30%;
+}
+.cnx-project-founder figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+.cnx-project-founder figcaption span {
+  color: #c4d2c2;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+.cnx-project-founder figcaption strong {
+  color: var(--cream);
+  font-size: 17px;
+  font-weight: 500;
+}
+.cnx-project-mentor {
+  position: absolute;
+  z-index: 1;
+  top: 138px;
+  left: 0;
+  width: 124px;
+  margin: 0;
+  text-align: center;
+}
+.cnx-project-mentor-portrait {
+  border: 4px solid var(--gold);
+}
+.cnx-project-mentor-portrait img {
+  object-fit: cover;
+  object-position: 52% center;
+}
+@media (max-width: 900px) {
+  .cnx-project-banner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+  }
+  .cnx-project-people {
+    margin-top: 4px;
+  }
+}
+@media (max-width: 600px) {
+  .cnx-project-banner {
+    padding: 28px 20px;
+    border-radius: 16px;
+  }
+  .cnx-project-people {
+    width: min(100%, 280px);
+  }
+  .cnx-project-founder {
+    width: 210px;
+  }
+  .cnx-project-mentor {
+    top: 112px;
+    width: 104px;
+  }
+}

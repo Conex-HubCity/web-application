@@ -193,6 +193,70 @@ export async function HomeSections({
       </section>
 
       <section
+        id="projet-du-mois"
+        className="cnx-section cnx-featured-project"
+        aria-labelledby="featured-project-title"
+      >
+        <div className="welcome-container">
+          <div className="cnx-section-heading">
+            <h2 id="featured-project-title">{t("Le projet du mois")}</h2>
+          </div>
+          <article className="cnx-project-banner" aria-labelledby="oria-title">
+            <Image
+              className="cnx-project-backdrop"
+              src="/assets/conex/oria-logo.jpg"
+              alt=""
+              fill
+              sizes="(max-width: 760px) 100vw, 80vw"
+            />
+            <div className="cnx-project-copy">
+              <div className="cnx-project-identity">
+                <Image
+                  src="/assets/conex/oria-logo.jpg"
+                  alt={t("Logo ORIA")}
+                  width={64}
+                  height={64}
+                />
+                <h3 id="oria-title">ORIA</h3>
+              </div>
+              <p className="cnx-project-tagline">{t("Trouver sa voie, construire son avenir.")}</p>
+              <p className="cnx-project-description">
+                {t(
+                  "ORIA accompagne les jeunes dans leurs choix d’études en les aidant à découvrir les formations et établissements adaptés à leurs aspirations.",
+                )}
+              </p>
+            </div>
+            <div className="cnx-project-people">
+              <figure className="cnx-project-founder">
+                <div className="cnx-project-founder-portrait">
+                  <Image
+                    src="/assets/conex/oria-yao-grace-akogo.jpg"
+                    alt={t("Portrait de Yao Grace Akogo")}
+                    fill
+                    sizes="(max-width: 600px) 210px, 248px"
+                  />
+                </div>
+                <figcaption>
+                  <span>{t("Porteur du projet")}</span>
+                  <strong>Yao Grace Akogo</strong>
+                </figcaption>
+              </figure>
+              <figure className="cnx-project-mentor">
+                <div className="cnx-project-mentor-portrait">
+                  <Image
+                    src="/assets/conex/mentor.webp"
+                    alt={t("Portrait illustratif du mentor")}
+                    fill
+                    sizes="(max-width: 600px) 104px, 124px"
+                  />
+                </div>
+              </figure>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section
         id="questions-frequentes"
         className="cnx-faq cnx-section"
         aria-labelledby="faq-title"
