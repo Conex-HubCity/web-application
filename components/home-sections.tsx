@@ -101,6 +101,40 @@ export async function HomeSections({
 
   return (
     <>
+      <section id="a-propos" className="cnx-about cnx-section" aria-labelledby="about-title">
+        <div className="welcome-container cnx-about-grid">
+          <div className="cnx-section-heading cnx-about-copy">
+            <div className="welcome-eyebrow">
+              <span />
+              CNX ?
+            </div>
+            <h2 id="about-title">
+              {t("Un ambitieux programme de mentorat")}{" "}
+              <em>{t("au service de la transformation de l’Afrique.")}</em>
+            </h2>
+            <p className="cnx-about-intro">
+              {t("Une bonne connexion peut ouvrir de nouveaux possibles.")}
+            </p>
+            <p>
+              {t(
+                "CNX relie des primo-entrepreneurs du continent à des professionnels de la diaspora qui souhaitent partager leur expérience.",
+              )}
+            </p>
+            <p className="cnx-about-signature">{t("JETER UN PONT POUR CONSTRUIRE ENSEMBLE")}</p>
+          </div>
+          <figure className="cnx-about-visual">
+            <Image
+              src="/assets/conex/africa-mirror-v1.png"
+              alt={t(
+                "Une entrepreneure et un mentor se font face autour d’un miroir en forme d’Afrique.",
+              )}
+              width={1536}
+              height={1024}
+              sizes="(max-width: 900px) 100vw, 54vw"
+            />
+          </figure>
+        </div>
+      </section>
       <section
         id="programme"
         className="cnx-section cnx-training-section"
