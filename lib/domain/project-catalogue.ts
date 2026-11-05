@@ -92,7 +92,6 @@ const visiblePresentation = {
     },
   },
   founder: {
-    adultConfirmedAt: { not: null },
     user: {
       accountStatus: "ACTIVE",
       emailVerifiedAt: { not: null },

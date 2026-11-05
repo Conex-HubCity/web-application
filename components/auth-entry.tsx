@@ -144,9 +144,13 @@ export function AuthEntry({
             )}
             {register && (
               <label className="auth-checkbox">
-                <input name="adultConfirmed" type="checkbox" required />
+                <input name="privacyAcknowledged" type="checkbox" required />
                 <span>
-                  {t("Je confirme avoir 18 ans ou plus, condition d’accès au pilote CNX.")}
+                  {t("J’ai pris connaissance de la")}{" "}
+                  <Link href="/confidentialite" target="_blank" rel="noopener noreferrer">
+                    {t("politique de confidentialité")}
+                  </Link>
+                  .
                 </span>
               </label>
             )}
@@ -161,16 +165,6 @@ export function AuthEntry({
                   .
                 </span>
               </label>
-            )}
-            {register && (
-              <Link
-                className="auth-forgot"
-                href="/confidentialite"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t("Politique de confidentialité")}
-              </Link>
             )}
             {state?.error && (
               <p className="auth-error" role="alert">

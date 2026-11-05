@@ -40,7 +40,7 @@ export async function definePassword(
       token: form.get("token"),
       password: form.get("password"),
       passwordConfirmation: form.get("passwordConfirmation"),
-      adultConfirmed: form.get("adultConfirmed") === "on",
+      privacyAcknowledged: form.get("privacyAcknowledged") === "on",
       locale: await getActionLocale(),
     });
     (await cookies()).delete(SESSION_COOKIE);

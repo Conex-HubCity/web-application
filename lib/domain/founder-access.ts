@@ -11,7 +11,7 @@ export async function requireFounderAccount(userId: string, db: Pick<PrismaClien
       accountStatus: true,
       emailVerifiedAt: true,
       roles: { select: { role: true } },
-      founderProfile: { select: { adultConfirmedAt: true } },
+      founderProfile: { select: { userId: true } },
     },
   });
   if (
@@ -19,7 +19,7 @@ export async function requireFounderAccount(userId: string, db: Pick<PrismaClien
     user.accountStatus !== "ACTIVE" ||
     !user.emailVerifiedAt ||
     !user.roles.some(({ role }) => role === "FOUNDER") ||
-    !user.founderProfile?.adultConfirmedAt
+    !user.founderProfile
   )
     throw new DomainError(
       "FOUNDER_UNAVAILABLE",

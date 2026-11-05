@@ -52,13 +52,6 @@ async function HomeContent() {
         </nav>
       </header>
       <main id="welcome-main">
-        {founderRegistrationClosed && (
-          <p className="welcome-preview-notice welcome-container">
-            {t(
-              "Les inscriptions Mentee sont actuellement fermées. Les candidatures mentors restent ouvertes.",
-            )}
-          </p>
-        )}
         <section className="welcome-masthead" aria-labelledby="welcome-title">
           <div className="welcome-hero-image">
             <Image

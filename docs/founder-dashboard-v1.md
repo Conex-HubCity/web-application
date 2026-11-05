@@ -30,7 +30,7 @@ Les porteurs consultent uniquement leur propre fiche via `/compte/projet/apercu`
 
 `ProjectRevision` ajoute `pitchUrl`, `socialLinks`, `customLinks`, `brandingImageId` et `presentedAt`. `presentedAt` marque la publication de la présentation. Les contrôles formels existants (`reviewStatus`, `publishedAt`, certification et fichier de pitch contrôlé) restent distincts pour le futur parcours de mentorat : aucune approbation ni analyse de fichier n’est fabriquée pour un lien externe. Les nouveaux champs entrent dans la protection des révisions approuvées.
 
-Le compte porteur doit être actif, son email et sa majorité confirmés ; l’inscription publique reste contrôlée séparément et les invitations restent possibles. L’inscription publique reste fermée. Le formulaire ne prend jamais l’identité ou le projet cible depuis le client. Le serveur vérifie aussi que l’image choisie appartient au porteur. Le remplacement d’un projet conserve les règles métier existantes ; cette interface ne crée pas un deuxième projet.
+Le compte porteur doit être actif, son email confirmé ; l’inscription publique reste contrôlée séparément et les invitations restent possibles. L’inscription publique reste fermée. Le formulaire ne prend jamais l’identité ou le projet cible depuis le client. Le serveur vérifie aussi que l’image choisie appartient au porteur. Le remplacement d’un projet conserve les règles métier existantes ; cette interface ne crée pas un deuxième projet.
 
 Deux migrations ajoutent les données de présentation, le modèle `ProjectImage` et la protection de l’historique. Prisma et MCD comptent désormais 22 modèles. Les présentations anciennes sans lien de pitch ne sont pas automatiquement exposées : le porteur doit compléter la fiche.
 

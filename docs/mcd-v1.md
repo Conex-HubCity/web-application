@@ -61,6 +61,8 @@ erDiagram
         string last_name
         datetime email_verified_at
         datetime phone_verified_at
+        datetime privacy_acknowledged_at
+        string privacy_policy_version
         string account_status
         datetime created_at
         datetime updated_at
@@ -633,3 +635,5 @@ Le porteur dispose d’un aperçu propriétaire séparé (`/compte/projet/apercu
 ### Accès mentor — contribution et validation
 
 Aucune étape « Mon adhésion » ni activation supplémentaire : une contribution unique `ContributionPayment` payée et un dossier mentor validé suffisent pour le tableau de bord et le catalogue, avec les contrôles de compte, email, charte et preuves. Le modèle historique `Membership` reste dans le schéma sans créer d’abonnement ni intervenir dans cet accès. Les données existantes sont conservées ; aucune migration n’est nécessaire.
+
+Depuis le 5 novembre 2026, l’inscription et l’acceptation des invitations demandent la prise de connaissance de la politique de confidentialité, enregistrée sur `users` avec sa version. Aucun contrôle de majorité ne conditionne l’inscription, les projets ou leur consultation. `founder_profiles.adult_confirmed_at` est uniquement une donnée historique, jamais reprise comme preuve de lecture de la politique. La charte mentor reste distincte.

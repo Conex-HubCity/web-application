@@ -108,8 +108,14 @@ function PasswordFields({ token, invitation }: { token: string; invitation: bool
       </label>
       {invitation && (
         <label className="auth-checkbox">
-          <input name="adultConfirmed" type="checkbox" required />
-          <span>{t("Je confirme avoir 18 ans ou plus.")}</span>
+          <input name="privacyAcknowledged" type="checkbox" required />
+          <span>
+            {t("J’ai pris connaissance de la")}{" "}
+            <Link href="/confidentialite" target="_blank" rel="noopener noreferrer">
+              {t("politique de confidentialité")}
+            </Link>
+            .
+          </span>
         </label>
       )}
       {state?.error && (

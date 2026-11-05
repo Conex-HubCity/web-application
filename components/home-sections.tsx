@@ -38,7 +38,7 @@ const questions = [
   {
     question: "À qui s’adresse le pilote CNX ?",
     answer:
-      "Le pilote est réservé aux personnes majeures : porteurs de projets en Afrique et professionnels expérimentés de la diaspora africaine. Les pays de lancement et les modalités d’ouverture seront précisés avant le démarrage du pilote.",
+      "Le pilote s’adresse aux porteurs de projets en Afrique et aux professionnels expérimentés de la diaspora africaine. Les pays de lancement et les modalités d’ouverture seront précisés avant le démarrage du pilote.",
   },
 ];
 

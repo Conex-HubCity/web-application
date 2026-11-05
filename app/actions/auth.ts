@@ -26,7 +26,7 @@ export async function authenticate(
             firstName: form.get("firstName"),
             lastName: form.get("lastName"),
             role: form.get("role"),
-            adultConfirmed: form.get("adultConfirmed") === "on",
+            privacyAcknowledged: form.get("privacyAcknowledged") === "on",
             charterAccepted: form.get("charterAccepted") === "on",
           })
         : mode === "login"

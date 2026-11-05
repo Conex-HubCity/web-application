@@ -125,17 +125,19 @@ enum FollowUpStatus {
 }
 
 model User {
-  id              String        @id @default(uuid()) @db.Uuid
-  email           String?       @unique @db.VarChar(254)
-  phone           String?       @unique @db.VarChar(32)
-  passwordHash    String        @map("password_hash") @db.Text
-  firstName       String        @map("first_name") @db.VarChar(100)
-  lastName        String?       @map("last_name") @db.VarChar(100)
-  emailVerifiedAt DateTime?     @map("email_verified_at") @db.Timestamptz(3)
-  phoneVerifiedAt DateTime?     @map("phone_verified_at") @db.Timestamptz(3)
-  accountStatus   AccountStatus @default(PENDING_VERIFICATION) @map("account_status")
-  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+  id                    String        @id @default(uuid()) @db.Uuid
+  email                 String?       @unique @db.VarChar(254)
+  phone                 String?       @unique @db.VarChar(32)
+  passwordHash          String        @map("password_hash") @db.Text
+  firstName             String        @map("first_name") @db.VarChar(100)
+  lastName              String?       @map("last_name") @db.VarChar(100)
+  emailVerifiedAt       DateTime?     @map("email_verified_at") @db.Timestamptz(3)
+  privacyAcknowledgedAt DateTime?     @map("privacy_acknowledged_at") @db.Timestamptz(3)
+  privacyPolicyVersion  String?       @map("privacy_policy_version") @db.VarChar(100)
+  phoneVerifiedAt       DateTime?     @map("phone_verified_at") @db.Timestamptz(3)
+  accountStatus         AccountStatus @default(PENDING_VERIFICATION) @map("account_status")
+  createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   contributionPayments ContributionPayment[]
   roles                UserRole[]
@@ -251,6 +253,7 @@ model FounderProfile {
   languages        String[]  @default([])
   skills           String[]  @default([])
   availability     String?   @db.Text
+  /// Historical age declaration; no longer required or used for access.
   adultConfirmedAt DateTime? @map("adult_confirmed_at") @db.Timestamptz(3)
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)

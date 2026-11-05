@@ -12,7 +12,7 @@ Le lien prouve la maîtrise de l’adresse email associée. Il confirme donc cet
 
 Depuis **Admin → Utilisateurs → Inviter un porteur de projet**, l’administrateur renseigne prénom, nom, email et langue. Le service contrôle à nouveau le rôle admin, l’email confirmé et le compte actif. Il crée exclusivement un rôle `FOUNDER`, sans certification, contribution, projet ni accès administrateur. Le mot de passe initial est aléatoire, haché et n’est communiqué à personne.
 
-Le destinataire reçoit un lien valable 48 heures pour définir lui-même son mot de passe. L’activation demande aussi sa confirmation de majorité. Une invitation en attente peut être renvoyée par le même formulaire sans créer un second compte ; une nouvelle émission invalide le lien précédent. Le destinataire peut également demander un nouveau lien depuis « Mot de passe oublié ? » : une invitation non acceptée reste une invitation et conserve l’exigence de majorité.
+Le destinataire reçoit un lien valable 48 heures pour définir lui-même son mot de passe. L’activation demande aussi la prise de connaissance de la politique de confidentialité. Une invitation en attente peut être renvoyée par le même formulaire sans créer un second compte ; une nouvelle émission invalide le lien précédent. Le destinataire peut également demander un nouveau lien depuis « Mot de passe oublié ? » : une invitation non acceptée reste une invitation et conserve la prise de connaissance de la politique de confidentialité.
 
 Un compte existant ordinaire ou une invitation déjà acceptée n’est jamais converti ou modifié par cette fonction. Il peut utiliser le parcours de récupération normal. Un rôle transmis frauduleusement dans le formulaire est ignoré : le rôle est fixé côté serveur.
 

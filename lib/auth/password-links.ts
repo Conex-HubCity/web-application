@@ -1,3 +1,4 @@
+import { PRIVACY_POLICY_VERSION } from "@/lib/privacy-policy";
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
 import type { PrismaClient, Prisma, PasswordTokenPurpose } from "@/generated/prisma/client";
@@ -245,7 +246,7 @@ export function createPasswordLinkService(
       token: unknown;
       password: unknown;
       passwordConfirmation: unknown;
-      adultConfirmed?: unknown;
+      privacyAcknowledged?: unknown;
       locale?: Locale;
     }) {
       const record = await validToken(input.token);
@@ -254,8 +255,8 @@ export function createPasswordLinkService(
         throw new AuthError("Le mot de passe doit contenir entre 8 et 128 caractères.");
       if (password !== input.passwordConfirmation)
         throw new AuthError("Les deux mots de passe doivent être identiques.");
-      if (record.purpose === "INVITATION" && input.adultConfirmed !== true)
-        throw new AuthError("Vous devez confirmer avoir 18 ans ou plus.");
+      if (record.purpose === "INVITATION" && input.privacyAcknowledged !== true)
+        throw new AuthError("Veuillez prendre connaissance de la politique de confidentialité.");
       const passwordHash = await hashPassword(password);
       await db.$transaction(async (tx) => {
         await tx.$queryRaw`SELECT id FROM users WHERE id=${record.userId}::uuid FOR UPDATE`;
@@ -264,6 +265,9 @@ export function createPasswordLinkService(
           where: { id: current.userId },
           data: {
             passwordHash,
+            ...(current.purpose === "INVITATION"
+              ? { privacyAcknowledgedAt: now(), privacyPolicyVersion: PRIVACY_POLICY_VERSION }
+              : {}),
             emailVerifiedAt: current.user.emailVerifiedAt ?? now(),
             accountStatus:
               current.user.accountStatus === "PENDING_VERIFICATION"
@@ -279,10 +283,6 @@ export function createPasswordLinkService(
           await tx.accountInvitation.update({
             where: { userId: current.userId },
             data: { acceptedAt: now() },
-          });
-          await tx.founderProfile.update({
-            where: { userId: current.userId },
-            data: { adultConfirmedAt: now() },
           });
         }
         await tx.session.deleteMany({ where: { userId: current.userId } });

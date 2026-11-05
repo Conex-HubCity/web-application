@@ -209,7 +209,7 @@ databaseTest(
         firstName: "Alice",
         lastName: "  Johnson  ",
         role,
-        adultConfirmed: true,
+        privacyAcknowledged: true,
         charterAccepted: true,
       });
       const account = await auth.getSession(session.token);
@@ -226,7 +226,9 @@ databaseTest(
       assert.equal(stored.emailVerifiedAt, null);
       assert.equal(stored.lastName, "Johnson");
       assert.notEqual(stored.sessions[0].tokenHash, session.token);
-      if (role === "FOUNDER") assert.ok(stored.founderProfile?.adultConfirmedAt);
+      assert.ok(stored.privacyAcknowledgedAt);
+      assert.equal(stored.privacyPolicyVersion, "2026-11-05");
+      if (role === "FOUNDER") assert.equal(stored.founderProfile?.adultConfirmedAt, null);
       else {
         assert.equal(stored.mentorProfile?.visibilityPreference, "PRIVATE");
         assert.equal(stored.mentorProfile?.verificationStatus, "DRAFT");
@@ -241,7 +243,7 @@ databaseTest(
           firstName: "Bob",
           lastName: "Smith",
           role,
-          adultConfirmed: true,
+          privacyAcknowledged: true,
           charterAccepted: true,
         }),
         AuthError,
@@ -411,13 +413,13 @@ databaseTest(
       firstName: "Alice",
       lastName: "Johnson",
       role: "MENTOR",
-      adultConfirmed: true,
+      privacyAcknowledged: true,
       charterAccepted: true,
     };
     await assert.rejects(auth.register({ ...input, role: "ADMIN" }), AuthError);
     await assert.rejects(auth.register({ ...input, lastName: "  " }), AuthError);
     await assert.rejects(auth.register({ ...input, lastName: "a".repeat(101) }), AuthError);
-    await assert.rejects(auth.register({ ...input, adultConfirmed: false }), AuthError);
+    await assert.rejects(auth.register({ ...input, privacyAcknowledged: false }), AuthError);
     await assert.rejects(
       auth.register({ ...input, password: "1234567", passwordConfirmation: "1234567" }),
       /entre 8 et 128/,
@@ -1284,7 +1286,7 @@ databaseTest(
       firstName: "Existing",
       lastName: "Founder",
       role: "FOUNDER",
-      adultConfirmed: true,
+      privacyAcknowledged: true,
     };
     await assert.rejects(closed.register(input), AuthError);
     const registered = await open.register(input);
@@ -1305,7 +1307,7 @@ databaseTest(
       firstName: "Preview",
       lastName: "Mentor",
       role: "MENTOR",
-      adultConfirmed: true,
+      privacyAcknowledged: true,
       charterAccepted: true,
     };
     const registered = await auth.register(input);
@@ -2090,8 +2092,11 @@ databaseTest(
     assert.equal(invited.founderProfile?.adultConfirmedAt, null);
     assert.equal(invited.receivedInvitation?.invitedById, admin.id);
     assert.equal((await f.links.inspect(token)).purpose, "INVITATION");
-    await assert.rejects(f.links.setPassword(newPasswordInput(token)), /18 ans/);
-    await f.links.setPassword({ ...newPasswordInput(token), adultConfirmed: true });
+    await assert.rejects(
+      f.links.setPassword(newPasswordInput(token)),
+      /politique de confidentialité/,
+    );
+    await f.links.setPassword({ ...newPasswordInput(token), privacyAcknowledged: true });
     const auth = createAuthService(db, { founderRegistration: false });
     const session = await auth.login({ email, password: "new password 123" });
     assert.ok(await auth.getSession(session.token));
@@ -2102,7 +2107,9 @@ databaseTest(
     assert.ok(activated.emailVerifiedAt);
     assert.equal(activated.accountStatus, "ACTIVE");
     assert.ok(activated.receivedInvitation?.acceptedAt);
-    assert.ok(activated.founderProfile?.adultConfirmedAt);
+    assert.ok(activated.privacyAcknowledgedAt);
+    assert.equal(activated.privacyPolicyVersion, "2026-11-05");
+    assert.equal(activated.founderProfile?.adultConfirmedAt, null);
     const profile = await createOnboardingService(db).getProfile(invited.id);
     assert.equal(profile?.isInvitedFounder, true);
     assert.equal(profile?.isCertified, false);
@@ -2115,7 +2122,7 @@ databaseTest(
         password: "password123",
         passwordConfirmation: "password123",
         role: "FOUNDER",
-        adultConfirmed: true,
+        privacyAcknowledged: true,
       }),
       /sur invitation/,
     );
@@ -2177,8 +2184,8 @@ databaseTest(
     assert.equal(await db.user.count({ where: { email: input.email } }), 1);
     await assert.rejects(f.links.inspect(old), AuthError);
     const results = await Promise.allSettled([
-      f.links.setPassword({ ...newPasswordInput(token), adultConfirmed: true }),
-      f.links.setPassword({ ...newPasswordInput(token), adultConfirmed: true }),
+      f.links.setPassword({ ...newPasswordInput(token), privacyAcknowledged: true }),
+      f.links.setPassword({ ...newPasswordInput(token), privacyAcknowledged: true }),
     ]);
     assert.equal(results.filter((result) => result.status === "fulfilled").length, 1);
   },
@@ -2221,7 +2228,7 @@ databaseTest(
         lastName: "Founder",
         password: "password123",
         passwordConfirmation: "password123",
-        adultConfirmed: true,
+        privacyAcknowledged: true,
       }),
       /invitation/,
     );
@@ -2321,7 +2328,7 @@ databaseTest(
 );
 
 databaseTest(
-  "founder project dashboard denies other roles, unverified accounts and missing majority",
+  "founder project dashboard denies other roles and unverified accounts without requiring an age declaration",
   async () => {
     for (const role of ["ADMIN", "MENTOR"] as const) {
       const actor = await user(role);
@@ -2347,11 +2354,8 @@ databaseTest(
       where: { userId: founder.id },
       data: { adultConfirmedAt: null },
     });
-    await assert.rejects(
-      saveFounderProject(founder.id, projectForm(), db),
-      expectCode("FOUNDER_UNAVAILABLE"),
-    );
-    assert.equal(await db.project.count({ where: { founderUserId: founder.id } }), 0);
+    await saveFounderProject(founder.id, projectForm(), db);
+    assert.equal(await db.project.count({ where: { founderUserId: founder.id } }), 1);
   },
 );
 

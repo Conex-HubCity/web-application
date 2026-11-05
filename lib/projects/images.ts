@@ -194,7 +194,6 @@ export async function readProjectImage(
       where: {
         founderUserId: image.ownerUserId,
         founder: {
-          adultConfirmedAt: { not: null },
           user: {
             accountStatus: "ACTIVE",
             emailVerifiedAt: { not: null },

@@ -31,7 +31,7 @@ export default async function PrivacyPage() {
               "Cette politique décrit l’utilisation de vos données sur CNX, la plateforme de mentorat portée par HubCity.",
             )}
           </p>
-          <p className="cnx-privacy-date">{t("Dernière mise à jour : 3 novembre 2026")}</p>
+          <p className="cnx-privacy-date">{t("Dernière mise à jour : 5 novembre 2026")}</p>
         </div>
         <article>
           {sections.map((section) => (

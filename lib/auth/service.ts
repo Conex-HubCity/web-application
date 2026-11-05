@@ -1,3 +1,4 @@
+import { PRIVACY_POLICY_VERSION } from "@/lib/privacy-policy";
 import "server-only";
 import { MENTOR_CHARTER_VERSION } from "@/lib/mentor-charter";
 import { isFounderRegistrationEnabled } from "@/lib/release";
@@ -97,7 +98,7 @@ export function createAuthService(
       firstName: unknown;
       lastName: unknown;
       role: unknown;
-      adultConfirmed: unknown;
+      privacyAcknowledged: unknown;
       charterAccepted?: unknown;
     }) {
       if (input.role === "FOUNDER" && !founderRegistration)
@@ -113,8 +114,8 @@ export function createAuthService(
         throw new AuthError("Saisissez votre prénom (60 caractères maximum).");
       if (input.role !== "FOUNDER" && input.role !== "MENTOR")
         throw new AuthError("Choisissez un parcours d’inscription valide.");
-      if (input.adultConfirmed !== true)
-        throw new AuthError("Vous devez confirmer avoir 18 ans ou plus.");
+      if (input.privacyAcknowledged !== true)
+        throw new AuthError("Veuillez prendre connaissance de la politique de confidentialité.");
       if (input.role === "MENTOR" && input.charterAccepted !== true)
         throw new AuthError("Veuillez accepter la charte du mentorat de Hubcity.");
       await throttle(email, "register");
@@ -127,11 +128,13 @@ export function createAuthService(
             passwordHash,
             firstName,
             lastName,
+            privacyAcknowledgedAt: new Date(),
+            privacyPolicyVersion: PRIVACY_POLICY_VERSION,
             // Authentication does not approve a contact, an account or a professional dossier.
             accountStatus: "PENDING_VERIFICATION",
             roles: { create: { role: input.role } },
             ...(input.role === "FOUNDER"
-              ? { founderProfile: { create: { adultConfirmedAt: new Date() } } }
+              ? { founderProfile: { create: {} } }
               : {
                   mentorProfile: {
                     create: {

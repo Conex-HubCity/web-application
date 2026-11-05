@@ -134,12 +134,6 @@ export function createPlatformService(db: PrismaClient = getDb()) {
 
   async function certifiedFounder(tx: Tx, userId: string) {
     await actor(tx, userId, "FOUNDER");
-    const profile = await tx.founderProfile.findUnique({ where: { userId } });
-    requireCondition(
-      profile?.adultConfirmedAt,
-      "MAJORITY_REQUIRED",
-      "La majorité doit être confirmée.",
-    );
     const certificate = await tx.certificationEvidence.findFirst({
       where: {
         founderUserId: userId,
@@ -380,12 +374,6 @@ export function createPlatformService(db: PrismaClient = getDb()) {
       const draft = projectData(input);
       return transaction(async (tx) => {
         await actor(tx, actorId, "FOUNDER");
-        const founder = await tx.founderProfile.findUnique({ where: { userId: actorId } });
-        requireCondition(
-          founder?.adultConfirmedAt,
-          "MAJORITY_REQUIRED",
-          "La majorité doit être confirmée.",
-        );
         return tx.project
           .create({
             data: {
@@ -635,7 +623,6 @@ export function createPlatformService(db: PrismaClient = getDb()) {
               archivedAt: null,
             },
             founder: {
-              adultConfirmedAt: { not: null },
               user: {
                 accountStatus: "ACTIVE",
                 OR: [{ emailVerifiedAt: { not: null } }, { phoneVerifiedAt: { not: null } }],
