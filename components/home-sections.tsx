@@ -189,7 +189,7 @@ export async function HomeSections({
                   />
                 </div>
                 <figcaption>
-                  <span>{t("Porteur du projet")}</span>
+                  <span>{t("Mentee")}</span>
                   <strong>Koumekpo Ablam Rodrigue</strong>
                 </figcaption>
               </figure>
