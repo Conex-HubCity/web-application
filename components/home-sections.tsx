@@ -58,7 +58,7 @@ export async function HomeSections({
     {
       role: "mentor",
       number: "02",
-      image: "mentor-upright-v3.webp",
+      image: "mentor-bokeh-v2.webp",
       label: t("Mentor"),
       introduction: t(
         "Vous êtes un professionnel en dehors du continent qui souhaite partager son expérience.",
@@ -76,13 +76,13 @@ export async function HomeSections({
       <section id="a-propos" className="cnx-about cnx-section" aria-labelledby="about-title">
         <div className="welcome-container cnx-about-grid">
           <div className="cnx-section-heading cnx-about-copy">
-            <h2 id="about-title">{t("CNX est un ambitieux programme de mentorat")}</h2>
-            <p>
+            <h2 id="about-title">{t("JETER UN PONT POUR CONSTRUIRE ENSEMBLE")}</h2>
+            <p className="cnx-about-intro">
+              {t("CNX est un ambitieux programme de mentorat")} {" "}
               {t(
                 "qui relie des primo-entrepreneurs du continent à des professionnels de la diaspora qui souhaitent partager leur expérience.",
               )}
             </p>
-            <p className="cnx-about-signature">{t("JETER UN PONT POUR CONSTRUIRE ENSEMBLE")}</p>
           </div>
           <figure className="cnx-about-visual">
             <Image
@@ -171,8 +171,11 @@ export async function HomeSections({
         aria-labelledby="featured-project-title"
       >
         <div className="welcome-container">
-          <div className="cnx-section-heading">
+          <div className="cnx-section-heading cnx-featured-project-heading">
             <h2 id="featured-project-title">{t("Le projet du mois")}</h2>
+            <p className="cnx-featured-project-subtitle">
+              {t("Tous les mois, un projet est sélectionné.")}
+            </p>
           </div>
           <article className="cnx-project-banner" aria-labelledby="locomo-title">
             <div className="cnx-project-people">
@@ -220,7 +223,7 @@ export async function HomeSections({
               </p>
               <p className="cnx-project-description">
                 {t(
-                  "Locomo développe une solution de rééducation à domicile qui associe analyse des mouvements par IA, corrections en temps réel et suivi par un kinésithérapeute à distance.",
+                  "Solution togolaise de kinésithérapie virtuelle et de suivi biomécanique, Locomo transforme tout smartphone ou ordinateur en assistant personnel de rééducation, utilisable même sans connexion Internet. L’analyse posturale en temps réel et le coaching vocal et visuel guident le patient à domicile, tandis qu’un tableau de bord permet aux kinésithérapeutes de prescrire les exercices et de suivre les progrès.",
                 )}
               </p>
             </div>

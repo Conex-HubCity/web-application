@@ -95,26 +95,24 @@ export function SplashScreen() {
       <div className="splash-content">
         <div className="splash-center">
           <div className="splash-hubcity">
-            <p className="splash-hubcity-attribution" lang="en">
-              A solution by
-            </p>
-            <div className="splash-hubcity-mark">
-              <Image
-                src="/assets/conex/hubcity-wordmark.png"
-                alt="HubCity"
-                width={752}
-                height={271}
-                preload
-                unoptimized
-              />
+            <div className="splash-hubcity-signature">
+              <p className="splash-hubcity-attribution" lang="en">
+                by
+              </p>
+              <div className="splash-hubcity-mark">
+                <Image
+                  src="/assets/conex/hubcity-wordmark.png"
+                  alt="HubCity"
+                  width={752}
+                  height={271}
+                  preload
+                  unoptimized
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <button className="splash-skip" onClick={() => dismissRef.current()}>
-        {" "}
-        {t("Passer l’introduction")} <span aria-hidden="true">↗</span>
-      </button>
     </dialog>
   );
 }

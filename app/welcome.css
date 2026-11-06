@@ -1612,18 +1612,25 @@
   max-height: min(36dvh, 220px);
   object-fit: contain;
 }
+.splash-hubcity-signature {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(14px, 2.5vw, 24px);
+  width: min(92vw, 500px);
+  margin-inline: auto;
+}
 .splash-hubcity-attribution {
-  margin-bottom: 22px;
-  color: #bfcbb6;
-  font-size: 10px;
-  line-height: 1.6;
-  letter-spacing: 2.5px;
+  margin: 0;
+  color: var(--gold);
+  font:
+    italic 400 clamp(18px, 2vw, 24px)/1 Georgia,
+    "Times New Roman",
+    serif;
+  letter-spacing: 0;
 }
-.cnx-splash[open] .splash-hubcity-attribution {
-  animation: cnx-rise-in 0.7s 0.1s both;
-}
-.cnx-splash[open] .splash-hubcity-mark {
-  animation: hubcity-logo-arrive 1.65s 0.5s both cubic-bezier(0.22, 0.65, 0.3, 1);
+.cnx-splash[open] .splash-hubcity-signature {
+  animation: hubcity-signature-arrive 1.45s 0.25s both cubic-bezier(0.22, 0.65, 0.3, 1);
 }
 .cnx-splash[open] .splash-hubcity::before {
   animation: hubcity-halo 3.2s 0.3s both ease-out;
@@ -1637,23 +1644,20 @@
 .cnx-splash[open] .splash-orbit-two {
   animation: hubcity-orbit 3.6s 0.45s both ease-out;
 }
-@keyframes hubcity-logo-arrive {
+@keyframes hubcity-signature-arrive {
   0% {
     opacity: 0;
-    clip-path: inset(0 100% 0 0);
-    transform: translateY(48px) scale(0.92);
+    filter: blur(8px);
+    transform: translateY(30px) scale(0.96);
   }
-  45% {
+  58% {
     opacity: 1;
-    clip-path: inset(0);
-    transform: translateY(-9px) scale(1.02);
-  }
-  70% {
-    transform: translateY(4px) scale(0.995);
+    filter: blur(0);
+    transform: translateY(-4px) scale(1.01);
   }
   100% {
     opacity: 1;
-    clip-path: inset(0);
+    filter: blur(0);
     transform: translateY(0) scale(1);
   }
 }
@@ -1684,8 +1688,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cnx-splash[open] .splash-hubcity-attribution,
-  .cnx-splash[open] .splash-hubcity-mark,
+  .cnx-splash[open] .splash-hubcity-signature,
   .cnx-splash[open] .splash-hubcity::before,
   .cnx-splash[open] .splash-hubcity::after {
     animation: none;

@@ -56,9 +56,19 @@ export function HomeProgramme() {
           tabIndex={active === 0 ? 0 : -1}
         >
           <h3 id={`${id}-academy-title`}>1. WoeAcademy</h3>
+          <p className="cx-learning-subtitle">{t("L’université libre de HubCity")}</p>
           <p>
+            {t("Vous portez un projet ? Le parcours de formation")} {" "}
+            <a
+              className="cx-programme-link"
+              href="https://woeacademy.hubcity.africa"
+              target="_blank"
+              rel="noreferrer"
+            >
+              WoeAcademy
+            </a>{" "}
             {t(
-              "Vous portez un projet ? Le parcours de formation WoeAcademy vous aide à le structurer avant de l’inscrire sur la plateforme et espérer bénéficier d’un mentorat.",
+              "vous aide à le structurer avant de l’inscrire sur la plateforme et espérer bénéficier d’un mentorat.",
             )}
           </p>
           <p className="cx-learning-note">

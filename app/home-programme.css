@@ -41,6 +41,15 @@
     serif;
   letter-spacing: -0.035em;
 }
+.welcome-page .cx-programme-link {
+  color: var(--gold);
+  font-weight: 600;
+  text-decoration: none;
+}
+.welcome-page .cx-programme-link:hover,
+.welcome-page .cx-programme-link:focus-visible {
+  color: #f7d7a8;
+}
 .welcome-page .cx-programme-block p {
   max-width: none;
   margin: 0;

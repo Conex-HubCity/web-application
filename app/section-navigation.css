@@ -5,11 +5,12 @@ html:has(.cnx-section-navigation) {
 .cnx-section-navigation {
   position: fixed;
   z-index: 30;
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  left: 50%;
-  transform: translateX(-50%) scale(0.45);
-  transform-origin: center bottom;
+  top: 50%;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  transform: translateY(-50%) scale(0.45);
+  transform-origin: right center;
   display: flex;
+  flex-direction: column;
   padding: 2px 8px;
   border: 1px solid #f6f3eb33;
   border-radius: 999px;
@@ -19,7 +20,7 @@ html:has(.cnx-section-navigation) {
 }
 .cnx-section-navigation:hover,
 .cnx-section-navigation:focus-within {
-  transform: translateX(-50%) scale(1);
+  transform: translateY(-50%) scale(1);
 }
 .cnx-section-navigation > a {
   position: relative;
@@ -50,9 +51,9 @@ html:has(.cnx-section-navigation) {
 }
 .cnx-section-tooltip {
   position: absolute;
-  bottom: calc(100% + 12px);
-  left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+  right: calc(100% + 12px);
+  transform: translateY(-50%);
   width: max-content;
   max-width: 180px;
   padding: 6px 10px;
@@ -71,10 +72,10 @@ html:has(.cnx-section-navigation) {
 }
 @media (hover: none) {
   .cnx-section-navigation {
-    transform: translateX(-50%) scale(0.6);
+    transform: translateY(-50%) scale(0.6);
   }
   .cnx-section-navigation:focus-within {
-    transform: translateX(-50%) scale(1);
+    transform: translateY(-50%) scale(1);
   }
 }
 @media (prefers-reduced-motion: reduce) {

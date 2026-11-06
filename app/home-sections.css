@@ -80,7 +80,8 @@
   background: #faf8f2;
 }
 /* Pathways precede the FAQ, with the shared purpose above both cards. */
-.cnx-pathways-heading > p.cnx-pathways-subtitle {
+.cnx-pathways-heading > p.cnx-pathways-subtitle,
+.cnx-featured-project-heading > p.cnx-featured-project-subtitle {
   max-width: none;
   margin-top: 24px;
   color: #9b6b45;
@@ -88,6 +89,9 @@
     italic 400 clamp(22px, 2.3vw, 30px)/1.45 Georgia,
     "Times New Roman",
     serif;
+}
+.cnx-featured-project-heading > p.cnx-featured-project-subtitle {
+  color: var(--gold);
 }
 .cnx-pathways-connection {
   margin-top: 28px;
@@ -99,7 +103,7 @@
     serif;
 }
 .cnx-pathway-bottom > p.cnx-pathway-intro {
-  margin-top: 14px;
+  margin-top: 4px;
   color: #fffdf7;
   font-size: 13px;
 }
@@ -109,8 +113,8 @@
 .cnx-pathway-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: auto minmax(70px, 1fr) repeat(5, auto);
-  column-gap: 24px;
+  grid-template-rows: auto minmax(170px, 1fr) repeat(5, auto);
+  column-gap: 10px;
 }
 .cnx-pathway-card {
   display: grid;
@@ -119,7 +123,8 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  min-height: 480px;
+  height: clamp(620px, 37vw, 650px);
+  min-height: 620px;
   padding: 29px 36px 35px;
   border-radius: 17px;
   color: #fffdf7;
@@ -134,9 +139,13 @@
 }
 .cnx-pathway-card:nth-child(2) > img {
   object-position: 42% center;
+  transform: scale(1.16) translateY(-10%);
 }
 .cnx-pathway-card:hover > img {
   transform: scale(1.045);
+}
+.cnx-pathway-card:nth-child(2):hover > img {
+  transform: scale(1.2) translateY(-9.7%);
 }
 .cnx-photo-shade {
   position: absolute;
@@ -211,11 +220,11 @@
 }
 .cnx-pathway-bottom h3 {
   font-family: Georgia, serif;
-  font-size: clamp(31px, 3.2vw, 47px);
+  font-size: clamp(22px, 1.8vw, 24px);
   font-weight: 400;
-  line-height: 1.12;
+  line-height: 1.1;
   letter-spacing: -0.04em;
-  margin-block: 18px;
+  margin-block: 0;
 }
 .cnx-pathway-bottom > p {
   color: #e0e7dc;
@@ -464,8 +473,7 @@
   align-items: start;
 }
 .cnx-faq-heading {
-  position: sticky;
-  top: 35px;
+  position: static;
 }
 .cnx-faq-heading > p {
   font-size: 13px;
@@ -612,11 +620,12 @@
 }
 @media (max-width: 1100px) {
   .cnx-pathway-card {
-    min-height: 580px;
+    height: 630px;
+    min-height: 630px;
     padding: 25px;
   }
   .cnx-pathway-bottom h3 {
-    font-size: 35px;
+    font-size: 22px;
   }
   .cnx-trust-photo {
     height: 570px;
@@ -677,22 +686,23 @@
   }
   .cnx-pathway-grid {
     grid-template-rows: none;
-    row-gap: 24px;
+    row-gap: 16px;
   }
   .cnx-pathway-card {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     grid-row: auto;
-    min-height: 580px;
+    height: 620px;
+    min-height: 620px;
     padding: 26px;
   }
   .cnx-pathway-bottom {
     display: block;
-    margin-top: 70px;
+    margin-top: 140px;
   }
   .cnx-pathway-bottom h3 {
-    font-size: 39px;
+    font-size: 35px;
   }
   .cnx-pathway-bottom > p {
     font-size: 12px;
@@ -746,9 +756,6 @@
   .cnx-commitments p {
     font-size: 12px;
   }
-  .cnx-faq-heading {
-    position: static;
-  }
   .cnx-faq-items summary {
     padding-block: 21px;
     font-size: 13px;
@@ -785,10 +792,11 @@
 @media (max-width: 380px) {
   .cnx-pathway-card {
     padding: 22px;
-    min-height: 560px;
+    height: 590px;
+    min-height: 590px;
   }
   .cnx-pathway-bottom h3 {
-    font-size: 34px;
+    font-size: 19px;
   }
   .cnx-journey-switch button {
     font-size: 10px;
@@ -816,13 +824,16 @@
   .cnx-pathway-card:hover > img {
     transform: none;
   }
+  .cnx-pathway-card:nth-child(2):hover > img {
+    transform: scale(1.16) translateY(-10%);
+  }
 }
 
 /* Targeted additions using the original forest, cream and gold charter. */
 .cnx-pathway-contribution {
   display: flex;
   gap: 12px;
-  align-items: baseline;
+  align-items: center;
   font-size: 11px;
   line-height: 1.6;
   margin-left: auto;
@@ -830,11 +841,24 @@
   color: #eee5d4;
 }
 .cnx-pathway-contribution strong {
+  display: inline-grid;
+  place-items: center;
+  min-width: 76px;
+  min-height: 48px;
+  padding: 8px 13px;
+  border: 2px solid #fff4d5;
+  border-radius: 999px;
+  background: var(--gold);
+  box-shadow:
+    0 0 0 3px #d9983f,
+    0 7px 16px #06150f4d;
+  color: var(--forest);
   font-family: Georgia, serif;
-  font-size: 25px;
-  font-weight: 400;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1;
   white-space: nowrap;
-  color: var(--gold);
+  transform: rotate(-3deg);
 }
 #choix,
 #formation {
@@ -844,6 +868,7 @@
 /* Discreet reassurance and a footer in the existing visual charter. */
 .welcome-footer.cnx-public-footer {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -851,7 +876,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding-block: clamp(48px, 5vw, 72px);
+  padding: clamp(48px, 5vw, 72px) 0 clamp(76px, 7vw, 96px);
   background: var(--cream);
 }
 .cnx-footer-content {
@@ -899,10 +924,17 @@
 }
 .cnx-footer-copyright {
   display: block;
-  margin-top: 23px;
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 18px;
+  left: 0;
+  width: 100%;
+  margin: 0;
   color: #697669;
   font-size: 10px;
   line-height: 1.7;
+  text-align: center;
 }
 .cnx-privacy-main {
   padding-block: 60px 100px;
@@ -969,20 +1001,11 @@
   display: block;
 }
 .cnx-about-copy > p.cnx-about-intro {
-  color: var(--forest);
-  font:
-    italic 400 21px/1.5 Georgia,
-    "Times New Roman",
-    serif;
+  color: #657568;
+  max-width: 590px;
+  font-size: 18px;
+  line-height: 1.65;
   margin-top: 25px;
-}
-.cnx-about-copy > p.cnx-about-signature {
-  color: #987045;
-  font-size: 9px;
-  line-height: 1.8;
-  font-weight: 600;
-  letter-spacing: 1.6px;
-  margin-top: 29px;
 }
 .cnx-about-visual {
   margin: 0;
@@ -1005,11 +1028,7 @@
 }
 @media (max-width: 600px) {
   .cnx-about-copy > p.cnx-about-intro {
-    font-size: 20px;
-  }
-  .cnx-about-copy > p.cnx-about-signature {
-    font-size: 8px;
-    letter-spacing: 1px;
+    font-size: 17px;
   }
   .cnx-about-visual img {
     border-radius: 14px;
@@ -1017,10 +1036,20 @@
 }
 
 .cnx-footer-socials {
-  display: flex;
-  flex-wrap: wrap;
   gap: 10px;
-  margin-top: 4px;
+}
+@media (min-width: 761px) {
+  .cnx-footer-socials {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .cnx-footer-socials h2 {
+    grid-column: 1 / -1;
+  }
+  .cnx-footer-socials a {
+    width: 100%;
+  }
 }
 .cnx-footer-socials a {
   display: inline-flex;
@@ -1049,6 +1078,14 @@
 .cnx-footer-email svg,
 .cnx-footer-socials svg {
   flex-shrink: 0;
+}
+.cnx-footer-gpt-logo {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.cnx-footer-socials a.cnx-footer-gpt-link {
+  white-space: nowrap;
 }
 .cnx-footer-email svg {
   margin-top: 2px;
@@ -1080,8 +1117,7 @@
 }
 @media (max-width: 760px) {
   .welcome-footer.cnx-public-footer {
-    flex-direction: column;
-    padding-bottom: 0;
+    padding-bottom: 62px;
   }
   .cnx-footer-content {
     padding-right: 0;
@@ -1231,7 +1267,7 @@
   position: absolute;
   z-index: 1;
   top: 96px;
-  right: 0;
+  right: 28px;
   width: 164px;
 }
 .cnx-project-mentor-portrait {
@@ -1260,6 +1296,7 @@
   }
   .cnx-project-mentor-portrait {
     top: 86px;
+    right: 18px;
     width: 136px;
   }
   .cnx-project-founder figcaption,

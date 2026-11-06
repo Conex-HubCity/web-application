@@ -2,7 +2,15 @@
 import Image from "next/image";
 import { Link, LanguageSwitcher, useTranslations } from "@/components/i18n";
 
-export function Brand({ full = false, label }: { full?: boolean; label?: string }) {
+export function Brand({
+  full = false,
+  label,
+  showLanguageSwitcher = true,
+}: {
+  full?: boolean;
+  label?: string;
+  showLanguageSwitcher?: boolean;
+}) {
   const t = useTranslations();
   return (
     <div className="cnx-brand-group">
@@ -31,7 +39,7 @@ export function Brand({ full = false, label }: { full?: boolean; label?: string 
           </>
         )}
       </Link>
-      <LanguageSwitcher />
+      {showLanguageSwitcher && <LanguageSwitcher />}
       {label && <span className="cnx-brand-label">{label}</span>}
     </div>
   );
