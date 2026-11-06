@@ -86,7 +86,7 @@ export async function HomeSections({
           </div>
           <figure className="cnx-about-visual">
             <Image
-              src="/assets/conex/africa-mirror-v2.webp"
+              src="/assets/conex/africa-mirror-v3.jpg"
               alt={t(
                 "Une entrepreneure dans une cour et un mentor dans un bureau sont reliés par un miroir en forme d’Afrique.",
               )}
