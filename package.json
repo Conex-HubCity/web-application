@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "export:preview": "node scripts/export-preview.mjs",
-    "test": "node --conditions=react-server --import tsx --test tests/platform.test.ts tests/i18n.test.ts tests/smtp.test.ts tests/stripe-webhook.test.ts tests/project-presentations.test.ts tests/project-images.test.ts tests/seed.test.ts",
+    "test": "node --conditions=react-server --import tsx --test tests/platform.test.ts tests/i18n.test.ts tests/smtp.test.ts tests/stripe-webhook.test.ts tests/project-presentations.test.ts tests/project-images.test.ts tests/request-origin.test.ts tests/seed.test.ts",
     "format": "prettier --write . && prisma format",
     "format:check": "prettier --check .",
     "postinstall": "prisma generate",

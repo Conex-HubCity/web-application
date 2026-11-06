@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/lib/auth/session";
 import { DomainError } from "@/lib/domain/policies";
 import { uploadProjectImage } from "@/lib/projects/images";
+import { hasAllowedRequestOrigin } from "@/lib/request-origin";
 const MAX_BODY = 6 * 1024 * 1024;
 const headers = { "Cache-Control": "private, no-store", Vary: "Cookie" };
 export async function POST(request: Request) {
@@ -15,14 +16,8 @@ export async function POST(request: Request) {
       { error: "Confirmez votre email avant de poursuivre." },
       { status: 403, headers },
     );
-  let sameOrigin = false;
-  try {
-    sameOrigin =
-      new URL(request.headers.get("origin") ?? "").origin === new URL(request.url).origin;
-  } catch {
-    /* Invalid or missing origin is rejected. */
-  }
-  if (!sameOrigin) return Response.json({ error: "Demande invalide." }, { status: 403, headers });
+  if (!hasAllowedRequestOrigin(request))
+    return Response.json({ error: "Demande invalide." }, { status: 403, headers });
   const type = request.headers.get("content-type") ?? "";
   if (!/^multipart\/form-data(?:;|$)/i.test(type))
     return Response.json(
