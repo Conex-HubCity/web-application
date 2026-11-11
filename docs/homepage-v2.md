@@ -50,7 +50,7 @@ Les chapitres reprennent la hauteur minimale du hero : 800 px, 880 px à partir 
 
 ## Les parcours — avant la FAQ
 
-Ordre de l’accueil : hero, CNX ?, Formation mentorale & Co, Les parcours, Le projet du mois, FAQ, footer.
+Ordre de l’accueil : hero, Les parcours, Préalable et suivi, FAQ, Le projet du mois, footer. La section de présentation CNX est retirée ; son texte intégral est conservé dans `docs/textes-retires.md` et son paragraphe de présentation apparaît sous l’ambition dans le hero.
 
 Mentor & Mentee : un même horizon.
 
@@ -143,3 +143,7 @@ Les titres CNX, Préalable et suivi, Les parcours, Le projet du mois et FAQ part
 ## Navigation par points
 
 Une barre compacte vert forêt, qui s’agrandit au survol ou au focus clavier, est fixée en bas de l’accueil et propose sept liens : Accueil, CNX, Préalable et suivi, Les parcours, Le projet du mois, FAQ et Contact. Chaque lien rejoint sa section avec un défilement fluide, instantané si la réduction des animations est activée. Les ancres natives restent disponibles sans JavaScript ; le point actif suit le défilement et les changements de hauteur du contenu. Les noms sont disponibles au survol, au clavier et aux lecteurs d’écran. La navigation est traduite en anglais et n’impose aucun défilement automatique.
+
+## Complément au parcours Mentee — 11 novembre 2026
+
+Le complément rédactionnel « Un regard extérieur pour préciser vos choix et faire mûrir votre projet. » a été retiré à la demande du propriétaire. Le titre Mentee est « Vous avez l’élan. » ; « Trouvez le regard qui vous fait avancer. » apparaît dans le sous-texte. Le titre Mentor est rétabli à « Votre expérience peut booster un projet. ».

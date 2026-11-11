@@ -49,7 +49,8 @@ export async function HomeSections({
       image: "entrepreneure.webp",
       label: t("Mentee"),
       introduction: t("Vous êtes un jeune sur le continent qui désire être guidé dans son projet."),
-      title: t("Vous avez l’élan. Trouvez le regard qui vous fait avancer."),
+      title: t("Vous avez l’élan."),
+      subtitle: t("Trouvez le regard qui vous fait avancer."),
       text: t(
         "Prenez du recul, progressez avec les conseils d’un aîné. Vous restez aux commandes de votre parcours.",
       ),
@@ -64,6 +65,7 @@ export async function HomeSections({
         "Vous êtes un professionnel en dehors du continent qui souhaite partager son expérience.",
       ),
       title: t("Votre expérience peut booster un projet."),
+      subtitle: null,
       text: t(
         "Transmettez, guidez, faites bénéficier de votre expertise, de votre savoir-faire, de vos compétences, de votre réseau.",
       ),
@@ -73,47 +75,6 @@ export async function HomeSections({
 
   return (
     <>
-      <section id="a-propos" className="cnx-about cnx-section" aria-labelledby="about-title">
-        <div className="welcome-container cnx-about-grid">
-          <div className="cnx-section-heading cnx-about-copy">
-            <h2 id="about-title">{t("JETER UN PONT POUR CONSTRUIRE ENSEMBLE")}</h2>
-            <p className="cnx-about-intro">
-              {t("CNX est un ambitieux programme de mentorat")} {" "}
-              {t(
-                "qui relie des primo-entrepreneurs du continent à des professionnels de la diaspora qui souhaitent partager leur expérience.",
-              )}
-            </p>
-          </div>
-          <figure className="cnx-about-visual">
-            <Image
-              src="/assets/conex/africa-mirror-v3.jpg"
-              alt={t(
-                "Une entrepreneure dans une cour et un mentor dans un bureau sont reliés par un miroir en forme d’Afrique.",
-              )}
-              width={1536}
-              height={1024}
-              sizes="(max-width: 900px) 100vw, 54vw"
-            />
-          </figure>
-        </div>
-      </section>
-      <section
-        id="programme"
-        className="cnx-section cnx-training-section"
-        aria-labelledby="training-title"
-      >
-        <div className="welcome-container">
-          <div className="cnx-section-heading cnx-training-heading">
-            <h2 id="training-title">{t("Préalable et suivi")}</h2>
-            <p className="cnx-training-subtitle">
-              {t("Une véritable préparation au compagnonnage.")}
-            </p>
-            <p>{t("WoeAcademy et Formation Mentorale : les arches sous le pont.")}</p>
-          </div>
-          <HomeProgramme />
-        </div>
-      </section>
-
       <section id="choix" className="cnx-pathways cnx-section" aria-labelledby="pathways-title">
         <div className="welcome-container">
           <div className="cnx-section-heading cnx-pathways-heading">
@@ -145,15 +106,21 @@ export async function HomeSections({
                 </div>
                 <div className="cnx-pathway-bottom">
                   <h3>{pathway.title}</h3>
-                  <p className="cnx-pathway-intro">{pathway.introduction}</p>
-                  <p className="cnx-pathway-description">{pathway.text}</p>
-                  {pathway.detail && <p className="cnx-pathway-detail">{pathway.detail}</p>}
+                  <div className="cnx-pathway-copy">
+                    <p className="cnx-pathway-intro">{pathway.introduction}</p>
+                    <p className="cnx-pathway-description">{pathway.text}</p>
+                    {pathway.detail && <p className="cnx-pathway-detail">{pathway.detail}</p>}
+                    {pathway.subtitle && <p className="cnx-pathway-subtitle">{pathway.subtitle}</p>}
+                  </div>
                   <div className="cnx-pathway-actions">
                     <PathwayAction role={pathway.role} closed={founderRegistrationClosed} />
                     {pathway.role === "mentor" && (
                       <span className="cnx-pathway-contribution">
                         <span>{t("En tant que mentor vous soutenez CNX")}</span>
-                        <strong>30 USD</strong>
+                        <strong>
+                          <span>30</span>
+                          <span>USD</span>
+                        </strong>
                       </span>
                     )}
                   </div>
@@ -162,6 +129,59 @@ export async function HomeSections({
             ))}
           </div>
           <p className="cnx-pathways-connection">{t("Nous vous connectons.")}</p>
+        </div>
+      </section>
+
+      <section
+        id="programme"
+        className="cnx-section cnx-training-section"
+        aria-labelledby="training-title"
+      >
+        <div className="welcome-container">
+          <div className="cnx-section-heading cnx-training-heading">
+            <h2 id="training-title">{t("Préalable et suivi")}</h2>
+            <p className="cnx-training-subtitle">
+              {t("Une véritable préparation au compagnonnage.")}
+            </p>
+            <p>{t("WoeAcademy et Formation Mentorale : les arches sous le pont.")}</p>
+          </div>
+          <HomeProgramme />
+        </div>
+      </section>
+
+      <section
+        id="questions-frequentes"
+        className="cnx-faq cnx-section"
+        aria-labelledby="faq-title"
+      >
+        <div className="welcome-container cnx-faq-grid">
+          <div className="cnx-section-heading cnx-faq-heading">
+            <h2 id="faq-title">{t("FAQ")}</h2>
+          </div>
+          <div className="cnx-faq-items">
+            {questions.map((item, index) => (
+              <details key={item.question}>
+                <summary>
+                  <span className="cnx-faq-number">0{index + 1}</span>
+                  <span>{t(item.question)}</span>
+                  <span className="cnx-faq-plus" aria-hidden="true">
+                    +
+                  </span>
+                </summary>
+                <div className="cnx-faq-answer">
+                  <p>
+                    {t(
+                      founderRegistrationClosed && index === 0
+                        ? "Les inscriptions Mentee sont actuellement fermées. Les candidatures mentors restent ouvertes."
+                        : founderRegistrationClosed && index === 1
+                          ? "La création du compte est gratuite. Après confirmation de l’email, une contribution unique de 30 USD permet de soutenir le fonctionnement de CNX. Vous pouvez ensuite vous arrêter là ou déposer vos justificatifs pour proposer votre candidature mentor."
+                          : item.answer,
+                    )}
+                  </p>
+                </div>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -228,42 +248,6 @@ export async function HomeSections({
               </p>
             </div>
           </article>
-        </div>
-      </section>
-
-      <section
-        id="questions-frequentes"
-        className="cnx-faq cnx-section"
-        aria-labelledby="faq-title"
-      >
-        <div className="welcome-container cnx-faq-grid">
-          <div className="cnx-section-heading cnx-faq-heading">
-            <h2 id="faq-title">{t("FAQ")}</h2>
-          </div>
-          <div className="cnx-faq-items">
-            {questions.map((item, index) => (
-              <details key={item.question}>
-                <summary>
-                  <span className="cnx-faq-number">0{index + 1}</span>
-                  <span>{t(item.question)}</span>
-                  <span className="cnx-faq-plus" aria-hidden="true">
-                    +
-                  </span>
-                </summary>
-                <div className="cnx-faq-answer">
-                  <p>
-                    {t(
-                      founderRegistrationClosed && index === 0
-                        ? "Les inscriptions Mentee sont actuellement fermées. Les candidatures mentors restent ouvertes."
-                        : founderRegistrationClosed && index === 1
-                          ? "La création du compte est gratuite. Après confirmation de l’email, une contribution unique de 30 USD permet de soutenir le fonctionnement de CNX. Vous pouvez ensuite vous arrêter là ou déposer vos justificatifs pour proposer votre candidature mentor."
-                          : item.answer,
-                    )}
-                  </p>
-                </div>
-              </details>
-            ))}
-          </div>
         </div>
       </section>
     </>

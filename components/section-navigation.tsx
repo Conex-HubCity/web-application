@@ -6,11 +6,10 @@ import "@/app/section-navigation.css";
 
 const sections = [
   { id: "accueil", label: "Accueil" },
-  { id: "a-propos", label: "CNX" },
-  { id: "programme", label: "Préalable et suivi" },
   { id: "choix", label: "Les parcours" },
-  { id: "projet-du-mois", label: "Le projet du mois" },
+  { id: "programme", label: "Préalable et suivi" },
   { id: "questions-frequentes", label: "FAQ" },
+  { id: "projet-du-mois", label: "Le projet du mois" },
   { id: "pied-de-page", label: "Contact" },
 ] as const;
 

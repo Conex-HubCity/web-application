@@ -71,7 +71,12 @@ async function HomeContent() {
               </h1>
               <p className="welcome-hero-context">
                 {t(
-                  "Agir sur et par son capital humain pour adresser les enjeux de transformation du continent africain.",
+                  "Notre ambition : jeter un pont pour construire ensemble, agir sur et par son capital humain pour adresser les enjeux de transformation du continent africain.",
+                )}
+              </p>
+              <p className="welcome-hero-context">
+                {t(
+                  "CNX est un ambitieux programme de mentorat qui relie des primo-entrepreneurs du continent à des professionnels de la diaspora qui souhaitent partager leur expérience.",
                 )}
               </p>
             </div>
